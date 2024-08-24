@@ -6,6 +6,7 @@
 
         .setcpu "6502"
         .org $6000
+        .include "macros.inc"
 
 L000E           := $000E
 L003C           := $003C
@@ -9944,71 +9945,44 @@ LAAB5   := $AAB5
 
         .assert * = $A800, error, "location mismatch"
 
-        .byte   $0C
-        .byte   $0D
-        .byte   "SUBLOGIC FLIGHT SIMULATOR II", 0
-        .byte   $14, $2D
-        .byte   "VERSION 2.0", 0
-        .byte   $1C, $08
-        .byte   "COPYRIGHT 1984 BY BRUCE ARTWICK", 0
-        .byte   $24, $07
-        .byte   "PRODUCED BY SUBLOGIC CORPORATION", 0
-        .byte   $32, $0A
-        .byte   "WHAT DISPLAY ARE YOU USING?", 0
-        .byte   $3C, $0A
-        .byte   "A. COLOR TV OR COMPOSITE MONITOR", 0
-        .byte   $44, $0A
-        .byte   "B. BLACK AND WHITE TV OR MONITOR", 0
-        .byte   $58, $0A
-        .byte   "(TYPE A OR B)", 0
+        MESSAGE $0C, $0D, "SUBLOGIC FLIGHT SIMULATOR II"
+        MESSAGE $14, $2D, "VERSION 2.0"
+        MESSAGE $1C, $08, "COPYRIGHT 1984 BY BRUCE ARTWICK"
+        MESSAGE $24, $07, "PRODUCED BY SUBLOGIC CORPORATION"
+        MESSAGE $32, $0A, "WHAT DISPLAY ARE YOU USING?"
+        MESSAGE $3C, $0A, "A. COLOR TV OR COMPOSITE MONITOR"
+        MESSAGE $44, $0A, "B. BLACK AND WHITE TV OR MONITOR"
+        MESSAGE $58, $0A, "(TYPE A OR B)"
         .byte   0, 0
-        .byte   $28, $0A
-        .byte   "SELECT OPERATING MODE", 0
-        .byte   $30, $0A
-        .byte   "A. DEMO MODE", 0
-        .byte   $38, $0A
-        .byte   "B. REGULAR FLIGHT MODE", 0
-        .byte   $4C, $0A
-        .byte   "(TYPE A OR B)", 0
+
+        MESSAGE $28, $0A, "SELECT OPERATING MODE"
+        MESSAGE $30, $0A, "A. DEMO MODE"
+        MESSAGE $38, $0A, "B. REGULAR FLIGHT MODE"
+        MESSAGE $4C, $0A, "(TYPE A OR B)"
         .byte   0, 0
-        .byte   $0C, $0A
-        .byte   "A LOWER CASE CHARACTER WAS TYPED.", 0
-        .byte   $14, $0A
-        .byte   "IF YOU ARE USING AN APPLE IIE", 0
-        .byte   $1C, $0A
-        .byte   "MAKE SURE THE CAPS LOCK KEY", 0
-        .byte   $24, $0A
-        .byte   "IS PRESSED.", 0
-        .byte   $32, $0A
-        .byte   "WHAT DISPLAY ARE YOU USING?", 0
-        .byte   $3C, $0A
-        .byte   "A. COLOR TV OR COMPOSITE MONITOR", 0
-        .byte   $44, $0A
-        .byte   "B. BLACK AND WHITE TV OR MONITOR", 0
-        .byte   $58, $0A
-        .byte   "(TYPE A OR B)", 0
+
+        MESSAGE $0C, $0A, "A LOWER CASE CHARACTER WAS TYPED."
+        MESSAGE $14, $0A, "IF YOU ARE USING AN APPLE IIE"
+        MESSAGE $1C, $0A, "MAKE SURE THE CAPS LOCK KEY"
+        MESSAGE $24, $0A, "IS PRESSED."
+        MESSAGE $32, $0A, "WHAT DISPLAY ARE YOU USING?"
+        MESSAGE $3C, $0A, "A. COLOR TV OR COMPOSITE MONITOR"
+        MESSAGE $44, $0A, "B. BLACK AND WHITE TV OR MONITOR"
+        MESSAGE $58, $0A, "(TYPE A OR B)"
         .byte   0, 0
-        .byte   $0C, $0A
-        .byte   "DEMO RUNS CONTINUOUSLY. PRESS", 0
-        .byte   $14, $0A
-        .byte   "THE K KEY TO BREAK OUT OF DEMO", 0
-        .byte   $1C, $0A
-        .byte   "AND RESUME NORMAL FLIGHT.", 0
-        .byte   $32, $0A
-        .byte   "PRESS ANY KEY TO CONTINUE.....", 0
+
+        MESSAGE $0C, $0A, "DEMO RUNS CONTINUOUSLY. PRESS"
+        MESSAGE $14, $0A, "THE K KEY TO BREAK OUT OF DEMO"
+        MESSAGE $1C, $0A, "AND RESUME NORMAL FLIGHT."
+        MESSAGE $32, $0A, "PRESS ANY KEY TO CONTINUE....."
         .byte   0, 0
-        .byte   $0C, $0A
-        .byte   "SIMPLE 48K DEMO ACTIVATED. THE", 0
-        .byte   $14, $0A
-        .byte   "AIRCRAFT WILL TAKE OFF AND FLY", 0
-        .byte   $1C, $0A
-        .byte   "STRAIGHT ONLY. A BETTER DEMO IS", 0
-        .byte   $24, $0A
-        .byte   "AVAILABLE WITH 64K. PRESS", 0
-        .byte   $2C, $0A
-        .byte   "THE K KEY TO BREAK OUT OF DEMO.", 0
-        .byte   $3C, $0A
-        .byte   "PRESS ANY KEY TO CONTINUE.....", 0
+
+        MESSAGE $0C, $0A, "SIMPLE 48K DEMO ACTIVATED. THE"
+        MESSAGE $14, $0A, "AIRCRAFT WILL TAKE OFF AND FLY"
+        MESSAGE $1C, $0A, "STRAIGHT ONLY. A BETTER DEMO IS"
+        MESSAGE $24, $0A, "AVAILABLE WITH 64K. PRESS"
+        MESSAGE $2C, $0A, "THE K KEY TO BREAK OUT OF DEMO."
+        MESSAGE $3C, $0A, "PRESS ANY KEY TO CONTINUE....."
         .byte   0, 0
 
         .byte   $BB

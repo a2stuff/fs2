@@ -7,6 +7,8 @@
         .setcpu "6502"
         .org $f600
 
+        .include "macros.inc"
+
 L168F           := $168F
 L1763           := $1763
 L1768           := $1768
@@ -42,24 +44,18 @@ L924C           := $924C
 L92DB           := $92DB
 LA23D           := $A23D
 LA4D2           := $A4D2
-        .byte   $0C, $0A
-        .byte   "**** COURSE PLOTTER SYSTEM ****", 0
-        .byte   $14, $2D, $20, $00, $1C, $06
-        .byte   "A. BEGIN NORMAL COURSE RECORDING", 0
-        .byte   $24, $06
-        .byte   "B. DISPLAY COURSE PLOT", 0
-        .byte   $2C, $06
-        .byte   "C. BOOT DOS", 0
-        .byte   $34, $06
-        .byte   "D. BEGIN PRECISION RECORDING", 0
-        .byte   $3C, $06
-        .byte   "E. TURN OFF COURSE PLOTTER", 0
-        .byte   $50, $0A
-        .byte   "SELECT OPTION, THEN PRESS ESC TO", 0
-        .byte   $56, $0A
-        .byte   "RETURN TO FLIGHT, SLEW, OR RADAR", 0
-        .byte   $5C, $0A
-        .byte   "MODE TO VIEW OR RECORD COURSE.", 0
+
+
+        MESSAGE $0C, $0A, "**** COURSE PLOTTER SYSTEM ****"
+        MESSAGE $14, $2D, " "
+        MESSAGE $1C, $06, "A. BEGIN NORMAL COURSE RECORDING"
+        MESSAGE $24, $06, "B. DISPLAY COURSE PLOT"
+        MESSAGE $2C, $06, "C. BOOT DOS"
+        MESSAGE $34, $06, "D. BEGIN PRECISION RECORDING"
+        MESSAGE $3C, $06, "E. TURN OFF COURSE PLOTTER"
+        MESSAGE $50, $0A, "SELECT OPTION, THEN PRESS ESC TO"
+        MESSAGE $56, $0A, "RETURN TO FLIGHT, SLEW, OR RADAR"
+        MESSAGE $5C, $0A, "MODE TO VIEW OR RECORD COURSE."
         .byte   $00, $00
 
 LF715:  asl     a

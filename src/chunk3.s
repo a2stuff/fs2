@@ -7,6 +7,8 @@
         .setcpu "6502"
         .org $d300
 
+        .include "macros.inc"
+
 L0000           := $0000
 L0020           := $0020
 L002D           := $002D
@@ -2110,10 +2112,10 @@ LDD21:  lda     #$0C
         bne     LDD09
         lda     #$7F
         bne     LDD09
-        .byte   $02, $0A
-        .byte   " 00000 NORTH ", 0
-        .byte   $02, $4C
-        .byte   " 00000 EAST ", 0
+
+        MESSAGE $02, $0A, " 00000 NORTH "
+        MESSAGE $02, $4C, " 00000 EAST "
+
         .byte   $AD
         ldy     $08,x
         and     #$01
@@ -2155,21 +2157,11 @@ LDD94:  lda     $089B
         sta     $0919
 LDDA6:  rts
 
-LDDA7:  .byte   $32
-        .byte   $14
-        .byte   "MOUNTAIN CRASH", 0
-        .byte   $32
-        .byte   $14
-        .byte   "CRASH", 0
-LDDC0:  .byte   $32
-        .byte   $14
-        .byte   "BUILDING CRASH", 0
-        .byte   $32
-        .byte   $14
-        .byte   "SPLASH!", 0
-        .byte   $32
-        .byte   $14
-        .byte   "AIRCRAFT PROBLEM !!!!", 0
+LDDA7:  MESSAGE $32, $14, "MOUNTAIN CRASH"
+        MESSAGE $32, $14, "CRASH"
+LDDC0:  MESSAGE $32, $14, "BUILDING CRASH"
+        MESSAGE $32, $14, "SPLASH!"
+        MESSAGE $32, $14, "AIRCRAFT PROBLEM !!!!"
 LDDF3:  clv
 LDDF4:  cmp     LDDA7,x
         clv
@@ -4715,42 +4707,36 @@ LEFA4:  lda     L0045
         inc     $FFFF,x
         .byte   0, 0
 
-        .byte   $00, $18, "***** WAR REPORT *****", 0
-        .byte   $0C, $04, "ENEMY PLANES SHOT DOWN = ", 0
-        .byte   $0C, $68, "000", 0
-        .byte   $12, $04, "BOMB HITS = ", 0
-        .byte   $12, $34, "000", 0
-        .byte   $18, $04, "AIRCRAFT DAMAGE BY ENEMY = ", 0
-        .byte   $18, $70, "000", 0
-        .byte   $24, $04, "ENEMY STATUS: 0=SHOT DOWN", 0
-        .byte   $2A, $3C, "1=RETURNING OR HOME", 0
-        .byte   $30, $3C, "2=ATTACKING", 0
+        MESSAGE $00, $18, "***** WAR REPORT *****"
+        MESSAGE $0C, $04, "ENEMY PLANES SHOT DOWN = "
+        MESSAGE $0C, $68, "000"
+        MESSAGE $12, $04, "BOMB HITS = "
+        MESSAGE $12, $34, "000"
+        MESSAGE $18, $04, "AIRCRAFT DAMAGE BY ENEMY = "
+        MESSAGE $18, $70, "000"
+        MESSAGE $24, $04, "ENEMY STATUS: 0=SHOT DOWN"
+        MESSAGE $2A, $3C, "1=RETURNING OR HOME"
+        MESSAGE $30, $3C, "2=ATTACKING"
 
-        .byte   $3C, $04, "ENEMY 1 = ", 0
-        .byte   $3C, $2C
-LF0C3:  .byte   "0", 0
+        MESSAGE $3C, $04, "ENEMY 1 = "
+        MESSAGE $3C, $2C, "0", LF0C3
 
-        .byte   $3C, $3C, "ENEMY 2 = ", 0
-        .byte   $3C, $64
-LF0D4:  .byte   "0", 0
+        MESSAGE $3C, $3C, "ENEMY 2 = "
+        MESSAGE $3C, $64, "0", LF0D4
 
-        .byte   $42, $04, "ENEMY 3 = ", 0
-        .byte   $42, $2C
-LF0E5:  .byte   "0", 0
+        MESSAGE $42, $04, "ENEMY 3 = "
+        MESSAGE $42, $2C, "0", LF0E5
 
-        .byte   $42, $3C, "ENEMY 4 = ", 0
-        .byte   $42, $64
-LF0F6:  .byte   "0", 0
+        MESSAGE $42, $3C, "ENEMY 4 = "
+        MESSAGE $42, $64, "0", LF0F6
 
-LF0F8:  .byte   $48, $04, "ENEMY 5 = ", 0
-        .byte   $48, $2C
-LF107:  .byte   "0", 0
+        MESSAGE $48, $04, "ENEMY 5 = "
+        MESSAGE $48, $2C, "0", LF107
 
-        .byte   $48, $3C, "ENEMY 6 = ", 0
-        .byte   $48, $64
-LF118:  .byte   "0", 0
+        MESSAGE $48, $3C, "ENEMY 6 = "
+        MESSAGE $48, $64, "0", LF118
 
-LF11A:  .byte   $54, $00, "PRESS ANY KEY TO RESUME BATTLE", 0
+LF11A:  MESSAGE $54, $00, "PRESS ANY KEY TO RESUME BATTLE"
         .byte   0, 0
 
 LF13D:  rts
