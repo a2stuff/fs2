@@ -4713,196 +4713,46 @@ LEFA4:  lda     L0045
         .byte   $FF
         brk
         inc     $FFFF,x
-        brk
-        brk
-        brk
-        clc
-        rol     a
-        rol     a
-        rol     a
-        rol     a
-        rol     a
-        jsr     L4157
-        .byte   $52
-        jsr     L4552
-        bvc     LF05F
-        .byte   $52
-        .byte   $54
-        jsr     L2A2A
-        rol     a
-        rol     a
-        rol     a
-        brk
-        .byte   $0C
-        .byte   $04
-        eor     $4E
-        eor     $4D
-        eor     $5020,y
-        jmp     L4E41
+        .byte   0, 0
 
-        eor     $53
-        jsr     L4853
-        .byte   $4F
-        .byte   $54
-        jsr     L4F44
-        .byte   $57
-        lsr     $3D20
-        jsr     L0C00
-        pla
-        bmi     LF069
-        bmi     LF03B
-LF03B:  .byte   $12
-        .byte   $04
-        .byte   $42
-        .byte   $4F
-        eor     $2042
-        pha
-        eor     #$54
-        .byte   $53
-        jsr     L203D
-        brk
-        .byte   $12
-        .byte   $34
-        bmi     LF07E
-        bmi     LF050
-LF050:  clc
-        .byte   $04
-        eor     ($49,x)
-        .byte   $52
-        .byte   $43
-        .byte   $52
-        eor     ($46,x)
-        .byte   $54
-        jsr     L4144
-        .byte   $4D
-        .byte   $41
-LF05F:  .byte   $47
-        eor     L0020
-        .byte   $42
-        eor     $4520,y
-        lsr     L4D45
-LF069:  eor     $3D20,y
-        jsr     L1800
-        bvs     LF0A1
-        bmi     LF0A3
-        brk
-        bit     $04
-        eor     $4E
-        eor     $4D
-        eor     $5320,y
-        .byte   $54
-LF07E:  eor     ($54,x)
-        eor     $53,x
-        .byte   $3A
-        jsr     L3D30
-        .byte   $53
-        pha
-        .byte   $4F
-        .byte   $54
-        jsr     L4F44
-        .byte   $57
-        lsr     $2A00
-        .byte   $3C
-        and     ($3D),y
-        .byte   $52
-        eor     $54
-        eor     $52,x
-        lsr     $4E49
-        .byte   $47
-        jsr     L524F
-        .byte   $20
-LF0A1:  pha
-        .byte   $4F
-LF0A3:  eor     a:L0045
-        bmi     LF0E4
-        .byte   $32
-        and     $5441,x
-        .byte   $54
-        eor     ($43,x)
-        .byte   $4B
-        eor     #$4E
-        .byte   $47
-        brk
-        .byte   $3C
-        .byte   $04
-        eor     $4E
-        eor     $4D
-        eor     $3120,y
-        jsr     L203D
-        brk
-        .byte   $3C
-        .byte   $2C
-LF0C3:  bmi     * + (2)
-        .byte   $3C
-        .byte   $3C
-        eor     $4E
-        eor     $4D
-        eor     $3220,y
-        jsr     L203D
-        brk
-        .byte   $3C
-        .byte   $64
-LF0D4:  bmi     LF0D6
-LF0D6:  .byte   $42
-        .byte   $04
-        eor     $4E
-        eor     $4D
-        eor     $3320,y
-        jsr     L203D
-        brk
-        .byte   $42
-LF0E4:  .byte   $2C
-LF0E5:  bmi     * + (2)
-        .byte   $42
-        .byte   $3C
-        eor     $4E
-        eor     $4D
-        eor     $3420,y
-        jsr     L203D
-        brk
-        .byte   $42
-        .byte   $64
-LF0F6:  bmi     LF0F8
-LF0F8:  pha
-        .byte   $04
-        eor     $4E
-        eor     $4D
-        eor     $3520,y
-        jsr     L203D
-        brk
-        pha
-        .byte   $2C
-LF107:  bmi     * + (2)
-        pha
-        .byte   $3C
-        eor     $4E
-        eor     $4D
-        eor     $3620,y
-        jsr     L203D
-        brk
-        pha
-        .byte   $64
-LF118:  bmi     LF11A
-LF11A:  .byte   $54
-        brk
-        bvc     LF170
-        eor     $53
-        .byte   $53
-        jsr     L4E41
-        eor     $4B20,y
-        eor     $59
-        jsr     L4F54
-        jsr     L4552
-        .byte   $53
-        eor     $4D,x
-        eor     L0020
-        .byte   $42
-        eor     ($54,x)
-        .byte   $54
-        jmp     L0045
+        .byte   $00, $18, "***** WAR REPORT *****", 0
+        .byte   $0C, $04, "ENEMY PLANES SHOT DOWN = ", 0
+        .byte   $0C, $68, "000", 0
+        .byte   $12, $04, "BOMB HITS = ", 0
+        .byte   $12, $34, "000", 0
+        .byte   $18, $04, "AIRCRAFT DAMAGE BY ENEMY = ", 0
+        .byte   $18, $70, "000", 0
+        .byte   $24, $04, "ENEMY STATUS: 0=SHOT DOWN", 0
+        .byte   $2A, $3C, "1=RETURNING OR HOME", 0
+        .byte   $30, $3C, "2=ATTACKING", 0
 
-        brk
-        brk
+        .byte   $3C, $04, "ENEMY 1 = ", 0
+        .byte   $3C, $2C
+LF0C3:  .byte   "0", 0
+
+        .byte   $3C, $3C, "ENEMY 2 = ", 0
+        .byte   $3C, $64
+LF0D4:  .byte   "0", 0
+
+        .byte   $42, $04, "ENEMY 3 = ", 0
+        .byte   $42, $2C
+LF0E5:  .byte   "0", 0
+
+        .byte   $42, $3C, "ENEMY 4 = ", 0
+        .byte   $42, $64
+LF0F6:  .byte   "0", 0
+
+LF0F8:  .byte   $48, $04, "ENEMY 5 = ", 0
+        .byte   $48, $2C
+LF107:  .byte   "0", 0
+
+        .byte   $48, $3C, "ENEMY 6 = ", 0
+        .byte   $48, $64
+LF118:  .byte   "0", 0
+
+LF11A:  .byte   $54, $00, "PRESS ANY KEY TO RESUME BATTLE", 0
+        .byte   0, 0
+
 LF13D:  rts
 
         lda     $08C8

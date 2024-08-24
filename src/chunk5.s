@@ -9884,8 +9884,8 @@ LA7D3:  rts
         .byte   $A7
         .byte   $41
 LA7E0:  brk
-LA7E1:  bcs     LA82F
-        sta     ($AB),y
+LA7E1:  .byte   $B0
+        jmp     LAB91
         jmp     LAB91
 
 LA7E8:  jsr     LA674
@@ -9904,499 +9904,113 @@ LA7F4:  jsr     LA686
         brk
         brk
         brk
-LA800:  .byte   $0C
+
+        ;; This memory is re-used after the simulation starts
+LA800   := $A800
+LA802   := $A802
+LA803   := $A803
+LA804   := $A804
+LA805   := $A805
+LA806   := $A806
+LA807   := $A807
+LA808   := $A808
+LA809   := $A809
+LA80A   := $A80A
+LA80B   := $A80B
+LA80C   := $A80C
+LA80D   := $A80D
+
+        ;; Also this, but less certain
+LA95B   := $A95B
+LA95C   := $A95C
+LA95D   := $A95D
+LA95E   := $A95E
+LA95F   := $A95F
+LA960   := $A960
+LA961   := $A961
+LA962   := $A962
+LA963   := $A963
+
+LAA4F   := $AA4F
+LAA50   := $AA50
+LAA51   := $AA51
+LAA52   := $AA52
+
+LAA75   := $AA75
+
+LAAB3   := $AAB3
+LAAB4   := $AAB4
+LAAB5   := $AAB5
+
+        .assert * = $A800, error, "location mismatch"
+
+        .byte   $0C
         .byte   $0D
-LA802:  .byte   $53
-LA803:  .byte   $55
-LA804:  .byte   $42
-LA805:  .byte   $4C
-LA806:  .byte   $4F
-LA807:  .byte   $47
-LA808:  .byte   $49
-LA809:  .byte   $43
-LA80A:  .byte   $20
-LA80B:  .byte   $46
-LA80C:  .byte   $4C
-LA80D:  eor     #$47
-        pha
-        .byte   $54
-        jsr     L4953
-        eor     $4C55
-        eor     ($54,x)
-        .byte   $4F
-        .byte   $52
-        jsr     L4949
-        brk
-        .byte   $14
-        and     $4556
-        .byte   $52
-        .byte   $53
-        eor     #$4F
-        lsr     $3220
-        rol     a:$30
-        .byte   $1C
-        php
-LA82F:  .byte   $43
-        .byte   $4F
-        bvc     LA88C
-        .byte   $52
-        eor     #$47
-        pha
-        .byte   $54
-        jsr     L3931
-        sec
-        .byte   $34
-        jsr     L5942
-        jsr     L5242
-        eor     $43,x
-        eor     $20
-        eor     ($52,x)
-        .byte   $54
-        .byte   $57
-        eor     #$43
-        .byte   $4B
-        brk
-        bit     $07
-        bvc     LA8A5
-        .byte   $4F
-        .byte   $44
-        eor     $43,x
-        eor     $44
-        jsr     L5942
-        jsr     L5553
-        .byte   $42
-        jmp     L474F
+        .byte   "SUBLOGIC FLIGHT SIMULATOR II", 0
+        .byte   $14, $2D
+        .byte   "VERSION 2.0", 0
+        .byte   $1C, $08
+        .byte   "COPYRIGHT 1984 BY BRUCE ARTWICK", 0
+        .byte   $24, $07
+        .byte   "PRODUCED BY SUBLOGIC CORPORATION", 0
+        .byte   $32, $0A
+        .byte   "WHAT DISPLAY ARE YOU USING?", 0
+        .byte   $3C, $0A
+        .byte   "A. COLOR TV OR COMPOSITE MONITOR", 0
+        .byte   $44, $0A
+        .byte   "B. BLACK AND WHITE TV OR MONITOR", 0
+        .byte   $58, $0A
+        .byte   "(TYPE A OR B)", 0
+        .byte   0, 0
+        .byte   $28, $0A
+        .byte   "SELECT OPERATING MODE", 0
+        .byte   $30, $0A
+        .byte   "A. DEMO MODE", 0
+        .byte   $38, $0A
+        .byte   "B. REGULAR FLIGHT MODE", 0
+        .byte   $4C, $0A
+        .byte   "(TYPE A OR B)", 0
+        .byte   0, 0
+        .byte   $0C, $0A
+        .byte   "A LOWER CASE CHARACTER WAS TYPED.", 0
+        .byte   $14, $0A
+        .byte   "IF YOU ARE USING AN APPLE IIE", 0
+        .byte   $1C, $0A
+        .byte   "MAKE SURE THE CAPS LOCK KEY", 0
+        .byte   $24, $0A
+        .byte   "IS PRESSED.", 0
+        .byte   $32, $0A
+        .byte   "WHAT DISPLAY ARE YOU USING?", 0
+        .byte   $3C, $0A
+        .byte   "A. COLOR TV OR COMPOSITE MONITOR", 0
+        .byte   $44, $0A
+        .byte   "B. BLACK AND WHITE TV OR MONITOR", 0
+        .byte   $58, $0A
+        .byte   "(TYPE A OR B)", 0
+        .byte   0, 0
+        .byte   $0C, $0A
+        .byte   "DEMO RUNS CONTINUOUSLY. PRESS", 0
+        .byte   $14, $0A
+        .byte   "THE K KEY TO BREAK OUT OF DEMO", 0
+        .byte   $1C, $0A
+        .byte   "AND RESUME NORMAL FLIGHT.", 0
+        .byte   $32, $0A
+        .byte   "PRESS ANY KEY TO CONTINUE.....", 0
+        .byte   0, 0
+        .byte   $0C, $0A
+        .byte   "SIMPLE 48K DEMO ACTIVATED. THE", 0
+        .byte   $14, $0A
+        .byte   "AIRCRAFT WILL TAKE OFF AND FLY", 0
+        .byte   $1C, $0A
+        .byte   "STRAIGHT ONLY. A BETTER DEMO IS", 0
+        .byte   $24, $0A
+        .byte   "AVAILABLE WITH 64K. PRESS", 0
+        .byte   $2C, $0A
+        .byte   "THE K KEY TO BREAK OUT OF DEMO.", 0
+        .byte   $3C, $0A
+        .byte   "PRESS ANY KEY TO CONTINUE.....", 0
+        .byte   0, 0
 
-        eor     #$43
-        jsr     L4F43
-        .byte   $52
-        bvc     LA8BA
-        .byte   $52
-        eor     ($54,x)
-        eor     #$4F
-        lsr     $3200
-        asl     a
-        .byte   $57
-        pha
-        eor     ($54,x)
-        jsr     L4944
-        .byte   $53
-        bvc     LA8CA
-        eor     ($59,x)
-        jsr     L5241
-        eor     $20
-        eor     L554F,y
-        jsr     L5355
-        .byte   $49
-LA88C:  lsr     $3F47
-        brk
-        .byte   $3C
-        asl     a
-        eor     ($2E,x)
-        jsr     L4F43
-        jmp     L524F
-
-        jsr     L5654
-        jsr     L524F
-        jsr     L4F43
-        .byte   $4D
-        .byte   $50
-LA8A5:  .byte   $4F
-        .byte   $53
-        eor     #$54
-        eor     $20
-        eor     L4E4F
-        eor     #$54
-        .byte   $4F
-        .byte   $52
-        brk
-        .byte   $44
-        asl     a
-        .byte   $42
-        rol     $4220
-        .byte   $4C
-LA8BA:  eor     ($43,x)
-        .byte   $4B
-        jsr     L4E41
-        .byte   $44
-        jsr     L4857
-        eor     #$54
-        eor     $20
-        .byte   $54
-        .byte   $56
-LA8CA:  jsr     L524F
-        jsr     L4F4D
-        lsr     $5449
-        .byte   $4F
-        .byte   $52
-        brk
-        cli
-        asl     a
-        plp
-        .byte   $54
-        eor     $4550,y
-        jsr     L2041
-        .byte   $4F
-        .byte   $52
-        jsr     L2942
-        brk
-        brk
-        brk
-        plp
-        asl     a
-        .byte   $53
-        eor     $4C
-        eor     $43
-        .byte   $54
-        jsr     L504F
-        eor     $52
-        eor     ($54,x)
-        eor     #$4E
-        .byte   $47
-        jsr     L4F4D
-        .byte   $44
-        eor     $00
-        bmi     LA90C
-        eor     ($2E,x)
-        jsr     L4544
-        eor     $204F
-        .byte   $4D
-        .byte   $4F
-LA90C:  .byte   $44
-        eor     $00
-        sec
-        asl     a
-        .byte   $42
-        rol     $5220
-        eor     $47
-        eor     $4C,x
-        eor     ($52,x)
-        jsr     L4C46
-        eor     #$47
-        pha
-        .byte   $54
-        jsr     L4F4D
-        .byte   $44
-        eor     $00
-        jmp     L280A
-
-        .byte   $54
-        eor     $4550,y
-        jsr     L2041
-        .byte   $4F
-        .byte   $52
-        jsr     L2942
-        brk
-        brk
-        brk
-        .byte   $0C
-        asl     a
-        eor     ($20,x)
-        jmp     L574F
-
-        eor     $52
-        jsr     L4143
-        .byte   $53
-        eor     $20
-        .byte   $43
-        pha
-        eor     ($52,x)
-        eor     ($43,x)
-        .byte   $54
-        eor     $52
-        jsr     L4157
-        .byte   $53
-        jsr     L5954
-        bvc     LA9A0
-LA95B:  .byte   $44
-LA95C:  .byte   $2E
-LA95D:  brk
-LA95E:  .byte   $14
-LA95F:  asl     a
-LA960:  .byte   $49
-LA961:  .byte   $46
-LA962:  .byte   $20
-LA963:  eor     L554F,y
-        jsr     L5241
-        eor     $20
-        eor     $53,x
-        eor     #$4E
-        .byte   $47
-        jsr     L4E41
-        jsr     L5041
-        bvc     LA9C4
-        eor     $20
-        eor     #$49
-        eor     $00
-        .byte   $1C
-        asl     a
-        eor     $4B41
-        eor     $20
-        .byte   $53
-        eor     $52,x
-        eor     $20
-        .byte   $54
-        pha
-        eor     $20
-        .byte   $43
-        eor     ($50,x)
-        .byte   $53
-        jsr     L4F4C
-        .byte   $43
-        .byte   $4B
-        jsr     L454B
-        eor     $2400,y
-        asl     a
-        eor     #$53
-LA9A0:  jsr     L5250
-        eor     $53
-        .byte   $53
-        eor     $44
-        rol     $3200
-        asl     a
-        .byte   $57
-        pha
-        eor     ($54,x)
-        jsr     L4944
-        .byte   $53
-        bvc     LAA02
-        eor     ($59,x)
-        jsr     L5241
-        eor     $20
-        eor     L554F,y
-        jsr     L5355
-        .byte   $49
-LA9C4:  lsr     $3F47
-        brk
-        .byte   $3C
-        asl     a
-        eor     ($2E,x)
-        jsr     L4F43
-        jmp     L524F
-
-        jsr     L5654
-        jsr     L524F
-        jsr     L4F43
-        eor     $4F50
-        .byte   $53
-        eor     #$54
-        eor     $20
-        eor     L4E4F
-        eor     #$54
-        .byte   $4F
-        .byte   $52
-        brk
-        .byte   $44
-        asl     a
-        .byte   $42
-        rol     $4220
-        jmp     L4341
-
-        .byte   $4B
-        jsr     L4E41
-        .byte   $44
-        jsr     L4857
-        eor     #$54
-        eor     $20
-        .byte   $54
-        .byte   $56
-LAA02:  jsr     L524F
-        jsr     L4F4D
-        lsr     $5449
-        .byte   $4F
-        .byte   $52
-        brk
-        cli
-        asl     a
-        plp
-        .byte   $54
-        eor     $4550,y
-        jsr     L2041
-        .byte   $4F
-        .byte   $52
-        jsr     L2942
-        brk
-        brk
-        brk
-        .byte   $0C
-        asl     a
-        .byte   $44
-        eor     $4D
-        .byte   $4F
-        jsr     L5552
-        lsr     $2053
-        .byte   $43
-        .byte   $4F
-        lsr     $4954
-        lsr     $4F55
-        eor     $53,x
-        jmp     L2E59
-
-        jsr     L5250
-        eor     $53
-        .byte   $53
-        brk
-        .byte   $14
-        asl     a
-        .byte   $54
-        pha
-        eor     $20
-        .byte   $4B
-        jsr     L454B
-        eor     $5420,y
-        .byte   $4F
-        .byte   $20
-LAA4F:  .byte   $42
-LAA50:  .byte   $52
-LAA51:  .byte   $45
-LAA52:  eor     ($4B,x)
-        jsr     L554F
-        .byte   $54
-        jsr     L464F
-        jsr     L4544
-        eor     a:$4F
-        .byte   $1C
-        asl     a
-        eor     ($4E,x)
-        .byte   $44
-        jsr     L4552
-        .byte   $53
-        eor     $4D,x
-        eor     $20
-        lsr     L524F
-        eor     $4C41
-        .byte   $20
-LAA75:  lsr     $4C
-        eor     #$47
-        pha
-        .byte   $54
-        rol     $3200
-        asl     a
-        bvc     LAAD3
-        eor     $53
-        .byte   $53
-        jsr     L4E41
-        eor     $4B20,y
-        eor     $59
-        jsr     L4F54
-        jsr     L4F43
-        lsr     $4954
-        lsr     $4555
-        rol     $2E2E
-        rol     a:$2E
-        brk
-        brk
-        .byte   $0C
-        asl     a
-        .byte   $53
-        eor     #$4D
-        bvc     LAAF3
-        eor     $20
-        .byte   $34
-        sec
-        .byte   $4B
-        jsr     L4544
-        eor     $204F
-        .byte   $41
-LAAB3:  .byte   $43
-LAAB4:  .byte   $54
-LAAB5:  eor     #$56
-        eor     ($54,x)
-        eor     $44
-        rol     $5420
-        pha
-        eor     $00
-        .byte   $14
-        asl     a
-        eor     ($49,x)
-        .byte   $52
-        .byte   $43
-        .byte   $52
-        eor     ($46,x)
-        .byte   $54
-        jsr     L4957
-        jmp     L204C
-
-        .byte   $54
-        .byte   $41
-LAAD3:  .byte   $4B
-        eor     $20
-        .byte   $4F
-        lsr     $46
-        jsr     L4E41
-        .byte   $44
-        jsr     L4C46
-        eor     $1C00,y
-        asl     a
-        .byte   $53
-        .byte   $54
-        .byte   $52
-        eor     ($49,x)
-        .byte   $47
-        pha
-        .byte   $54
-        jsr     L4E4F
-        jmp     L2E59
-
-        .byte   $20
-LAAF3:  eor     ($20,x)
-        .byte   $42
-        eor     $54
-        .byte   $54
-        eor     $52
-        jsr     L4544
-        eor     $204F
-        eor     #$53
-        brk
-        bit     $0A
-        eor     ($56,x)
-        eor     ($49,x)
-        jmp     L4241
-
-        jmp     L2045
-
-        .byte   $57
-        eor     #$54
-        pha
-        jsr     L3436
-        .byte   $4B
-        rol     $5020
-        .byte   $52
-        eor     $53
-        .byte   $53
-        brk
-        bit     $540A
-        pha
-        eor     $20
-        .byte   $4B
-        jsr     L454B
-        eor     $5420,y
-        .byte   $4F
-        jsr     L5242
-        eor     $41
-        .byte   $4B
-        jsr     L554F
-        .byte   $54
-        jsr     L464F
-        jsr     L4544
-        eor     $2E4F
-        brk
-        .byte   $3C
-        asl     a
-        bvc     LAB98
-        eor     $53
-        .byte   $53
-        jsr     L4E41
-        eor     $4B20,y
-        eor     $59
-        jsr     L4F54
-        jsr     L4F43
-        lsr     $4954
-        lsr     $4555
-        rol     $2E2E
-        rol     a:$2E
-        brk
-        brk
         .byte   $BB
         .byte   $BB
         .byte   $77

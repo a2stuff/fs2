@@ -1332,23 +1332,12 @@ L0810:  brk
         brk
         .byte   $9B
         pla
-        .byte   $42
-        .byte   $4F
-        eor     $5342
-        .byte   $3A
-        jsr     L2035
-        brk
+        .byte   "BOMBS: 5 ", 0
         brk
         brk
         .byte   $9B
         pla
-        .byte   $53
-        .byte   $43
-L08DB:  .byte   $4F
-        .byte   $52
-        eor     $3A
-        bmi     L0911
-        bmi     L08E3
+        .byte   "SCORE:000", 0
 L08E3:  brk
         brk
         brk
@@ -1421,8 +1410,7 @@ L0911:  brk
         brk
         brk
         brk
-        .byte   $0C
-        bvc     L08DB
+        .byte   $0C, $50, $A7
         brk
         brk
         ora     ($00,x)
