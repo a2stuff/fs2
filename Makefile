@@ -37,9 +37,9 @@ $(OUTDIR)/%.built: $(OUTDIR)/%.o src/asm.cfg
 
 
 validate:
-	@diff chunks/1_4000-5fff out/chunk1.built > /dev/null || echo "Chunk 1 mismatch"
-	@diff chunks/2_f600-fbff out/chunk2.built > /dev/null || echo "Chunk 2 mismatch"
-	@diff chunks/3_d300-f3ff out/chunk3.built > /dev/null || echo "Chunk 3 mismatch"
-	@diff chunks/4_0200-25ff out/chunk4.built > /dev/null || echo "Chunk 4 mismatch"
-	@diff chunks/5_6000-b3df out/chunk5.built > /dev/null || echo "Chunk 5 mismatch"
+	@diff -q chunks/1_4000-5fff out/chunk1.built > /dev/null || echo "Chunk 1 mismatch"
+	@diff -q chunks/2_f600-fbff out/chunk2.built > /dev/null || echo "Chunk 2 mismatch"
+	@diff -q chunks/3_d300-f3ff out/chunk3.built > /dev/null || echo "Chunk 3 mismatch"
+	@diff -q chunks/4_0200-25ff out/chunk4.built > /dev/null || echo "Chunk 4 mismatch"
+	@diff -q chunks/5_6000-b3df out/chunk5.built > /dev/null || echo "Chunk 5 mismatch"
 
