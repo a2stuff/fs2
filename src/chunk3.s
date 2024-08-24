@@ -2110,23 +2110,11 @@ LDD21:  lda     #$0C
         bne     LDD09
         lda     #$7F
         bne     LDD09
-        .byte   $02
-        asl     a
-        jsr     L3030
-        bmi     LDD68
-        bmi     LDD5A
-        lsr     L524F
-        .byte   $54
-        pha
-        jsr     L0200
-        jmp     L3020
-
-        bmi     LDD77
-        bmi     LDD79
-        jsr     L4145
-        .byte   $53
-        .byte   $54
-        jsr     LAD00
+        .byte   $02, $0A
+        .byte   " 00000 NORTH ", 0
+        .byte   $02, $4C
+        .byte   " 00000 EAST ", 0
+        .byte   $AD
         ldy     $08,x
         and     #$01
         beq     LDD79
@@ -2169,55 +2157,19 @@ LDDA6:  rts
 
 LDDA7:  .byte   $32
         .byte   $14
-        eor     $554F
-        lsr     $4154
-        eor     #$4E
-        jsr     L5243
-        eor     ($53,x)
-        pha
-        brk
+        .byte   "MOUNTAIN CRASH", 0
         .byte   $32
         .byte   $14
-        .byte   $43
-        .byte   $52
-        eor     ($53,x)
-        pha
-        brk
+        .byte   "CRASH", 0
 LDDC0:  .byte   $32
         .byte   $14
-        .byte   $42
-        eor     $49,x
-        jmp     L4944
-
-        lsr     $2047
-        .byte   $43
-        .byte   $52
-        eor     ($53,x)
-        pha
-        brk
+        .byte   "BUILDING CRASH", 0
         .byte   $32
         .byte   $14
-        .byte   $53
-        bvc     LDE22
-        eor     ($53,x)
-        pha
-        and     (L0000,x)
+        .byte   "SPLASH!", 0
         .byte   $32
         .byte   $14
-        eor     ($49,x)
-        .byte   $52
-        .byte   $43
-        .byte   $52
-        eor     ($46,x)
-        .byte   $54
-        jsr     L5250
-        .byte   $4F
-        .byte   $42
-        jmp     L4D45
-
-        jsr     L2121
-        and     ($21,x)
-        brk
+        .byte   "AIRCRAFT PROBLEM !!!!", 0
 LDDF3:  clv
 LDDF4:  cmp     LDDA7,x
         clv
@@ -2930,140 +2882,28 @@ LE313:  inc     $A5
         .byte   $64
         ror     $88,x
         sta     $D0AB,y
-        .byte   $57
-        eor     $41
-        .byte   $54
-        pha
-        eor     $52
-        jsr     L202D
-        brk
-        .byte   $4F
-        .byte   $42
-        .byte   $53
-        eor     $52
-        lsr     $41,x
-        .byte   $54
-        eor     #$4F
-        .byte   $4E
-        brk
-LE342:  .byte   $31
-LE343:  .byte   $32
-        .byte   $3A
-        bmi     LE377
-        jsr     L555A
-        jmp     L0055
 
-        brk
-        .byte   $54
-        eor     $4D
-        bvc     LE398
-        .byte   $52
-        eor     ($54,x)
-        eor     $52,x
-        eor     L0020
-LE35A:  .byte   $37
-LE35B:  and     L0020,x
-        and     a:L0020
-        eor     #$4E
-        lsr     $4F
-        .byte   $52
-        eor     $5441
-        eor     #$4F
-        lsr     $4C00
-        eor     ($4E,x)
-        .byte   $44
-        eor     #$4E
-        .byte   $47
-        jsr     L4E41
-        .byte   $44
-LE377:  jsr     L4544
-        bvc     LE3BD
-        .byte   $52
-        .byte   $54
-        eor     #$4E
-        .byte   $47
-        jsr     L5552
-        lsr     L4157
-        .byte   $59
-        .byte   $20
-LE389:  .byte   $33
-LE38A:  and     (L0020),y
-        and     a:L0020
-        eor     ($44,x)
-        lsr     $49,x
-        .byte   $53
-        eor     L0020
-        .byte   $43
-        .byte   $4F
-LE398:  lsr     $5254
-        .byte   $4F
-        jmp     L454C
+        .byte   "WEATHER - ", 0
+        .byte   "OBSERVATION", 0
+LE342:  .byte   "12:00 ZULU", 0
+        .byte   0
+        .byte   "TEMPERATURE "
+LE35A:  .byte   "75 - ", 0
+        .byte   "INFORMATION", 0
+        .byte   "LANDING AND DEPARTING RUNWAY "
+LE389:  .byte   "31 - ", 0
+        .byte   "ADVISE CONTROLLER", 0
+        .byte   "ALTIMETER 29.95 -", 0
+        .byte   "VISIBILITY 10 - ", 0
+        .byte   "WIND "
+LE3C9:  .byte   "330 AT "
+LE3D0:  .byte   "27 - ", 0
+        .byte   " "
+LE3D7:  .byte   " "
+        .byte   "MEASURED CEILING "
+LE3E9:  .byte   "00600 OVERCAST - ", 0
+        .byte   "ON INITIAL CONTACT", 0
 
-        .byte   $52
-        brk
-        eor     ($4C,x)
-        .byte   $54
-        eor     #$4D
-        eor     $54
-        eor     $52
-        jsr     L3932
-        rol     $3539
-        jsr     L002D
-        lsr     $49,x
-        .byte   $53
-        eor     #$42
-        eor     #$4C
-        eor     #$54
-        .byte   $59
-LE3BD:  jsr     L3031
-        jsr     L202D
-        brk
-        .byte   $57
-        eor     #$4E
-        .byte   $44
-        .byte   $20
-LE3C9:  .byte   $33
-LE3CA:  .byte   $33
-LE3CB:  bmi     LE3ED
-        eor     ($54,x)
-        .byte   $20
-LE3D0:  .byte   $32
-LE3D1:  .byte   $37
-        jsr     L202D
-        brk
-        .byte   $20
-LE3D7:  jsr     $454D
-        eor     ($53,x)
-        eor     $52,x
-        eor     $44
-        jsr     L4543
-        eor     #$4C
-        eor     #$4E
-        .byte   $47
-        .byte   $20
-LE3E9:  .byte   $30
-LE3EA:  .byte   $30
-LE3EB:  rol     $30,x
-LE3ED:  bmi     LE40F
-        .byte   $4F
-        lsr     L0045,x
-        .byte   $52
-        .byte   $43
-        eor     ($53,x)
-        .byte   $54
-        jsr     L202D
-        brk
-        .byte   $4F
-        lsr     $4920
-        lsr     $5449
-        eor     #$41
-        jmp     L4320
-
-        .byte   $4F
-        lsr     $4154
-        .byte   $43
-        .byte   $54
-        brk
         .byte   $AE
 LE40F:  lsr     $09,x
         lda     $090E,x
@@ -3071,7 +2911,7 @@ LE40F:  lsr     $09,x
         adc     $0930
         jsr     LE4C5
         sta     LE35A
-        stx     LE35B
+        stx     LE35A+1
         lda     #$68
         sta     $C2
         lda     #$01
@@ -3082,8 +2922,8 @@ LE40F:  lsr     $09,x
         txa
         ldx     $C9
         jsr     LE4C7
-        sta     LE3CA
-        stx     LE3CB
+        sta     LE3C9+1
+        stx     LE3C9+2
         cpy     #$30
         bne     LE444
         ldy     #$20
@@ -3094,7 +2934,7 @@ LE444:  sty     LE3C9
         bne     LE453
         lda     #$20
 LE453:  sta     LE3D0
-        stx     LE3D1
+        stx     LE3D0+1
         lda     $0954
         clc
         adc     $0854
@@ -3104,7 +2944,7 @@ LE453:  sta     LE3D0
         sbc     #$18
 LE467:  jsr     LE4C5
         sta     LE342
-        stx     LE343
+        stx     LE342+1
         lda     #$66
         sta     $C2
         lda     #$08
@@ -3129,8 +2969,8 @@ LE48E:  ldy     #$20
         bne     LE4A2
         lda     #$20
 LE4A2:  sty     LE3E9
-        sta     LE3EA
-        stx     LE3EB
+        sta     LE3E9+1
+        stx     LE3E9+2
 LE4AB:  lda     $0974
         lsr     a
         lsr     a
@@ -3142,7 +2982,7 @@ LE4AB:  lda     $0974
         lda     $090B,x
         jsr     LE4C5
         sta     LE389
-        stx     LE38A
+        stx     LE389+1
         rts
 
 LE4C2:  brk

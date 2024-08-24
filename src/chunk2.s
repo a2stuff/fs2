@@ -42,165 +42,26 @@ L924C           := $924C
 L92DB           := $92DB
 LA23D           := $A23D
 LA4D2           := $A4D2
-        .byte   $0C
-        asl     a
-        rol     a
-        rol     a
-        rol     a
-        rol     a
-        jsr     L4F43
-        eor     $52,x
-        .byte   $53
-        eor     $20
-        bvc     LF65C
-        .byte   $4F
-        .byte   $54
-        .byte   $54
-        eor     $52
-        jsr     L5953
-        .byte   $53
-        .byte   $54
-        eor     $4D
-        jsr     L2A2A
-        rol     a
-        rol     a
-        brk
-        .byte   $14
-        and     a:$20
-        .byte   $1C
-        asl     $41
-        rol     $4220
-        eor     $47
-        eor     #$4E
-        jsr     L4F4E
-        .byte   $52
-        eor     $4C41
-        jsr     L4F43
-        eor     $52,x
-        .byte   $53
-        eor     $20
-        .byte   $52
-        eor     $43
-        .byte   $4F
-        .byte   $52
-        .byte   $44
-        eor     #$4E
-        .byte   $47
-        brk
-        bit     $06
-        .byte   $42
-        rol     $4420
-        eor     #$53
-        bvc     LF69F
-        eor     ($59,x)
-        jsr     L4F43
-        eor     $52,x
-        .byte   $53
-        .byte   $45
-LF65C:  jsr     L4C50
-        .byte   $4F
-        .byte   $54
-        brk
-        bit     $4306
-        rol     $4220
-        .byte   $4F
-        .byte   $4F
-        .byte   $54
-        jsr     L4F44
-        .byte   $53
-        brk
-        .byte   $34
-        asl     $44
-        rol     $4220
-        eor     $47
-        eor     #$4E
-        jsr     L5250
-        eor     $43
-        eor     #$53
-        eor     #$4F
-        lsr     $5220
-        eor     $43
-        .byte   $4F
-        .byte   $52
-        .byte   $44
-        eor     #$4E
-        .byte   $47
-        brk
-        .byte   $3C
-        asl     $45
-        rol     $5420
-        eor     $52,x
-        lsr     $4F20
-        lsr     $46
-        jsr     L4F43
-LF69F:  eor     $52,x
-        .byte   $53
-        eor     $20
-        bvc     LF6F2
-        .byte   $4F
-        .byte   $54
-        .byte   $54
-        eor     $52
-        brk
-        bvc     LF6B8
-        .byte   $53
-        eor     $4C
-        eor     $43
-        .byte   $54
-        jsr     L504F
-        .byte   $54
-LF6B8:  eor     #$4F
-        lsr     $202C
-        .byte   $54
-        pha
-        eor     $4E
-        jsr     L5250
-        eor     $53
-        .byte   $53
-        jsr     L5345
-        .byte   $43
-        jsr     L4F54
-        brk
-        lsr     $0A,x
-        .byte   $52
-        eor     $54
-        eor     $52,x
-        lsr     $5420
-        .byte   $4F
-        jsr     L4C46
-        eor     #$47
-        pha
-        .byte   $54
-        bit     $5320
-        jmp     L5745
+        .byte   $0C, $0A
+        .byte   "**** COURSE PLOTTER SYSTEM ****", 0
+        .byte   $14, $2D, $20, $00, $1C, $06
+        .byte   "A. BEGIN NORMAL COURSE RECORDING", 0
+        .byte   $24, $06
+        .byte   "B. DISPLAY COURSE PLOT", 0
+        .byte   $2C, $06
+        .byte   "C. BOOT DOS", 0
+        .byte   $34, $06
+        .byte   "D. BEGIN PRECISION RECORDING", 0
+        .byte   $3C, $06
+        .byte   "E. TURN OFF COURSE PLOTTER", 0
+        .byte   $50, $0A
+        .byte   "SELECT OPTION, THEN PRESS ESC TO", 0
+        .byte   $56, $0A
+        .byte   "RETURN TO FLIGHT, SLEW, OR RADAR", 0
+        .byte   $5C, $0A
+        .byte   "MODE TO VIEW OR RECORD COURSE.", 0
+        .byte   $00, $00
 
-        bit     $4F20
-        .byte   $52
-        jsr     L4152
-        .byte   $44
-        eor     ($52,x)
-        brk
-LF6F2:  .byte   $5C
-        asl     a
-        eor     $444F
-        eor     $20
-        .byte   $54
-        .byte   $4F
-        jsr     L4956
-        eor     $57
-        jsr     L524F
-        jsr     L4552
-        .byte   $43
-        .byte   $4F
-        .byte   $52
-        .byte   $44
-        jsr     L4F43
-        eor     $52,x
-        .byte   $53
-        eor     $2E
-        brk
-        brk
-        brk
 LF715:  asl     a
 LF716:  .byte   $01
 LF717:  brk
