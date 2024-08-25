@@ -1,7 +1,7 @@
 ### Common definitions
 
 # Compile flags.
-CAFLAGS = --target apple2 --list-bytes 0 --warnings-as-errors
+CAFLAGS = --target apple2 --list-bytes 0 --warnings-as-errors -W2
 LDFLAGS = --config src/asm.cfg --warnings-as-errors
 
 # Build into an 'out'  dir:

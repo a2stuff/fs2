@@ -7,9 +7,9 @@
         .setcpu "6502"
         .org $200
 
+        .refto __APPLE2__
+
 L002D           := $002D
-L0120           := $0120
-L2824           := $2824
 L4889           := $4889
 L796A           := $796A
 LA7E2           := $A7E2
@@ -306,7 +306,7 @@ L0331:  ora     ($0A,x)
         ora     #$04
         .byte   $0B
         .byte   $03
-        ora     L0F03
+        ora     $0F03
         .byte   $03
         ora     ($02),y
         .byte   $FF
@@ -322,7 +322,7 @@ L0331:  ora     ($0A,x)
         ora     #$04
         .byte   $0B
         .byte   $03
-        ora     L0F02
+        ora     $0F02
         .byte   $02
         ora     ($01),y
         .byte   $FF
@@ -343,7 +343,7 @@ L0331:  ora     ($0A,x)
         .byte   $03
         .byte   $0C
         .byte   $03
-        asl     L1002
+        asl     $1002
         ora     ($FF,x)
         brk
         .byte   $03
@@ -365,7 +365,7 @@ L0331:  ora     ($0A,x)
         .byte   $02
         .byte   $0C
         .byte   $02
-        ora     L0F02
+        ora     $0F02
         ora     ($FF,x)
         jmp     LB7B5
 
@@ -589,7 +589,7 @@ L0401:  .byte   $03
         ora     ($08,x)
         ora     ($FF,x)
         brk
-L0500:  ora     ($00,x)
+        ora     ($00,x)
         .byte   $03
         brk
         .byte   $03
@@ -1338,7 +1338,8 @@ L0810:  brk
         .byte   $9B
         pla
         .byte   "SCORE:000", 0
-L08E3:  brk
+
+        brk
         brk
         brk
         brk
@@ -1378,7 +1379,7 @@ L08FA:  brk
         brk
         brk
         brk
-L0911:  brk
+        brk
         brk
         brk
         .byte   $FF
@@ -2494,278 +2495,64 @@ L0E0E:  brk
         ora     ($01,x)
         ora     ($01,x)
         .byte   $FF
-L0E9A:  jsr     L2824
-        bit     $3430
-        sec
-        .byte   $3C
-        jsr     L2824
-        bit     $3430
-        sec
-        .byte   $3C
-        and     ($25,x)
-        and     #$2D
-        and     ($35),y
-        and     L213D,y
-        and     $29
-        and     $3531
-        and     L223D,y
-        rol     $2A
-        rol     $3632
-        .byte   $3A
-        rol     $2622,x
-        rol     a
-        rol     $3632
-        .byte   $3A
-        rol     $2723,x
-        .byte   $2B
-        .byte   $2F
-        .byte   $33
-        .byte   $37
-        .byte   $3B
-        .byte   $3F
-        .byte   $23
-        .byte   $27
-        .byte   $2B
-        .byte   $2F
-        .byte   $33
-        .byte   $37
-        .byte   $3B
-        .byte   $3F
-        jsr     L2824
-        bit     $3430
-        sec
-        .byte   $3C
-        jsr     L2824
-        bit     $3430
-        sec
-        .byte   $3C
-        and     ($25,x)
-        and     #$2D
-        and     ($35),y
-        and     L213D,y
-        and     $29
-        and     $3531
-        and     L223D,y
-        rol     $2A
-        rol     $3632
-        .byte   $3A
-        .byte   $3E
-L0F02:  .byte   $22
-L0F03:  rol     $2A
-        rol     $3632
-        .byte   $3A
-        rol     $2723,x
-        .byte   $2B
-        .byte   $2F
-L0F0E:  .byte   $33
-L0F0F:  .byte   $37
-        .byte   $3B
-        .byte   $3F
-        .byte   $23
-        .byte   $27
-        .byte   $2B
-        .byte   $2F
-        .byte   $33
-        .byte   $37
-        .byte   $3B
-        .byte   $3F
-        jsr     L2824
-        bit     $3430
-        sec
-        .byte   $3C
-        jsr     L2824
-        bit     $3430
-        sec
-        .byte   $3C
-        and     ($25,x)
-        and     #$2D
-        and     ($35),y
-        and     L213D,y
-        and     $29
-        and     $3531
-        and     L223D,y
-        rol     $2A
-        rol     $3632
-        .byte   $3A
-        rol     $2622,x
-        rol     a
-        rol     $3632
-        .byte   $3A
-        rol     $2723,x
-        .byte   $2B
-        .byte   $2F
-        .byte   $33
-        .byte   $37
-        .byte   $3B
-        .byte   $3F
-        .byte   $23
-        .byte   $27
-        .byte   $2B
-        .byte   $2F
-        .byte   $33
-        .byte   $37
-        .byte   $3B
-        .byte   $3F
-L0F5A:  brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        plp
-        plp
-        plp
-        plp
-        plp
-        plp
-        plp
-        plp
-        tay
-        tay
-        tay
-        tay
-        tay
-        tay
-        tay
-        tay
-        plp
-        plp
-        plp
-        plp
-        plp
-        plp
-        plp
-        plp
-        tay
-        tay
-L0FB4:  tay
-        tay
-L0FB6:  tay
-        tay
-L0FB8:  tay
-        tay
-L0FBA:  plp
-        plp
-        plp
-        plp
-        plp
-        plp
-        plp
-        plp
-        tay
-        tay
-L0FC4:  tay
-        tay
-L0FC6:  tay
-        tay
-L0FC8:  tay
-        tay
-L0FCA:  plp
-        plp
-        plp
-        plp
-        plp
-        plp
-        plp
-        plp
-        tay
-        tay
-L0FD4:  tay
-        tay
-L0FD6:  tay
-        tay
-L0FD8:  tay
-        tay
-L0FDA:  bvc     L102C
-        bvc     L102E
-        bvc     L1030
-        bvc     L1032
-        bne     L0FB4
-L0FE4:  bne     L0FB6
-L0FE6:  bne     L0FB8
-L0FE8:  bne     L0FBA
-L0FEA:  bvc     L103C
-        bvc     L103E
-        bvc     L1040
-        bvc     L1042
-        bne     L0FC4
-        bne     L0FC6
-        bne     L0FC8
-        bne     L0FCA
-        bvc     L104C
-        bvc     L104E
-        bvc     L1050
-        bvc     L1052
-L1002:  bne     L0FD4
-        bne     L0FD6
-        bne     L0FD8
-        bne     L0FDA
-        bvc     L105C
-        bvc     L105E
-        bvc     L1060
-        bvc     L1062
-        bne     L0FE4
-        bne     L0FE6
-        bne     L0FE8
-        bne     L0FEA
+
+;;; HBASH table
+
+L0E9A:
+        .byte   $20,$24,$28,$2c,$30,$34,$38,$3c
+        .byte   $20,$24,$28,$2c,$30,$34,$38,$3c
+        .byte   $21,$25,$29,$2d,$31,$35,$39,$3d
+        .byte   $21,$25,$29,$2d,$31,$35,$39,$3d
+        .byte   $22,$26,$2a,$2e,$32,$36,$3a,$3e
+        .byte   $22,$26,$2a,$2e,$32,$36,$3a,$3e
+        .byte   $23,$27,$2b,$2f,$33,$37,$3b,$3f
+        .byte   $23,$27,$2b,$2f,$33,$37,$3b,$3f
+        .byte   $20,$24,$28,$2c,$30,$34,$38,$3c
+        .byte   $20,$24,$28,$2c,$30,$34,$38,$3c
+        .byte   $21,$25,$29,$2d,$31,$35,$39,$3d
+        .byte   $21,$25,$29,$2d,$31,$35,$39,$3d
+        .byte   $22,$26,$2a,$2e,$32,$36,$3a,$3e
+        .byte   $22,$26,$2a,$2e,$32,$36,$3a,$3e
+        .byte   $23,$27,$2b,$2f,$33,$37,$3b,$3f
+        .byte   $23,$27,$2b,$2f,$33,$37,$3b,$3f
+        .byte   $20,$24,$28,$2c,$30,$34,$38,$3c
+        .byte   $20,$24,$28,$2c,$30,$34,$38,$3c
+        .byte   $21,$25,$29,$2d,$31,$35,$39,$3d
+        .byte   $21,$25,$29,$2d,$31,$35,$39,$3d
+        .byte   $22,$26,$2a,$2e,$32,$36,$3a,$3e
+        .byte   $22,$26,$2a,$2e,$32,$36,$3a,$3e
+        .byte   $23,$27,$2b,$2f,$33,$37,$3b,$3f
+        .byte   $23,$27,$2b,$2f,$33,$37,$3b,$3f
+
+
+;;; HBASHL table
+
+L0F5A:
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $80,$80,$80,$80,$80,$80,$80,$80
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $80,$80,$80,$80,$80,$80,$80,$80
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $80,$80,$80,$80,$80,$80,$80,$80
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $80,$80,$80,$80,$80,$80,$80,$80
+        .byte   $28,$28,$28,$28,$28,$28,$28,$28
+        .byte   $a8,$a8,$a8,$a8,$a8,$a8,$a8,$a8
+        .byte   $28,$28,$28,$28,$28,$28,$28,$28
+        .byte   $a8,$a8,$a8,$a8,$a8,$a8,$a8,$a8
+        .byte   $28,$28,$28,$28,$28,$28,$28,$28
+        .byte   $a8,$a8,$a8,$a8,$a8,$a8,$a8,$a8
+        .byte   $28,$28,$28,$28,$28,$28,$28,$28
+        .byte   $a8,$a8,$a8,$a8,$a8,$a8,$a8,$a8
+        .byte   $50,$50,$50,$50,$50,$50,$50,$50
+        .byte   $d0,$d0,$d0,$d0,$d0,$d0,$d0,$d0
+        .byte   $50,$50,$50,$50,$50,$50,$50,$50
+        .byte   $d0,$d0,$d0,$d0,$d0,$d0,$d0,$d0
+        .byte   $50,$50,$50,$50,$50,$50,$50,$50
+        .byte   $d0,$d0,$d0,$d0,$d0,$d0,$d0,$d0
+        .byte   $50,$50,$50,$50,$50,$50,$50,$50
+        .byte   $d0,$d0,$d0,$d0,$d0,$d0,$d0,$d0
+
 L101A:  brk
         brk
         brk
@@ -2780,38 +2567,38 @@ L101A:  brk
         .byte   $02
         .byte   $02
         .byte   $02
-L102C:  .byte   $02
         .byte   $02
-L102E:  .byte   $02
-        .byte   $03
-L1030:  .byte   $03
-        .byte   $03
-L1032:  .byte   $03
+        .byte   $02
+        .byte   $02
         .byte   $03
         .byte   $03
         .byte   $03
+        .byte   $03
+        .byte   $03
+        .byte   $03
+        .byte   $03
         .byte   $04
         .byte   $04
         .byte   $04
         .byte   $04
         .byte   $04
         .byte   $04
-L103C:  .byte   $04
+        .byte   $04
         .byte   $05
-L103E:  ora     $05
-L1040:  ora     $05
-L1042:  ora     $05
+        ora     $05
+        ora     $05
+        ora     $05
         asl     $06
         asl     $06
         asl     $06
         asl     $07
-L104C:  .byte   $07
         .byte   $07
-L104E:  .byte   $07
         .byte   $07
-L1050:  .byte   $07
         .byte   $07
-L1052:  php
+        .byte   $07
+        .byte   $07
+        .byte   $07
+        php
         php
         php
         php
@@ -2820,11 +2607,11 @@ L1052:  php
         php
         ora     #$09
         .byte   $09
-L105C:  ora     #$09
-L105E:  ora     #$09
-L1060:  asl     a
+        ora     #$09
+        ora     #$09
         asl     a
-L1062:  asl     a
+        asl     a
+        asl     a
         asl     a
         asl     a
         asl     a
@@ -2847,7 +2634,7 @@ L1062:  asl     a
         ora     L0D0D
         ora     L0E0E
         asl     L0E0E
-        asl     L0F0E
+        asl     $0F0E
         .byte   $0F
         .byte   $0F
         .byte   $0F
@@ -3240,7 +3027,7 @@ L125B:  php
         .byte   $0C
         ora     L0D0D
         asl     L0E0E
-        asl     L0F0F
+        asl     $0F0F
         .byte   $0F
         bpl     L1286
         bpl     L1288
@@ -3338,7 +3125,7 @@ L1288:  ora     $16,x
         .byte   $0C
         ora     L0D0D
         ora     L0E0E
-        asl     L0F0F
+        asl     $0F0F
         .byte   $0F
         .byte   $0F
         bpl     L1312
@@ -3399,122 +3186,33 @@ L1315:  asl     $16,x
         .byte   $27
         .byte   $27
         .byte   $27
-L1354:  brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-        brk
-        ora     ($02,x)
-        .byte   $03
-        .byte   $04
-        ora     $06
-L13EE:  brk
-        .byte   $02
-        .byte   $04
-        asl     $01
-        .byte   $03
-        ora     $07
+
+;;; Pre-shift tables for drawing text???
+
+L1354:  .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+        .byte   0, 1, 2, 3, 4, 5, 6
+
+L13EE:  .byte   0, 2, 4, 6, 1, 3, 5, 7
         ora     ($04,x)
         bpl     L143A
         .byte   $02
@@ -4711,6 +4409,12 @@ L1C03:  sta     ($8E),y
         bne     L1BBC
         rts
 
+;;; Draw message to both hires screens
+;;; A,X = message (col, row, null-terminated string)
+
+DrawMessage:
+        .refto DrawMessage
+
         sta     $BE
         stx     $BF
         clc
@@ -4877,6 +4581,8 @@ L1D1D:  and     $5AB9,x
         stx     $AB
         ldx     $A9
         jmp     L1D49
+
+;;; Inner loop of text drawing
 
 L1D46:  asl     a
         rol     $AB
@@ -5363,7 +5069,7 @@ L2020:  .byte   $80
         .byte   $80
         .byte   $80
         .byte   $80
-L2035:  .byte   $80
+        .byte   $80
         .byte   $80
         .byte   $80
         .byte   $80
@@ -5598,7 +5304,7 @@ L2122:  .byte   $80
         .byte   $80
         .byte   $80
         .byte   $80
-L213D:  .byte   $80
+        .byte   $80
         .byte   $80
         .byte   $80
         .byte   $80
@@ -5824,7 +5530,7 @@ L2218:  .byte   $80
         .byte   $80
         .byte   $80
         .byte   $80
-L223D:  .byte   $80
+        .byte   $80
         .byte   $80
         .byte   $80
         .byte   $80

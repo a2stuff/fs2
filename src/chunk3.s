@@ -9,26 +9,24 @@
 
         .include "macros.inc"
 
+        .refto __APPLE2__
+
 L0000           := $0000
 L0020           := $0020
 L002D           := $002D
 L0045           := $0045
-L0055           := $0055
 L00BA           := $00BA
-L0200           := $0200
 L03F0           := $03F0
-L0C00           := $0C00
 L1569           := $1569
 L168F           := $168F
 L1696           := $1696
 L1735           := $1735
 L1763           := $1763
 L1768           := $1768
-L1800           := $1800
 L180C           := $180C
 L1931           := $1931
 L1AD2           := $1AD2
-L1C0C           := $1C0C
+DrawMessage     := $1C0C
 L1C96           := $1C96
 L1C9F           := $1C9F
 L1D92           := $1D92
@@ -38,39 +36,7 @@ L1FC4           := $1FC4
 L1FE0           := $1FE0
 L2020           := $2020
 L2024           := $2024
-L202D           := $202D
-L203D           := $203D
-L2121           := $2121
 L2221           := $2221
-L2A2A           := $2A2A
-L3020           := $3020
-L3030           := $3030
-L3031           := $3031
-L3333           := $3333
-L3732           := $3732
-L3832           := $3832
-L3932           := $3932
-L3D30           := $3D30
-L4144           := $4144
-L4145           := $4145
-L4157           := $4157
-L4320           := $4320
-L4543           := $4543
-L4544           := $4544
-L454C           := $454C
-L4552           := $4552
-L4853           := $4853
-L4944           := $4944
-L4D20           := $4D20
-L4D45           := $4D45
-L4E41           := $4E41
-L4F44           := $4F44
-L4F54           := $4F54
-L5243           := $5243
-L524F           := $524F
-L5250           := $5250
-L5552           := $5552
-L555A           := $555A
 L6018           := $6018
 L601B           := $601B
 L601E           := $601E
@@ -88,7 +54,6 @@ L9CFC           := $9CFC
 L9F10           := $9F10
 LA23D           := $A23D
 LAC00           := $AC00
-LAD00           := $AD00
 LAF00           := $AF00
 LB100           := $B100
 LB600           := $B600
@@ -2113,7 +2078,9 @@ LDD21:  lda     #$0C
         lda     #$7F
         bne     LDD09
 
+msg_north:
         MESSAGE $02, $0A, " 00000 NORTH "
+msg_east:
         MESSAGE $02, $4C, " 00000 EAST "
 
         .byte   $AD
@@ -2121,21 +2088,25 @@ LDD21:  lda     #$0C
         and     #$01
         beq     LDD79
         lda     $093C
-LDD5A:  ldx     $093D
+        ldx     $093D
         sta     $B6
         stx     $B7
-        lda     #$31
-        ldx     #$DD
-        jsr     L1C0C
-LDD68:  lda     $093E
+
+        ;; Draw "00000 NORTH" (slew mode)
+        lda     #<msg_north
+        ldx     #>msg_north
+        jsr     DrawMessage
+
+        lda     $093E
         ldx     $093F
         sta     $B6
         stx     $B7
-        lda     #$41
-        ldx     #$DD
-        .byte   $20
-LDD77:  .byte   $0C
-        .byte   $1C
+
+        ;; Draw "00000 EAST" (slew mode)
+        lda     #<msg_east
+        ldx     #>msg_east
+        jsr     DrawMessage
+
 LDD79:  rts
 
         lda     $083C
@@ -2897,7 +2868,7 @@ LE3E9:  .byte   "00600 OVERCAST - ", 0
         .byte   "ON INITIAL CONTACT", 0
 
         .byte   $AE
-LE40F:  lsr     $09,x
+        lsr     $09,x
         lda     $090E,x
         clc
         adc     $0930
@@ -4736,7 +4707,7 @@ LEFA4:  lda     L0045
         MESSAGE $48, $3C, "ENEMY 6 = "
         MESSAGE $48, $64, "0", LF118
 
-LF11A:  MESSAGE $54, $00, "PRESS ANY KEY TO RESUME BATTLE"
+        MESSAGE $54, $00, "PRESS ANY KEY TO RESUME BATTLE"
         .byte   0, 0
 
 LF13D:  rts
@@ -4763,7 +4734,7 @@ LF13D:  rts
         sta     $B6
         lda     #$00
         .byte   $85
-LF170:  .byte   $B7
+        .byte   $B7
         lda     #$70
         ldx     #$F0
         jsr     L8773

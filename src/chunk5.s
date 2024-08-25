@@ -8,6 +8,8 @@
         .org $6000
         .include "macros.inc"
 
+        .refto __APPLE2__
+
 L000E           := $000E
 L003C           := $003C
 L00A5           := $00A5
@@ -73,56 +75,10 @@ L1EBC           := $1EBC
 L1EC4           := $1EC4
 L1F89           := $1F89
 L2020           := $2020
-L2041           := $2041
-L2045           := $2045
-L204C           := $204C
 L2121           := $2121
-L280A           := $280A
-L2942           := $2942
-L2E59           := $2E59
-L3054           := $3054
-L3269           := $3269
-L3436           := $3436
-L3931           := $3931
-L4143           := $4143
-L4157           := $4157
-L4241           := $4241
-L4341           := $4341
-L4544           := $4544
-L454B           := $454B
-L4552           := $4552
-L464F           := $464F
-L474F           := $474F
 L4767           := $4767
 L4792           := $4792
-L4857           := $4857
-L4944           := $4944
-L4949           := $4949
-L4953           := $4953
-L4957           := $4957
-L4C46           := $4C46
-L4E41           := $4E41
-L4E4F           := $4E4F
-L4F43           := $4F43
-L4F4C           := $4F4C
-L4F4D           := $4F4D
 L4F54           := $4F54
-L4F59           := $4F59
-L5041           := $5041
-L504F           := $504F
-L5241           := $5241
-L5242           := $5242
-L524F           := $524F
-L5250           := $5250
-L5355           := $5355
-L554F           := $554F
-L5552           := $5552
-L5553           := $5553
-L5654           := $5654
-L574F           := $574F
-L587D           := $587D
-L5942           := $5942
-L5954           := $5954
 LB808           := $B808
 LB849           := $B849
 LB9C3           := $B9C3
@@ -4310,7 +4266,7 @@ L7EB0:  ror     $A2
         ror     $9E
         jmp     L7F7F
 
-L7EBC:  sty     $E5
+        sty     $E5
         lda     $32
         clc
         adc     #$51
@@ -5400,7 +5356,7 @@ L8596:  .byte   $80
         .byte   $FF
         .byte   $87
         .byte   $F0
-L8638:  .byte   $FF
+        .byte   $FF
         .byte   $FF
         .byte   $FF
         .byte   $FF
@@ -5496,13 +5452,13 @@ L8653:  .byte   $FF
         .byte   $FF
         .byte   $9F
         .byte   $F0
-L8698:  .byte   $FF
+        .byte   $FF
         .byte   $FF
         .byte   $FF
         .byte   $FF
         .byte   $8F
         .byte   $F0
-L869E:  .byte   $FF
+        .byte   $FF
         .byte   $FF
         .byte   $FF
         .byte   $FF
@@ -5538,7 +5494,7 @@ L869E:  .byte   $FF
         beq     L8651
         beq     L8653
         .byte   $B0
-L86CD:  .byte   $FF
+        .byte   $FF
         brk
         brk
         .byte   $FF
@@ -5870,7 +5826,7 @@ L88CF:  .byte   $33
 L88D0:  .byte   $37
         bmi     L88D3
 L88D3:  .byte   $91
-L88D4:  .byte   $72
+        .byte   $72
 L88D5:  .byte   $30
 L88D6:  bmi     * + (2)
         sta     ($7B),y
@@ -5888,13 +5844,13 @@ L88E8:  txs
         .byte   $87
         and     ($00),y
         txs
-L88ED:  .byte   $87
+        .byte   $87
         .byte   $4F
         brk
         .byte   $BB
         .byte   $6E
         pha
-L88F3:  eor     $41
+        eor     $41
         .byte   $54
         brk
         .byte   $BB
@@ -5908,17 +5864,17 @@ L88FB:  pha
         .byte   $07
         php
         .byte   $82
-L8907:  .byte   $54
+        .byte   $54
         .byte   $54
         .byte   $4F
         .byte   $20
         brk
-L890C:  .byte   $07
+        .byte   $07
         php
         .byte   $82
         .byte   $54
         .byte   $46
-L8911:  .byte   $52
+        .byte   $52
         jsr     L0700
         php
         lda     L4F54
@@ -10029,7 +9985,7 @@ LAB91:  nop
         ldx     #$3F
         txs
         jsr     L1EC4
-LAB98:  bcs     LABB4
+        bcs     LABB4
         jsr     LABEC
         bcs     LABB4
         jsr     LAD15
