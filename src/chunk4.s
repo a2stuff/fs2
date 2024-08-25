@@ -2711,20 +2711,20 @@ L10A3:  .byte   $13
         .byte   $1C
         .byte   $1C
         .byte   $1C
-        ora     L1D1D,x
-        ora     L1D1D,x
-        ora     L1E1E,x
-        asl     L1E1E,x
-        asl     L1F1E,x
+        ora     $1D1D,x
+        ora     $1D1D,x
+        ora     $1E1E,x
+        asl     $1E1E,x
+        asl     $1F1E,x
         .byte   $1F
         .byte   $1F
         .byte   $1F
         .byte   $1F
         .byte   $1F
         .byte   $1F
-        jsr     L2020
-        jsr     L2020
-        jsr     L2121
+        jsr     $2020
+        jsr     $2020
+        jsr     $2121
         and     ($21,x)
 L1105:  and     ($21,x)
         and     ($22,x)
@@ -3064,12 +3064,12 @@ L1288:  ora     $16,x
         .byte   $1C
         .byte   $1C
         .byte   $1C
-        ora     L1D1D,x
-        asl     L1E1E,x
-        asl     L1F1F,x
+        ora     $1D1D,x
+        asl     $1E1E,x
+        asl     $1F1F,x
         .byte   $1F
-        jsr     L2020
-        jsr     L2121
+        jsr     $2020
+        jsr     $2121
         and     ($22,x)
         .byte   $22
         .byte   $22
@@ -3151,8 +3151,8 @@ L1315:  asl     $16,x
         clc
         clc
         clc
-        ora     L1919,y
-        ora     L1A1A,y
+        ora     $1919,y
+        ora     $1A1A,y
         .byte   $1A
         .byte   $1B
         .byte   $1B
@@ -3161,12 +3161,12 @@ L1315:  asl     $16,x
         .byte   $1C
         .byte   $1C
         .byte   $1C
-        ora     L1D1D,x
-        ora     L1E1E,x
-        asl     L1F1F,x
+        ora     $1D1D,x
+        ora     $1E1E,x
+        asl     $1F1F,x
         .byte   $1F
         .byte   $1F
-        jsr     L2020
+        jsr     $2020
         and     ($21,x)
         and     ($21,x)
         .byte   $22
@@ -3404,7 +3404,7 @@ L150E:  sec
         brk
         ror     a
         .byte   $5F
-        ldx     L236B
+        ldx     $236B
         and     $6B6E,y
         .byte   $E7
         adc     $49E7,y
@@ -3413,7 +3413,7 @@ L150E:  sec
         sbc     $925B
         bit     $49
         .byte   $72
-        lda     L245B
+        lda     $245B
         adc     $5B7D,y
 L1530:  sbc     $57,x
         .byte   $6F
@@ -4411,25 +4411,24 @@ L1C03:  sta     ($8E),y
 ;;; Draw message to both hires screens
 ;;; A,X = message (col, row, null-terminated string)
 
-DrawMessage:
+.proc DrawMessage
         .refto DrawMessage
 
         sta     $BE
         stx     $BF
         clc
         adc     #$02
-        bcc     L1C16
+        bcc     :+
         inx
-L1C16:  sta     $B8
+:       sta     $B8
         stx     $B9
         ldy     #$00
-        .byte   $A5
-L1C1D:  .byte   $B7
-        bmi     L1C26
+        lda     $B7
+        bmi     :+
         lda     #$20
         sta     ($B8),y
         bne     L1C39
-L1C26:  lda     #$2D
+:       lda     #$2D
         sta     ($B8),y
         lda     #$00
         sec
@@ -4439,6 +4438,7 @@ L1C26:  lda     #$2D
         sbc     $B7
         sta     $B7
         bmi     L1C67
+
 L1C39:  lda     #$10
         ldx     #$27
         ldy     #$01
@@ -4558,9 +4558,8 @@ L1D0A:  ldy     $C0
         cmp     #$60
         bcc     L1D1C
         sbc     #$40
-L1D1C:  .byte   $85
-L1D1D:  and     $5AB9,x
-        .byte   $0F
+L1D1C:  sta     $3D
+        lda     $0F5A,y
         sta     $8E
         sta     $3C
         ldy     L123C,x
@@ -4660,6 +4659,7 @@ L1DC5:  sta     ($8E),y
         cpx     #$64
         bne     L1DAA
         rts
+.endproc
 
         bmi     L1DD6
         sec
@@ -4722,7 +4722,7 @@ L1E0C:  ora     ($D9,x)
         .byte   $DF
         brk
         .byte   $DF
-L1E1E:  brk
+        brk
         .byte   $DF
         brk
         .byte   $DF
@@ -4796,7 +4796,7 @@ L1E1E:  brk
         ora     ($30,x)
         plp
         bit     $20
-        asl     L1C1D,x
+        asl     $1C1D,x
         .byte   $1C
         .byte   $1C
         .byte   $1C
@@ -4804,27 +4804,27 @@ L1E1E:  brk
         bvs     L1ECF
         rol     $22
         .byte   $1F
-        asl     L1C1D,x
+        asl     $1C1D,x
         .byte   $1C
         .byte   $1C
         .byte   $1C
         .byte   $1C
-        jmp     L203A
+        jmp     $203A
 
-        jmp     L2015
+        jmp     $2015
 
-        jmp     L20AF
+        jmp     $20AF
 
-        jmp     L2122
+        jmp     $2122
 
-        jmp     L238A
+        jmp     $238A
 
-        jmp     L2000
+        jmp     $2000
 
         sec
         rts
 
-        jmp     L2578
+        jmp     $2578
 
         clc
         rts
@@ -4851,6 +4851,7 @@ L1ECF:  asl     $4A4A,x
         txa
         ror     a
         jsr     L1EFA
+
 L1EE9:  ldx     #$1F
 L1EEB:  lda     $40,x
         ldy     $FF40,x
@@ -4881,8 +4882,8 @@ L1F08:  ldy     $5A
         pha
         ldy     $5A
         .byte   $BE
-L1F1E:  .byte   $75
-L1F1F:  .byte   $D7
+        .byte   $75
+        .byte   $D7
         lda     $D875,y
         jsr     L1F5F
         pla
@@ -5001,7 +5002,7 @@ L1FB3:  brk
         php
         lsr     a
         .byte   $8D
-L1FEB:  .byte   $0B
+        .byte   $0B
         asl     a:$A9,x
         rol     a
         plp
@@ -5015,1366 +5016,6 @@ L1FFB:  rts
         brk
         brk
         brk
-L2000:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L2015:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L2020:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L203A:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $D3
-        .byte   $AB
-        cld
-        sbc     $80B9,x
-        cpy     #$9B
-        sty     $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        ldy     #$D8
-        sta     ($80,x)
-        cpx     #$D9
-        .byte   $9F
-        .byte   $80
-        cpy     #$CD
-        .byte   $80
-        .byte   $80
-        bcc     L1FEB
-L206B:  .byte   $80
-        cpx     $AE
-        cmp     $AA,x
-        cmp     $AA,x
-        cmp     $AA,x
-        cmp     $AA,x
-        cmp     $AA,x
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L2099:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L20AF:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        sty     $80
-        .byte   $80
-L20D3:  .byte   $80
-        .byte   $80
-        cpy     $B8
-        cpx     #$E0
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        stx     $86
-        stx     $8080
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        bcc     L20D3
-        dec     $81,x
-        bcc     L206B
-        stx     $8C
-        stx     $A0,y
-        .byte   $D4
-        tay
-        cmp     ($92),y
-        .byte   $D4
-        dey
-        bne     L2099
-        lda     $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L20FE:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L2121:  .byte   $80
-L2122:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        tya
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $BF
-        .byte   $80
-        .byte   $80
-        cpx     #$80
-        .byte   $82
-        ldy     #$80
-        stx     $E0
-        .byte   $EE
-L2160:  sty     $9C80
-        .byte   $80
-        clv
-        .byte   $80
-        .byte   $80
-        bcs     L20FE
-        ldy     #$C0
-        tya
-        ldy     $86
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L218B:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        stx     $E080
-        sta     ($80,x)
-        .byte   $80
-        .byte   $80
-        .byte   $9C
-        ldx     #$C4
-        .byte   $83
-        .byte   $80
-        bcc     L2160
-        .byte   $80
-        .byte   $A7
-        dey
-        sbc     $8080,y
-        .byte   $80
-        bcs     L218B
-        sty     $80
-        sta     $AEA4,y
-        cmp     $AA,x
-        cmp     $AA,x
-        cmp     $AA,x
-L21F4:  cmp     $AA,x
-        cmp     $AA,x
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L2200:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        sty     $E1C0
-        tya
-        sty     $B1C3
-        ldy     $81C6,x
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L2218:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        cpy     #$80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        sty     $80
-        sta     ($80,x)
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        dey
-        bcc     L2200
-        .byte   $80
-        cld
-        .byte   $BD
-        .byte   $80
-L2264:  .byte   $80
-        .byte   $82
-        bcs     L2218
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        tya
-        bcs     L21F4
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L2272:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L227F:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        sed
-        .byte   $FF
-        .byte   $9F
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $FF
-        .byte   $FF
-        sta     ($80,x)
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        sed
-        .byte   $FF
-        .byte   $8F
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        ldy     $B6
-        cpy     $868D
-        .byte   $83
-        bcc     L2264
-        .byte   $E3
-        bcs     L227F
-        ldy     #$88
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        ldy     #$90
-        .byte   $80
-        .byte   $80
-        ldy     #$80
-        .byte   $80
-        cpy     #$90
-        sty     $8E
-        .byte   $80
-        .byte   $80
-L22E3:  .byte   $80
-        .byte   $80
-        tya
-        .byte   $CC
-        .byte   $80
-L22E8:  .byte   $80
-        .byte   $82
-        sta     ($80,x)
-        cpx     $86
-        .byte   $80
-        .byte   $80
-        bcc     L2272
-L22F2:  .byte   $80
-        dey
-L22F4:  cpy     #$80
-        .byte   $80
-        ldy     #$80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        tya
-        .byte   $C3
-        .byte   $BF
-        .byte   $FC
-        .byte   $C7
-        .byte   $FF
-        tya
-        stx     $B3
-        .byte   $9B
-        cpx     #$9F
-        cpy     #$E1
-        .byte   $80
-L2319:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        cpx     #$92
-        .byte   $82
-        .byte   $80
-        cpy     #$AA
-        dey
-        .byte   $80
-        stx     $98
-        cpx     #$87
-        tya
-        cpx     #$80
-        bcs     L2319
-        stx     $9C
-        cpy     #$81
-        .byte   $83
-        .byte   $80
-L233F:  stx     $AA
-        .byte   $D4
-        .byte   $80
-L2343:  sta     ($87,x)
-        stx     $AA,y
-        .byte   $D4
-        tay
-        cmp     ($92),y
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $BF
-        ldy     #$90
-        sta     ($80,x)
-        .byte   $80
-        .byte   $80
-        bcc     L22E8
-        ldy     #$80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        ldy     #$90
-        dey
-        beq     L22E3
-        .byte   $80
-        bcs     L22F4
-        dey
-        tya
-        sty     $80
-        .byte   $80
-L236A:  .byte   $80
-L236B:  cpy     #$86
-        .byte   $C2
-        tya
-        .byte   $80
-        bcc     L22F2
-        .byte   $80
-        dey
-        cpy     #$80
-        .byte   $80
-        ldy     #$80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L238A:  .byte   $80
-        .byte   $80
-L238C:  .byte   $80
-        .byte   $80
-        .byte   $80
-L238F:  .byte   $80
-        .byte   $80
-L2391:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $82
-        .byte   $D4
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        bcc     L2391
-        sta     ($88),y
-        .byte   $80
-        cpx     #$87
-        .byte   $80
-        bcc     L233F
-        .byte   $8F
-        .byte   $87
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $DB
-        tya
-        .byte   $82
-        .byte   $80
-        bcc     L2343
-        cpy     #$A1
-        ldx     $E6,y
-        dec     $81
-        .byte   $83
-        bcc     L236A
-        .byte   $C3
-        sbc     $A080,y
-        .byte   $80
-        iny
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $A7
-        .byte   $80
-        bcs     L238F
-        .byte   $83
-        .byte   $80
-        .byte   $80
-        cpy     #$80
-        .byte   $80
-        .byte   $80
-        .byte   $8C
-L23E1:  .byte   $80
-        .byte   $DB
-        sta     ($98,x)
-        .byte   $80
-        cpx     #$87
-        bcc     L238C
-        cpy     #$C0
-        sta     ($82,x)
-        cpx     #$80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L23F4:  .byte   $80
-        .byte   $80
-        .byte   $80
-        ldy     #$80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L23FE:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L2434:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $93
-        tax
-        sed
-        bcs     L23E1
-        .byte   $80
-        cpx     #$9B
-        sty     $80
-        .byte   $E0
-L245B:  .byte   $87
-        .byte   $80
-        ldy     #$D8
-        sta     $80
-        bcs     L23FE
-        stx     $80
-        bne     L2434
-        sta     ($80,x)
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $E6
-L246D:  stx     $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        bcc     L23F4
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        ldy     #$80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L2499:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        dey
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        clv
-        cpy     #$C0
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $82
-        .byte   $82
-        sty     $C0
-        .byte   $83
-        .byte   $80
-        cpx     #$86
-        sty     $EC,x
-        stx     $9E,y
-L24E9:  .byte   $80
-        beq     L246D
-        sty     $A096
-        cpy     $88
-        sta     ($92),y
-        cpy     #$88
-        bcc     L2499
-        ldy     $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        ldy     #$80
-        .byte   $80
-        sed
-        .byte   $8F
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $83
-        sty     $90
-        cpy     #$81
-        cpy     #$9F
-        cld
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        sta     $8080
-        bcs     L24E9
-        .byte   $80
-        .byte   $80
-        tya
-        ldy     $F6
-        lda     $A4
-        lda     ($C5,x)
-        txa
-        .byte   $D4
-        tay
-        cmp     ($8A,x)
-        .byte   $95
-L2578:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        cpy     #$81
-        .byte   $80
-        .byte   $80
-        stx     $80
-        .byte   $80
-        .byte   $80
-        .byte   $A3
-        ldy     #$A0
-        sty     $9080
-        .byte   $80
-        cpx     #$88
-        dey
-        dey
-        .byte   $83
-        .byte   $80
-        .byte   $80
-        tya
-        ldx     #$D4
-        tay
-        lda     ($A4),y
-        stx     $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
+
+        .assert * = $2000, error, "mismatch"
+        .incbin "../res/c4_hires.bin"
