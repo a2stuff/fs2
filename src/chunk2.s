@@ -18,8 +18,8 @@ L1768           := $1768
 L180C           := $180C
 L1818           := $1818
 L1A6E           := $1A6E
-L1D92           := $1D92
-L1DA8           := $1DA8
+DrawMessage4    := $1D92
+ClearViewportsToBlack   := $1DA8
 
 ;;; Possible chunk5 references
 L6006           := $6006
@@ -54,10 +54,11 @@ LF718:  brk
 LF719:  brk
 LF71A:  brk
 LF71B:  brk
-LF71C:  jsr     L1DA8
+
+LF71C:  jsr     ClearViewportsToBlack
         lda     #$00
         ldx     #$F6
-        jsr     L1D92
+        jsr     DrawMessage4
         jsr     L89D0
         cmp     #$41
         beq     LF742

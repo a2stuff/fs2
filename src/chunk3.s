@@ -17,6 +17,7 @@ L00BA           := $00BA
 
 ;;; Possible chunk4 references
 L03F0           := $03F0
+HiresTableHi    := $0E9A
 L1569           := $1569
 L168F           := $168F
 L1696           := $1696
@@ -27,10 +28,10 @@ L180C           := $180C
 L1931           := $1931
 L1AD2           := $1AD2
 DrawMessage     := $1C0C
-L1C96           := $1C96
-L1C9F           := $1C9F
-L1D92           := $1D92
-L1DA8           := $1DA8
+DrawMessage2    := $1C96
+DrawMessage3    := $1C9F
+DrawMessage4    := $1D92
+ClearViewportsToBlack   := $1DA8
 L1EC6           := $1EC6
 L1FC4           := $1FC4
 L1FE0           := $1FE0
@@ -1734,7 +1735,7 @@ LDA53:  lda     $BE
         jsr     L9CFC
         lda     #$22
         ldx     #$DB
-        jmp     L1C9F
+        jmp     DrawMessage3
 
         .byte   $93
         .byte   $4B
@@ -1821,17 +1822,17 @@ LDA53:  lda     $BE
         brk
 LDB28:  lda     #$79
         ldx     #$DA
-        jsr     L1D92
+        jsr     DrawMessage4
         lda     #$0A
         sta     LD9E9
         ldx     #$04
         jsr     L1931
         lda     #$22
         ldx     #$DB
-        jsr     L1C9F
+        jsr     DrawMessage3
         lda     #$EA
         ldx     #$D9
-        jsr     L1C9F
+        jsr     DrawMessage3
         rts
 
         lda     $08A9
@@ -1940,7 +1941,7 @@ LDC15:  lda     $FA
 LDC18:  sta     LD9ED,x
         lda     #$EA
         ldx     #$D9
-        jsr     L1C9F
+        jsr     DrawMessage3
         lda     LD9EE
         asl     a
         asl     a
@@ -2036,10 +2037,10 @@ LDCD9:  rts
         sta     $08AC
         rts
 
-LDCE9:  jsr     L1DA8
+LDCE9:  jsr     ClearViewportsToBlack
         lda     #$DB
         ldx     #$DD
-        jsr     L1C9F
+        jsr     DrawMessage3
         lda     $2B
         adc     $5F
         and     #$0E
@@ -2145,7 +2146,7 @@ LDE07:  and     #$06
         ldx     LDDF4,y
         ldy     #$00
         sty     $0834
-LDE15:  jsr     L1C96
+LDE15:  jsr     DrawMessage2
         ldx     #$FF
         jsr     LE311
         ldx     #$01
@@ -2452,7 +2453,7 @@ LDFFF:  lda     LDFB1
         ldy     LDFB8
         lda     $0F5A,y
         sta     $8E
-        lda     $0E9A,y
+        lda     HiresTableHi,y
         sta     $8F
         lda     LDFB5
         jsr     L601B
@@ -2795,7 +2796,7 @@ LE2C8:  cpx     #$8F
         lda     LE2C8,x
         tax
         pla
-        jsr     L1C96
+        jsr     DrawMessage2
         rts
 
         lda     $FA
@@ -2966,7 +2967,7 @@ LE4DC:  rts
         lda     #$03
         sta     $B8
         sta     $B9
-        jsr     L1DA8
+        jsr     ClearViewportsToBlack
         lda     $092A
         ldx     $092B
         sta     $B6
@@ -3005,7 +3006,7 @@ LE52E:  cmp     #$20
         sta     L00BA
         lda     #$B8
         ldx     #$00
-        jsr     L1C96
+        jsr     DrawMessage2
         lda     #$00
         sec
         sbc     $093B
@@ -3026,7 +3027,7 @@ LE554:  lda     $B9
         adc     #$07
         cmp     #$5A
         bcc     LE567
-        jsr     L1DA8
+        jsr     ClearViewportsToBlack
         lda     #$03
 LE567:  sta     $B8
         lda     #$03
@@ -3315,7 +3316,7 @@ LE76A:  sta     $B9
         sta     ($B8),y
         rts
 
-LE770:  lda     $0E9A,y
+LE770:  lda     HiresTableHi,y
         sta     $B9
         lda     $0F5A,y
         sta     $B8
@@ -4751,37 +4752,37 @@ LF13D:  rts
         lda     $A9FE
         ora     #$30
         sta     LF118
-        jsr     L1DA8
+        jsr     ClearViewportsToBlack
         lda     #$00
         ldx     #$F0
-        jsr     L1D92
+        jsr     DrawMessage4
         lda     #$35
         ldx     #$F0
-        jsr     L1C9F
+        jsr     DrawMessage3
         lda     #$4A
         ldx     #$F0
-        jsr     L1C9F
+        jsr     DrawMessage3
         lda     #$6E
         ldx     #$F0
-        jsr     L1C9F
+        jsr     DrawMessage3
         lda     #$C1
         ldx     #$F0
-        jsr     L1C9F
+        jsr     DrawMessage3
         lda     #$D2
         ldx     #$F0
-        jsr     L1C9F
+        jsr     DrawMessage3
         lda     #$E3
         ldx     #$F0
-        jsr     L1C9F
+        jsr     DrawMessage3
         lda     #$F4
         ldx     #$F0
-        jsr     L1C9F
+        jsr     DrawMessage3
         lda     #$05
         ldx     #$F1
-        jsr     L1C9F
+        jsr     DrawMessage3
         lda     #$16
         ldx     #$F1
-        jsr     L1C9F
+        jsr     DrawMessage3
         jsr     L8743
         rts
 

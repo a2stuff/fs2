@@ -17,6 +17,7 @@ L00A5           := $00A5
 ;;; Possible chunk4 references
 L0300           := $0300
 L08AD           := $08AD
+HiresTableHi    := $0E9A
 L154A           := $154A
 L1569           := $1569
 L168F           := $168F
@@ -64,11 +65,10 @@ L1B6D           := $1B6D
 L1B80           := $1B80
 L1B9F           := $1B9F
 L1C73           := $1C73
-L1C96           := $1C96
-L1C9F           := $1C9F
-L1D67           := $1D67
-L1D92           := $1D92
-L1DA8           := $1DA8
+DrawMessage2    := $1C96
+DrawMessage3    := $1C9F
+DrawMessage4    := $1D92
+ClearViewportsToBlack   := $1DA8
 L1EAD           := $1EAD
 L1EB0           := $1EB0
 L1EB3           := $1EB3
@@ -810,7 +810,7 @@ L653E:  ldx     $F3
 L6541:  ldy     $E7
         lda     $0F5A,y
         sta     $8E
-        lda     $0E9A,y
+        lda     HiresTableHi,y
         sta     $8F
         lda     $ED
         beq     L6555
@@ -965,7 +965,7 @@ L6644:  .byte   $A4
 L6645:  .byte   $E7
 L6646:  lda     $0F5A,y
         sta     $8E
-        lda     $0E9A,y
+        lda     HiresTableHi,y
         sta     $8F
         stx     $B2
         lda     $123C,x
@@ -1063,7 +1063,7 @@ L66A9:  adc     #$88
         .byte   $6B
         stx     L6C6D
         .byte   $67
-        jmp     (L1D67)
+        jmp     ($1D67)
 
         .byte   $6F
         iny
@@ -3301,7 +3301,7 @@ L784A:  ldx     $25
         ldy     $B1
         lda     $0F5A,y
         sta     $8E
-        lda     $0E9A,y
+        lda     HiresTableHi,y
         sta     $8F
 L785D:  lda     $B1
         cmp     $0AB8,x
@@ -3447,7 +3447,7 @@ L7959:  lda     $23
         sta     ($8E),y
         rts
 
-L7963:  lda     $0E9A,y
+L7963:  lda     HiresTableHi,y
         sta     $8F
         lda     $0F5A,y
         sta     $8E
@@ -3541,7 +3541,7 @@ L7A06:  dec     $EA
 L7A08:  .byte   $84
 L7A09:  .byte   $B1
 L7A0A:  ldy     $EA
-        lda     $0E9A,y
+        lda     HiresTableHi,y
         sta     $8F
         lda     $0F5A,y
         sta     $8E
@@ -3605,7 +3605,7 @@ L7A67:  lda     $F2
 L7A74:  inc     $EA
         sty     $B1
         ldy     $EA
-        lda     $0E9A,y
+        lda     HiresTableHi,y
         sta     $8F
         lda     $0F5A,y
         sta     $8E
@@ -4938,7 +4938,7 @@ L8387:  sta     $B5
         ldx     $E7
 L838B:  lda     $0F5A,x
         sta     $8E
-        lda     $0E9A,x
+        lda     HiresTableHi,x
         sta     $8F
         ldy     #$08
         lda     $24
@@ -4966,7 +4966,7 @@ L838B:  lda     $0F5A,x
 L83B7:  ldx     #$6E
 L83B9:  lda     $0F5A,x
         sta     $8E
-        lda     $0E9A,x
+        lda     HiresTableHi,x
         sta     $8F
         stx     $B0
         ldx     #$00
@@ -5006,7 +5006,7 @@ L83E2:  lda     #$86
         ldy     $E7
         lda     $0F5A,y
         sta     $8E
-        lda     $0E9A,y
+        lda     HiresTableHi,y
         sta     $8F
         lda     $8A
         bne     L841F
@@ -5970,10 +5970,10 @@ L89B6:  lda     $0834
 
 L89BC:  lda     #$00
         sta     $0834
-        jsr     L1DA8
+        jsr     ClearViewportsToBlack
         lda     #$AA
         ldx     #$89
-        jsr     L1C96
+        jsr     DrawMessage2
         ldx     #$01
         jmp     L9093
 
@@ -6086,7 +6086,7 @@ L8AA9:  inx
         sta     L88E0
         lda     #$DD
         ldx     #$88
-        jsr     L1C9F
+        jsr     DrawMessage3
         lda     $08F0
         bne     L8AFD
 L8AC4:  jsr     L9EFC
@@ -6102,7 +6102,7 @@ L8ACC:  inx
         sta     L88DB
         lda     #$D8
         ldx     #$88
-        jsr     L1C9F
+        jsr     DrawMessage3
         lda     $0954
         ldx     #$2F
 L8AE7:  inx
@@ -6115,7 +6115,7 @@ L8AE7:  inx
         sta     L88D6
         lda     #$D3
         ldx     #$88
-        jsr     L1C9F
+        jsr     DrawMessage3
 L8AFD:  rts
 
 L8AFE:  brk
@@ -8331,7 +8331,7 @@ L9C77:  lda     $FB
         jsr     L9CFC
         lda     #$86
         ldx     #$88
-        jsr     L1C9F
+        jsr     DrawMessage3
         ldx     $3E
         pla
         sec
@@ -8354,7 +8354,7 @@ L9CD4:  sta     $B6
         jsr     L9CFC
         lda     #$8C
         ldx     #$88
-        jmp     L1C9F
+        jmp     DrawMessage3
 
 L9CE6:  tay
         txa
@@ -8461,7 +8461,7 @@ L9D7A:  clc
         jsr     L9CFC
         lda     #$92
         ldx     #$88
-        jmp     L1C96
+        jmp     DrawMessage2
 
 L9D9C:  sta     $BE
         stx     $BF
@@ -8493,7 +8493,7 @@ L9D9C:  sta     $BE
 L9DC3:  jsr     L9EFC
         lda     #$9F
         ldx     #$88
-        jsr     L1C9F
+        jsr     DrawMessage3
         lda     #$A1
         ldx     #$88
         jsr     L9D9C
@@ -8507,7 +8507,7 @@ L9DDF:  jsr     L9EFC
         bne     L9E08
         lda     #$A6
         ldx     #$88
-        jsr     L1C9F
+        jsr     DrawMessage3
         lda     #$A8
         ldx     #$88
         jsr     L9D9C
@@ -8523,7 +8523,7 @@ L9E08:  rts
 L9E09:  jsr     L9EFC
         lda     #$98
         ldx     #$88
-        jsr     L1C9F
+        jsr     DrawMessage3
         lda     #$9A
         ldx     #$88
         jsr     L9D9C
@@ -8554,10 +8554,10 @@ L9E49:  jsr     L9E64
         sta     L88B7
         lda     #$AD
         ldx     #$88
-        jsr     L1C96
+        jsr     DrawMessage2
         lda     #$B3
         ldx     #$88
-        jsr     L1C96
+        jsr     DrawMessage2
 L9E63:  rts
 
 L9E64:  ldy     #$2F
@@ -8599,10 +8599,10 @@ L9EA1:  jsr     L9E64
         sta     L88C3
         lda     #$B9
         ldx     #$88
-        jsr     L1C96
+        jsr     DrawMessage2
         lda     #$BF
         ldx     #$88
-        jsr     L1C96
+        jsr     DrawMessage2
 L9EBB:  rts
 
 L9EBC:  jsr     L9EFC
@@ -8626,7 +8626,7 @@ L9ED7:  inx
         sta     L88E5
 L9EE6:  lda     #$E2
         ldx     #$88
-        jsr     L1C9F
+        jsr     DrawMessage3
 L9EED:  rts
 
 L9EEE:  lda     #$20
@@ -8645,7 +8645,7 @@ L9F04:  rts
 L9F05:  jsr     L9EFC
         lda     #$C5
         ldx     #$88
-        jsr     L1C9F
+        jsr     DrawMessage3
         rts
 
 L9F10:  lda     #$F0
@@ -8654,10 +8654,10 @@ L9F10:  lda     #$F0
         bne     L9F23
         lda     #$F7
         ldx     #$88
-        jsr     L1C96
+        jsr     DrawMessage2
         jmp     L9F26
 
-L9F23:  jsr     L1C9F
+L9F23:  jsr     DrawMessage3
 L9F26:  jsr     L9EFC
         lda     #$E8
         ldx     #$88
@@ -8665,7 +8665,7 @@ L9F26:  jsr     L9EFC
         bne     L9F36
         lda     #$EC
         ldx     #$88
-L9F36:  jmp     L1C96
+L9F36:  jmp     DrawMessage2
 
 L9F39:  lda     $0990
         tax
@@ -8691,7 +8691,7 @@ L9F54:  inx
         sta     L88CF
         lda     #$CC
         ldx     #$88
-        jsr     L1C9F
+        jsr     DrawMessage3
 L9F6A:  rts
 
 L9F6B:  lda     $FB
@@ -9055,7 +9055,7 @@ LA205:  tax
         clc
         adc     #$76
         tax
-        lda     $0E9A,x
+        lda     HiresTableHi,x
         sta     $B7
         clc
         adc     $8D
@@ -9081,7 +9081,7 @@ LA22F:  asl     a
         adc     #$FE
         bcc     LA23A
         inx
-LA23A:  jmp     L1C96
+LA23A:  jmp     DrawMessage2
 
 LA23D:  lda     $63
         sec
@@ -9446,7 +9446,7 @@ LA4BE:  stx     L8930
 LA4C8:  stx     L8931
         lda     #$2E
         ldx     #$89
-        jmp     L1C96
+        jmp     DrawMessage2
 
 LA4D2:  lda     $098C
         ldx     $098D
@@ -9627,7 +9627,7 @@ LA61B:  lda     LA7E0
         lda     $2B
         bpl     LA639
 LA632:  nop
-        jsr     L1DA8
+        jsr     ClearViewportsToBlack
         jmp     LA632
 
 LA639:  rts
@@ -10067,10 +10067,10 @@ LAC2F:  lda     LABCC,x
         clc
 LAC39:  rts
 
-LAC3A:  jsr     L1DA8
+LAC3A:  jsr     ClearViewportsToBlack
         lda     #$00
         ldx     #$A8
-        jsr     L1D92
+        jsr     DrawMessage4
 LAC44:  jsr     L89D0
         cmp     #$61
         beq     LAC59
@@ -10081,10 +10081,10 @@ LAC44:  jsr     L89D0
         cmp     #$42
         beq     LAC6D
         bne     LAC44
-LAC59:  jsr     L1DA8
+LAC59:  jsr     ClearViewportsToBlack
         lda     #$3A
         ldx     #$A9
-        jsr     L1D92
+        jsr     DrawMessage4
         jmp     LAC44
 
 LAC66:  lda     #$65
@@ -10101,10 +10101,10 @@ LAC77:  lda     ($BE),y
         iny
         cpy     #$16
         bne     LAC77
-        jsr     L1DA8
+        jsr     ClearViewportsToBlack
         lda     #$E8
         ldx     #$A8
-        jsr     L1D92
+        jsr     DrawMessage4
 LAC8B:  jsr     L89D0
         cmp     #$41
         beq     LAC98
@@ -10112,15 +10112,15 @@ LAC8B:  jsr     L89D0
         beq     LACB4
         bne     LAC8B
 LAC98:  inc     $092C
-        jsr     L1DA8
+        jsr     ClearViewportsToBlack
         lda     #$20
         ldx     #$AA
-        jsr     L1D92
+        jsr     DrawMessage4
         lda     $08C6
         bne     LACB1
         lda     #$A0
         ldx     #$AA
-        jsr     L1D92
+        jsr     DrawMessage4
 LACB1:  jsr     L89D0
 LACB4:  lda     #$00
         sta     $08A6
@@ -10188,7 +10188,7 @@ LAD32:  lda     $C050
 LAD42:  lda     $0F5A,x
         sta     $B8
         sta     $C0
-        lda     $0E9A,x
+        lda     HiresTableHi,x
         sta     $B9
         clc
         adc     #$20
@@ -10401,7 +10401,7 @@ LAECC:  pla
         rts
 
         tay
-        jsr     L1D92
+        jsr     DrawMessage4
         lda     $0A72
         cmp     #$01
         bne     LAEF4
@@ -10409,7 +10409,7 @@ LAECC:  pla
         sta     $0A72
         lda     #$3B
         ldx     #$A8
-        jsr     L1D92
+        jsr     DrawMessage4
         ldx     #$00
         ldy     #$00
 LAEEE:  inx
@@ -10722,7 +10722,7 @@ LB09A:  sta     LA80D
 
         ldy     #$6B
         sty     $B6
-LB0AF:  lda     $0E9A,y
+LB0AF:  lda     HiresTableHi,y
         sta     $A6
         lda     $0F5A,y
         sta     L00A5
@@ -10805,7 +10805,7 @@ LB150:  ora     #$29
         sta     $0978
         ldy     #$65
         sty     $B6
-LB15A:  lda     $0E9A,y
+LB15A:  lda     HiresTableHi,y
         sta     $A6
         clc
         adc     $8D

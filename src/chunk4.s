@@ -2497,7 +2497,7 @@ L0E0E:  brk
 
 ;;; HBASH table
 
-L0E9A:
+HiresTableHi:
         .byte   $20,$24,$28,$2c,$30,$34,$38,$3c
         .byte   $20,$24,$28,$2c,$30,$34,$38,$3c
         .byte   $21,$25,$29,$2d,$31,$35,$39,$3d
@@ -2526,7 +2526,7 @@ L0E9A:
 
 ;;; HBASHL table
 
-L0F5A:
+HiresTableLo:
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $80,$80,$80,$80,$80,$80,$80,$80
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
@@ -4142,10 +4142,10 @@ L1A04:  adc     ($96),y
         iny
         sty     $E7
         ldx     $A7
-        lda     L0F5A,x
+        lda     HiresTableLo,x
         sta     $9A
         sta     $BA
-L1A1A:  lda     L0E9A,x
+L1A1A:  lda     HiresTableHi,x
         sta     $9B
         clc
         adc     $8D
@@ -4384,12 +4384,12 @@ L1BBC:  ldy     L0A50
         clc
         adc     L0A4F
         tay
-        lda     L0E9A,y
+        lda     HiresTableHi,y
         sta     $8F
         clc
         adc     $8D
         sta     $BB
-        lda     L0F5A,y
+        lda     HiresTableLo,y
         sta     $8E
         sta     $BA
         lda     L0A3F
@@ -4414,8 +4414,11 @@ L1C03:  sta     ($8E),y
 .proc DrawMessage
         .refto DrawMessage
 
-        sta     $BE
-        stx     $BF
+        msg_ptr := $BE
+
+        ;; Entry point used for North/East in Slew Mode
+        sta     msg_ptr
+        stx     msg_ptr+1
         clc
         adc     #$02
         bcc     :+
@@ -4489,18 +4492,28 @@ L1C90:  ldy     $A7
         sta     ($B8),y
         rts
 
-        sta     $BE
-        stx     $BF
+;;; Alternate entry point 1C96
+DrawMessage2:
+        .refto DrawMessage2
+
+        sta     msg_ptr
+        stx     msg_ptr+1
 L1C9A:  lda     #$7F
         tax
-        bne     L1CAD
-        sta     $BE
-        stx     $BF
+        bne     L1CAD           ; always
+
+;;; Alternate entry point 1C9F
+DrawMessage3:
+        .refto DrawMessage3
+
+        sta     msg_ptr
+        stx     msg_ptr+1
 L1CA3:  lda     #$D5
         ldx     #$AA
         bne     L1CAD
         lda     #$AA
         ldx     #$D5
+
 L1CAD:  sta     $90
         stx     $91
         jsr     L1CBB
@@ -4516,8 +4529,8 @@ L1CBB:  jsr     L1CC5
         rts
 
 L1CC5:  ldy     #$00
-        lda     ($BE),y
-        inc     $BE
+        lda     (msg_ptr),y
+        inc     msg_ptr
         bne     L1CCF
         inc     $BF
 L1CCF:  rts
@@ -4551,7 +4564,7 @@ L1D06:  sta     $BD
         sty     $BC
 L1D0A:  ldy     $C0
         ldx     $C1
-        lda     L0E9A,y
+        lda     HiresTableHi,y
         sta     $8F
         clc
         adc     #$20
@@ -4624,47 +4637,71 @@ L1D87:  jsr     L1CC5
         bmi     L1DA7
         jmp     L1CD0
 
-        sta     $BE
-        stx     $BF
+
+;;; Alternate entry point 1D92
+DrawMessage4:
+        .refto DrawMessage4
+
+        sta     msg_ptr
+        stx     msg_ptr+1
 L1D96:  ldy     #$00
-        lda     ($BE),y
+        lda     (msg_ptr),y
         bne     L1DA1
         iny
-        lda     ($BE),y
+        lda     (msg_ptr),y
         beq     L1DA7
 L1DA1:  jsr     L1C9A
         jmp     L1D96
 
 L1DA7:  rts
+.endproc
 
-        ldx     #$00
-L1DAA:  lda     L0E9A,x
-        sta     $8F
+;;; Clear viewport on both hires screens
+.proc ClearViewportsToBlack
+        .refto ClearViewportsToBlack
+
+        ptr1 := $8E
+        ptr2 := $3C
+
+        ;; Loop over all viewport rows
+        ldx     #0              ; row
+
+        ;; Hires table may be set for page1 or page2;
+        ;; set ptr1 to current and ptr2 to alt regardless
+loop:   lda     HiresTableHi,x
+        sta     ptr1+1
         clc
         adc     #$20
         cmp     #$60
-        bcc     L1DB8
+        bcc     :+
         sbc     #$40
-L1DB8:  sta     $3D
-        lda     L0F5A,x
-        sta     $8E
-        sta     $3C
-        ldy     #$27
-        lda     #$00
-L1DC5:  sta     ($8E),y
-        sta     ($3C),y
+:       sta     ptr2+1
+        lda     HiresTableLo,x
+        sta     ptr1
+        sta     ptr2
+
+        ;; Clear current row to black
+        ldy     #39
+        lda     #0
+:       sta     (ptr1),y
+        sta     (ptr2),y
         dey
-        bpl     L1DC5
+        bpl     :-
+
+        ;; Next row
         inx
-        cpx     #$64
-        bne     L1DAA
+        cpx     #100            ; viewport rows
+        bne     loop
+
         rts
 .endproc
 
-        bmi     L1DD6
+;;; 1DD2 - character bitmaps???
+
+        bmi     :+
         sec
         .byte   $02
-L1DD6:  ldx     #$02
+:       ldx     #$02
         .byte   $A7
         .byte   $02
         ldy     $B102
@@ -4672,7 +4709,7 @@ L1DD6:  ldx     #$02
         .byte   $DF
         .byte   $07
         txs
-        asl     L0F5A
+        asl     $0F5A
         .byte   $1A
         bpl     L1E01
         ora     ($32),y
@@ -4801,7 +4838,7 @@ L1E0C:  ora     ($D9,x)
         .byte   $1C
         .byte   $1C
         .byte   $1C
-        bvs     L1ECF
+        bvs     $1ECF
         rol     $22
         .byte   $1F
         asl     $1C1D,x
@@ -4809,22 +4846,20 @@ L1E0C:  ora     ($D9,x)
         .byte   $1C
         .byte   $1C
         .byte   $1C
-        jmp     $203A
 
-        jmp     $2015
+;;; Jump table, patched at runtime (48k vs 64k???)
 
-        jmp     $20AF
-
-        jmp     $2122
-
-        jmp     $238A
-
-        jmp     $2000
+        jmp     $203A           ; becomes D3D0
+        jmp     $2015           ; becomes D3D3
+        jmp     $20AF           ; becomes D3D6
+        jmp     $2122           ; becomes D3D9
+        jmp     $238A           ; becomes D3DC
+        jmp     $2000           ; becomes D3DF
 
         sec
         rts
 
-        jmp     $2578
+        jmp     $2578           ; becomes D3E2
 
         clc
         rts
@@ -4832,9 +4867,9 @@ L1E0C:  ora     ($D9,x)
         jsr     L1EE9
         lda     #$00
         sta     $53
-        .byte   $AD
-        .byte   $01
-L1ECF:  asl     $4A4A,x
+        lda     $1E01
+        lsr     a
+        lsr     a
         clc
         adc     #$01
         asl     a
