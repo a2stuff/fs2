@@ -3359,8 +3359,11 @@ L14C6:  .byte   $80
 L14CD:  inc     $F8FC,x
         beq     L14B2
         cpy     #$80
+
+;;; Character Table ??? (words)
+
 L14D4:  brk
-L14D5:  brk
+        brk
         .byte   $92
         jsr     L002D
         adc     $925F,x
@@ -4434,7 +4437,8 @@ L1C03:  sta     ($8E),y
         bmi     :+
         lda     #$20
         sta     ($B8),y
-        bne     L1C39
+        bne     L1C39           ; always
+
 :       lda     #$2D
         sta     ($B8),y
         lda     #$00
@@ -4497,6 +4501,7 @@ L1C90:  ldy     $A7
         rts
 
 ;;; Alternate entry point 1C96
+;;; Color mask is white
 DrawMessage2:
         .refto DrawMessage2
 
@@ -4507,6 +4512,7 @@ L1C9A:  lda     #$7F
         bne     L1CAD           ; always
 
 ;;; Alternate entry point 1C9F
+;;; Color mask is orange
 DrawMessage3:
         .refto DrawMessage3
 
@@ -4515,6 +4521,8 @@ DrawMessage3:
 L1CA3:  lda     #$D5
         ldx     #$AA
         bne     L1CAD           ; always
+
+;;; Unused ???
         lda     #$AA
         ldx     #$D5
 
@@ -4523,7 +4531,7 @@ L1CAD:  sta     color_mask1
         jsr     GetMessageColRow
         sta     msg_row
         stx     msg_col
-        jmp     L1D87
+        jmp     NextCharacter
 
 ;;; Assuming pointer is at start of message, returns A=row, X=col
 .proc GetMessageColRow
@@ -4545,56 +4553,70 @@ L1CAD:  sta     color_mask1
 :       rts
 .endproc
 
-L1CD0:  asl     a
+;;; A = character ASCII code - $20
+
+DrawCharacter:
+        char_word = $A5
+        char_rows = $A7
+
+        asl     a               ; *= 2
         tax
-        lda     L14D4,x
-        sta     $A5
-        lda     L14D5,x
-        sta     $A6
-        lda     #$05
-        sta     $A7
-        ldx     $C1
-        ldy     L1354,x
+        lda     L14D4,x         ; ???
+        sta     char_word
+        lda     L14D4+1,x
+        sta     char_word+1
+        lda     #5              ; rows
+        sta     char_rows
+
+        ldx     msg_col
+        ldy     L1354,x         ; pre-shift ???
         ldx     L13EE,y
         stx     $A9
         lda     L14C6,x
         sta     $AD
         lda     L14CD,x
         sta     $AE
-        ldy     $C1
+        ldy     msg_col
         lda     L123C,y
         lsr     a
         lda     color_mask1
         ldy     color_mask2
         bcc     L1D06
+
         sta     $BC
         sty     $BD
-        bne     L1D0A
-L1D06:  sta     $BD
+        bne     L1D0A           ; always
+L1D06:
+        sta     $BD
         sty     $BC
-L1D0A:  ldy     msg_row
+L1D0A:
+
+        hires_ptr1 := $8E
+        hires_ptr2 := $3C
+
+        ldy     msg_row
         ldx     msg_col
         lda     HiresTableHi,y
-        sta     $8F
+        sta     hires_ptr1+1
         clc
         adc     #$20
         cmp     #$60
         bcc     L1D1C
         sbc     #$40
-L1D1C:  sta     $3D
-        lda     $0F5A,y
-        sta     $8E
-        sta     $3C
+L1D1C:  sta     hires_ptr2+1
+        lda     HiresTableLo,y
+        sta     hires_ptr1
+        sta     hires_ptr2
         ldy     L123C,x
         lda     #$00
-        lsr     $A6
-        ror     $A5
+        lsr     char_word+1
+        ror     char_word
         rol     a
-        lsr     $A6
-        ror     $A5
+        lsr     char_word+1
+        ror     char_word
         rol     a
-        lsr     $A6
-        ror     $A5
+        lsr     char_word+1
+        ror     char_word
         rol     a
         tax
         lda     L14BE,x
@@ -4641,12 +4663,13 @@ L1D49:  dex
         sec
         sbc     #$05
         sta     msg_row
-L1D87:  jsr     GetMessageByte
+
+NextCharacter:
+        jsr     GetMessageByte
         sec
         sbc     #$20
-        bmi     L1DA7
-        jmp     L1CD0
-
+        bmi     L1DA7           ; end of string
+        jmp     DrawCharacter
 
 ;;; Alternate entry point 1D92
 ;;; If col/row are 0, no-op

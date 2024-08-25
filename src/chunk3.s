@@ -18,6 +18,7 @@ L00BA           := $00BA
 ;;; Possible chunk4 references
 L03F0           := $03F0
 HiresTableHi    := $0E9A
+HiresTableLo    := $0F5A
 L1569           := $1569
 L168F           := $168F
 L1696           := $1696
@@ -2451,7 +2452,7 @@ LDFBA:  pha
 LDFFF:  lda     LDFB1
         sta     $27
         ldy     LDFB8
-        lda     $0F5A,y
+        lda     HiresTableLo,y
         sta     $8E
         lda     HiresTableHi,y
         sta     $8F
@@ -3318,7 +3319,7 @@ LE76A:  sta     $B9
 
 LE770:  lda     HiresTableHi,y
         sta     $B9
-        lda     $0F5A,y
+        lda     HiresTableLo,y
         sta     $B8
         lda     $101A,x
         ldy     $A5

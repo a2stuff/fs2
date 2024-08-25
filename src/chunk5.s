@@ -18,6 +18,7 @@ L00A5           := $00A5
 L0300           := $0300
 L08AD           := $08AD
 HiresTableHi    := $0E9A
+HiresTableLo    := $0F5A
 L154A           := $154A
 L1569           := $1569
 L168F           := $168F
@@ -808,7 +809,7 @@ L653E:  ldx     $F3
         rts
 
 L6541:  ldy     $E7
-        lda     $0F5A,y
+        lda     HiresTableLo,y
         sta     $8E
         lda     HiresTableHi,y
         sta     $8F
@@ -963,7 +964,7 @@ L663F:  ldy     #$00
 
 L6644:  .byte   $A4
 L6645:  .byte   $E7
-L6646:  lda     $0F5A,y
+L6646:  lda     HiresTableLo,y
         sta     $8E
         lda     HiresTableHi,y
         sta     $8F
@@ -3299,7 +3300,7 @@ L784A:  ldx     $25
         lda     #$02
         sta     L7889
         ldy     $B1
-        lda     $0F5A,y
+        lda     HiresTableLo,y
         sta     $8E
         lda     HiresTableHi,y
         sta     $8F
@@ -3449,7 +3450,7 @@ L7959:  lda     $23
 
 L7963:  lda     HiresTableHi,y
         sta     $8F
-        lda     $0F5A,y
+        lda     HiresTableLo,y
         sta     $8E
         ldy     $12C8,x
         lda     $1354,x
@@ -3543,7 +3544,7 @@ L7A09:  .byte   $B1
 L7A0A:  ldy     $EA
         lda     HiresTableHi,y
         sta     $8F
-        lda     $0F5A,y
+        lda     HiresTableLo,y
         sta     $8E
         ldy     $B1
         lda     ($8E),y
@@ -3607,7 +3608,7 @@ L7A74:  inc     $EA
         ldy     $EA
         lda     HiresTableHi,y
         sta     $8F
-        lda     $0F5A,y
+        lda     HiresTableLo,y
         sta     $8E
         ldy     $B1
 L7A86:  dex
@@ -4936,7 +4937,7 @@ L8384:  jmp     L83E2
 
 L8387:  sta     $B5
         ldx     $E7
-L838B:  lda     $0F5A,x
+L838B:  lda     HiresTableLo,x
         sta     $8E
         lda     HiresTableHi,x
         sta     $8F
@@ -4964,7 +4965,7 @@ L838B:  lda     $0F5A,x
         rts
 
 L83B7:  ldx     #$6E
-L83B9:  lda     $0F5A,x
+L83B9:  lda     HiresTableLo,x
         sta     $8E
         lda     HiresTableHi,x
         sta     $8F
@@ -5004,7 +5005,7 @@ L83E2:  lda     #$86
 
         stx     $B2
         ldy     $E7
-        lda     $0F5A,y
+        lda     HiresTableLo,y
         sta     $8E
         lda     HiresTableHi,y
         sta     $8F
@@ -9060,7 +9061,7 @@ LA205:  tax
         clc
         adc     $8D
         sta     $3F
-        lda     $0F5A,x
+        lda     HiresTableLo,x
         sta     $B6
         sta     $3E
         ldy     #$17
@@ -10185,7 +10186,7 @@ LAD32:  lda     $C050
         lda     $C054
         ldy     #$00
         ldx     #$BF
-LAD42:  lda     $0F5A,x
+LAD42:  lda     HiresTableLo,x
         sta     $B8
         sta     $C0
         lda     HiresTableHi,x
@@ -10724,7 +10725,7 @@ LB09A:  sta     LA80D
         sty     $B6
 LB0AF:  lda     HiresTableHi,y
         sta     $A6
-        lda     $0F5A,y
+        lda     HiresTableLo,y
         sta     L00A5
         ldy     #$1D
         lda     #$82
@@ -10810,7 +10811,7 @@ LB15A:  lda     HiresTableHi,y
         clc
         adc     $8D
         sta     $A8
-        lda     $0F5A,y
+        lda     HiresTableLo,y
         sta     L00A5
         sta     $A7
         ldy     #$1D
