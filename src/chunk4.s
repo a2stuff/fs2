@@ -4409,12 +4409,16 @@ L1C03:  sta     ($8E),y
         rts
 
 ;;; Draw message to both hires screens
-;;; A,X = message (col, row, null-terminated string)
+;;; A,X = message (row, col, null-terminated string)
 
 .proc DrawMessage
         .refto DrawMessage
 
         msg_ptr := $BE
+        color_mask1 = $90
+        color_mask2 = $91
+        msg_row = $C0
+        msg_col = $C1
 
         ;; Entry point used for North/East in Slew Mode
         sta     msg_ptr
@@ -4423,7 +4427,7 @@ L1C03:  sta     ($8E),y
         adc     #$02
         bcc     :+
         inx
-:       sta     $B8
+:       sta     $B8             ; points at string
         stx     $B9
         ldy     #$00
         lda     $B7
@@ -4510,30 +4514,36 @@ DrawMessage3:
         stx     msg_ptr+1
 L1CA3:  lda     #$D5
         ldx     #$AA
-        bne     L1CAD
+        bne     L1CAD           ; always
         lda     #$AA
         ldx     #$D5
 
-L1CAD:  sta     $90
-        stx     $91
-        jsr     L1CBB
-        sta     $C0
-        stx     $C1
+L1CAD:  sta     color_mask1
+        stx     color_mask2
+        jsr     GetMessageColRow
+        sta     msg_row
+        stx     msg_col
         jmp     L1D87
 
-L1CBB:  jsr     L1CC5
+;;; Assuming pointer is at start of message, returns A=row, X=col
+.proc GetMessageColRow
+        jsr     GetMessageByte
         pha
-        jsr     L1CC5
+        jsr     GetMessageByte
         tax
         pla
         rts
+.endproc
 
-L1CC5:  ldy     #$00
+;;; Returns byte from message, incrementing `msg_ptr`
+.proc GetMessageByte
+        ldy     #$00
         lda     (msg_ptr),y
         inc     msg_ptr
-        bne     L1CCF
-        inc     $BF
-L1CCF:  rts
+        bne     :+
+        inc     msg_ptr+1
+:       rts
+.endproc
 
 L1CD0:  asl     a
         tax
@@ -4554,16 +4564,16 @@ L1CD0:  asl     a
         ldy     $C1
         lda     L123C,y
         lsr     a
-        lda     $90
-        ldy     $91
+        lda     color_mask1
+        ldy     color_mask2
         bcc     L1D06
         sta     $BC
         sty     $BD
         bne     L1D0A
 L1D06:  sta     $BD
         sty     $BC
-L1D0A:  ldy     $C0
-        ldx     $C1
+L1D0A:  ldy     msg_row
+        ldx     msg_col
         lda     HiresTableHi,y
         sta     $8F
         clc
@@ -4620,18 +4630,18 @@ L1D49:  dex
         ora     $AB
         sta     ($8E),y
         sta     ($3C),y
-        inc     $C0
+        inc     msg_row
         dec     $A7
         bne     L1D0A
-        lda     $C1
+        lda     msg_col
         clc
         adc     #$04
-        sta     $C1
-        lda     $C0
+        sta     msg_col
+        lda     msg_row
         sec
         sbc     #$05
-        sta     $C0
-L1D87:  jsr     L1CC5
+        sta     msg_row
+L1D87:  jsr     GetMessageByte
         sec
         sbc     #$20
         bmi     L1DA7
@@ -4639,6 +4649,7 @@ L1D87:  jsr     L1CC5
 
 
 ;;; Alternate entry point 1D92
+;;; If col/row are 0, no-op
 DrawMessage4:
         .refto DrawMessage4
 
