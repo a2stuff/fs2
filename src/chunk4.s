@@ -4745,7 +4745,7 @@ loop:   lda     HiresTableHi,x
         txs
         asl     $0F5A
         .byte   $1A
-        bpl     L1E01
+        bpl     $1E01
         ora     ($32),y
         ora     ($24),y
         .byte   $12
@@ -4767,7 +4767,7 @@ loop:   lda     HiresTableHi,x
         .byte   $13
         .byte   $14
         brk
-L1E01:  .byte   $20
+        .byte   $20
         brk
 L1E03:  .byte   $05
 L1E04:  brk
@@ -5064,7 +5064,7 @@ L1FB3:  brk
         ldy     #$00
         rts
 
-        lda     L1E01
+        lda     $1E01
         cmp     #$88
         bcs     L1FFB
         lsr     a
