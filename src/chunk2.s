@@ -11,6 +11,7 @@
 
         .refto __APPLE2__
 
+;;; Possible chunk4 references
 L168F           := $168F
 L1763           := $1763
 L1768           := $1768
@@ -19,6 +20,8 @@ L1818           := $1818
 L1A6E           := $1A6E
 L1D92           := $1D92
 L1DA8           := $1DA8
+
+;;; Possible chunk5 references
 L6006           := $6006
 L6C89           := $6C89
 L89D0           := $89D0

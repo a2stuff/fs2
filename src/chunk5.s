@@ -13,8 +13,9 @@
 L000E           := $000E
 L003C           := $003C
 L00A5           := $00A5
+
+;;; Possible chunk4 references
 L0300           := $0300
-L0700           := $0700
 L08AD           := $08AD
 L154A           := $154A
 L1569           := $1569
@@ -74,15 +75,14 @@ L1EB3           := $1EB3
 L1EBC           := $1EBC
 L1EC4           := $1EC4
 L1F89           := $1F89
-L2020           := $2020
-L2121           := $2121
-L4767           := $4767
-L4792           := $4792
-L4F54           := $4F54
+
+;;; Possible chunk5 references
 LB808           := $B808
 LB849           := $B849
 LB9C3           := $B9C3
 LB9CE           := $B9CE
+
+;;; Possible chunk3 references
 LD3D3           := $D3D3
 LD3D9           := $D3D9
 LD3E2           := $D3E2
@@ -104,12 +104,15 @@ LE646           := $E646
 LE667           := $E667
 LF261           := $F261
 LF3CA           := $F3CA
+
+;;; Possible chunk2 references
 LF71C           := $F71C
 LF7E2           := $F7E2
 LF97A           := $F97A
 LF9B5           := $F9B5
 LFA56           := $FA56
 LFAEC           := $FAEC
+
 L6000:  jmp     L610A
 
 L6003:  jmp     L639D
@@ -1074,7 +1077,7 @@ L66A9:  adc     #$88
         .byte   $67
         .byte   $BB
         .byte   $67
-        jmp     (L4767)
+        jmp     ($4767)
 
         adc     #$BA
         pla
@@ -4096,7 +4099,7 @@ L7DB0:  .byte   $1A
         .byte   $1C
         ora     $1E1D,x
         asl     $201F,x
-        jsr     L2121
+        jsr     $2121
         .byte   $22
         .byte   $22
         .byte   $23
@@ -4207,7 +4210,7 @@ L7E3E:  clc
         ora     $1E1D,x
         asl     $1F1E,x
         .byte   $1F
-        jsr     L2020
+        jsr     $2020
         and     ($21,x)
         and     ($22,x)
         .byte   $22
@@ -5875,20 +5878,20 @@ L88FB:  pha
         .byte   $54
         .byte   $46
         .byte   $52
-        jsr     L0700
+        jsr     $0700
         php
-        lda     L4F54
+        lda     $4F54
         lsr     $46
         brk
         .byte   $07
         php
         lda     $5454
         .byte   $4F
-        jsr     L0700
+        jsr     $0700
         php
         lda     $4654
         .byte   $52
-        jsr     L0700
+        jsr     $0700
         php
         .byte   $6C
         .byte   $7D
@@ -5959,7 +5962,7 @@ L89A9:  rts
         .byte   $52
         eor     ($53,x)
         pha
-        jsr     L2121
+        jsr     $2121
         and     ($00,x)
 L89B6:  lda     $0834
         bne     L89BC
@@ -6203,7 +6206,7 @@ L8B8A:  .byte   $47
 L8B8C:  .byte   $F7
         sta     ($0C),y
         .byte   $92
-        jmp     L4792
+        jmp     $4792
 
         .byte   $91
 L8B94:  .byte   $47

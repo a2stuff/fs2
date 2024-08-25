@@ -11,11 +11,11 @@
 
         .refto __APPLE2__
 
-L0000           := $0000
-L0020           := $0020
 L002D           := $002D
 L0045           := $0045
 L00BA           := $00BA
+
+;;; Possible chunk4 references
 L03F0           := $03F0
 L1569           := $1569
 L168F           := $168F
@@ -34,9 +34,8 @@ L1DA8           := $1DA8
 L1EC6           := $1EC6
 L1FC4           := $1FC4
 L1FE0           := $1FE0
-L2020           := $2020
-L2024           := $2024
-L2221           := $2221
+
+;;; Possible chunk5 references
 L6018           := $6018
 L601B           := $601B
 L601E           := $601E
@@ -53,11 +52,7 @@ L91DE           := $91DE
 L9CFC           := $9CFC
 L9F10           := $9F10
 LA23D           := $A23D
-LAC00           := $AC00
-LAF00           := $AF00
-LB100           := $B100
-LB600           := $B600
-LBB00           := $BB00
+
         .byte   $FF
         .byte   $FF
         brk
@@ -1743,80 +1738,80 @@ LDA53:  lda     $BE
 
         .byte   $93
         .byte   $4B
-        jsr     L2020
-        jsr     L2020
+        jsr     $2020
+        jsr     $2020
         brk
         tya
         .byte   $4B
-        jsr     L2020
-        jsr     L2020
+        jsr     $2020
+        jsr     $2020
         brk
         .byte   $9C
-        eor     L0020,x
-        jsr     L2020
+        eor     $0020,x
+        jsr     $2020
         brk
         sta     $244D,x
-        jsr     L2020
-        jsr     L0020
+        jsr     $2020
+        jsr     $0020
         ldx     #$4E
-        jsr     L2020
-        jsr     L2020
+        jsr     $2020
+        jsr     $2020
         brk
         .byte   $A7
-        lsr     L2020
-        jsr     L2020
-        jsr     LAC00
-        eor     L2024
-        jsr     L2020
-        jsr     LB100
-        eor     L2024
-        jsr     L2020
-        jsr     LB600
-        eor     L2024
-        jsr     L2020
-        jsr     LBB00
+        lsr     $2020
+        jsr     $2020
+        jsr     $AC00
+        eor     $2024
+        jsr     $2020
+        jsr     $B100
+        eor     $2024
+        jsr     $2020
+        jsr     $B600
+        eor     $2024
+        jsr     $2020
+        jsr     $BB00
         .byte   $4B
-        jsr     L2020
-        jsr     L2020
+        jsr     $2020
+        jsr     $2020
         brk
         .byte   $93
         eor     $2D3C
         and     $2D2D
         brk
         tya
-        eor     L2024
-        jsr     L2020
+        eor     $2024
+        jsr     $2020
         brk
         ldx     #$4D
-        bit     L0000
+        bit     $0000
         .byte   $A7
         eor     a:$24
         .byte   $97
-        eor     L2024
+        eor     $2024
         eor     ($44,x)
-        lsr     L0000
+        lsr     $0000
         .byte   $A3
-        eor     L2024
-        jsr     L2024
-        jsr     LAF00
+        eor     $2024
+        jsr     $2024
+        jsr     $AF00
         eor     $2D24
-        jsr     L2020
-        and     LBB00
-        eor     L2024
-        jsr     L2024
+        jsr     $2020
+        and     $BB00
+        eor     $2024
+        jsr     $2024
         brk
         .byte   $82
         pla
         eor     ($44,x)
-        lsr     L0020
+        lsr     $0020
         brk
         .byte   $89
         adc     #$20
-        jsr     L2020
+        jsr     $2020
         brk
         dey
         adc     #$20
-        jsr     L2020
+        jsr     $2020
         brk
         brk
         brk
@@ -2190,13 +2185,13 @@ LDE59:  .byte   $13
         .byte   $07
         asl     a:$07,x
         ora     ($1E),y
-        ora     (L0000),y
+        ora     ($0000),y
         asl     $1E
-        asl     L0000
+        asl     $0000
         .byte   $13
         asl     a:$13,x
         ora     $1E
-        ora     L0000
+        ora     $0000
         ora     $1E,x
         ora     $AD,x
         lsr     $09,x
@@ -2282,7 +2277,7 @@ LDEEF:  brk
         brk
         brk
         .byte   $3C
-        jsr     L0000
+        jsr     $0000
         plp
         .byte   $14
         cpy     #$01
@@ -2491,7 +2486,7 @@ LE04B:  ora     $110F
         clc
         ora     $1C1B,y
         ora     $1F1E,x
-        jsr     L2221
+        jsr     $2221
         .byte   $23
         bit     $25
         rol     $27

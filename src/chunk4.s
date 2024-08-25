@@ -10,14 +10,13 @@
         .refto __APPLE2__
 
 L002D           := $002D
-L4889           := $4889
-L796A           := $796A
+
 LA7E2           := $A7E2
 LA851           := $A851
 LB7B5           := $B7B5
 LC70D           := $C70D
 LED98           := $ED98
-LFBFE           := $FBFE
+
         sty     $C2
         .byte   $D2
         cmp     $CE,x
@@ -3221,7 +3220,7 @@ L13EE:  .byte   0, 2, 4, 6, 1, 3, 5, 7
         bpl     L1441
         .byte   $02
         php
-        jsr     LFBFE
+        jsr     $FBFE
         .byte   $EF
         .byte   $BF
         sbc     $DFF7,x
@@ -3266,7 +3265,7 @@ L1441:  .byte   $72
         sbc     ($70,x)
         lsr     $C96F,x
         adc     $6C23
-        jmp     (L796A)
+        jmp     ($796A)
 
         .byte   $67
         dec     $E766
@@ -3379,7 +3378,7 @@ L14E2:  .byte   $12
         and     $00
         bit     $C0
         ora     ($00,x)
-        jsr     L4889
+        jsr     $4889
         .byte   $6F
         .byte   $7B
         .byte   $49
