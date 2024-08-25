@@ -1734,9 +1734,7 @@ LDA53:  lda     $BE
         lda     #$24
         ldx     #$DB
         jsr     L9CFC
-        lda     #$22
-        ldx     #$DB
-        jmp     DrawMessage3
+        JUMPAX  DrawMessage3, $DB22
 
         .byte   $93
         .byte   $4B
@@ -1821,19 +1819,14 @@ LDA53:  lda     $BE
         .byte   $33
         .byte   $37
         brk
-LDB28:  lda     #$79
-        ldx     #$DA
-        jsr     DrawMessage4
+LDB28:
+        CALLAX  DrawMessage4, $DA79
         lda     #$0A
         sta     LD9E9
         ldx     #$04
         jsr     L1931
-        lda     #$22
-        ldx     #$DB
-        jsr     DrawMessage3
-        lda     #$EA
-        ldx     #$D9
-        jsr     DrawMessage3
+        CALLAX  DrawMessage3, $DB22
+        CALLAX  DrawMessage3, $D9EA
         rts
 
         lda     $08A9
@@ -1940,9 +1933,7 @@ LDC15:  lda     $FA
         rts
 
 LDC18:  sta     LD9ED,x
-        lda     #$EA
-        ldx     #$D9
-        jsr     DrawMessage3
+        CALLAX  DrawMessage3, $D9EA
         lda     LD9EE
         asl     a
         asl     a
@@ -2039,9 +2030,7 @@ LDCD9:  rts
         rts
 
 LDCE9:  jsr     ClearViewportsToBlack
-        lda     #$DB
-        ldx     #$DD
-        jsr     DrawMessage3
+        CALLAX  DrawMessage3, $DDDB
         lda     $2B
         adc     $5F
         and     #$0E
@@ -2090,9 +2079,7 @@ msg_east:
         stx     $B7
 
         ;; Draw "00000 NORTH" (slew mode)
-        lda     #<msg_north
-        ldx     #>msg_north
-        jsr     DrawMessage
+        CALLAX  DrawMessage, msg_north
 
         lda     $093E
         ldx     $093F
@@ -2100,9 +2087,7 @@ msg_east:
         stx     $B7
 
         ;; Draw "00000 EAST" (slew mode)
-        lda     #<msg_east
-        ldx     #>msg_east
-        jsr     DrawMessage
+        CALLAX  DrawMessage, msg_east
 
 LDD79:  rts
 
@@ -3005,9 +2990,7 @@ LE52C:  bne     LE4FA
 LE52E:  cmp     #$20
         beq     LE54F
         sta     L00BA
-        lda     #$B8
-        ldx     #$00
-        jsr     DrawMessage2
+        CALLAX  DrawMessage2, $00B8
         lda     #$00
         sec
         sbc     $093B
@@ -4754,36 +4737,16 @@ LF13D:  rts
         ora     #$30
         sta     LF118
         jsr     ClearViewportsToBlack
-        lda     #$00
-        ldx     #$F0
-        jsr     DrawMessage4
-        lda     #$35
-        ldx     #$F0
-        jsr     DrawMessage3
-        lda     #$4A
-        ldx     #$F0
-        jsr     DrawMessage3
-        lda     #$6E
-        ldx     #$F0
-        jsr     DrawMessage3
-        lda     #$C1
-        ldx     #$F0
-        jsr     DrawMessage3
-        lda     #$D2
-        ldx     #$F0
-        jsr     DrawMessage3
-        lda     #$E3
-        ldx     #$F0
-        jsr     DrawMessage3
-        lda     #$F4
-        ldx     #$F0
-        jsr     DrawMessage3
-        lda     #$05
-        ldx     #$F1
-        jsr     DrawMessage3
-        lda     #$16
-        ldx     #$F1
-        jsr     DrawMessage3
+        CALLAX  DrawMessage4, $F000
+        CALLAX  DrawMessage3, $F035
+        CALLAX  DrawMessage3, $F04A
+        CALLAX  DrawMessage3, $F06E
+        CALLAX  DrawMessage3, $F0C1
+        CALLAX  DrawMessage3, $F0D2
+        CALLAX  DrawMessage3, $F0E3
+        CALLAX  DrawMessage3, $F0F4
+        CALLAX  DrawMessage3, $F105
+        CALLAX  DrawMessage3, $F116
         jsr     L8743
         rts
 

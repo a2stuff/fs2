@@ -8,7 +8,7 @@ LDFLAGS = --config src/asm.cfg --warnings-as-errors
 OUTDIR = out
 
 # Headers
-HEADERS =
+HEADERS = src/macros.inc
 
 TARGETS = $(OUTDIR)/chunk1.built \
 	$(OUTDIR)/chunk2.built \

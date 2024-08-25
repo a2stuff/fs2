@@ -5972,9 +5972,7 @@ L89B6:  lda     $0834
 L89BC:  lda     #$00
         sta     $0834
         jsr     ClearViewportsToBlack
-        lda     #$AA
-        ldx     #$89
-        jsr     DrawMessage2
+        CALLAX  DrawMessage2, $89AA
         ldx     #$01
         jmp     L9093
 
@@ -6085,9 +6083,7 @@ L8AA9:  inx
         adc     #$3A
         stx     L88DF
         sta     L88E0
-        lda     #$DD
-        ldx     #$88
-        jsr     DrawMessage3
+        CALLAX  DrawMessage3, $88DD
         lda     $08F0
         bne     L8AFD
 L8AC4:  jsr     L9EFC
@@ -6101,9 +6097,7 @@ L8ACC:  inx
         adc     #$3A
         stx     L88DA
         sta     L88DB
-        lda     #$D8
-        ldx     #$88
-        jsr     DrawMessage3
+        CALLAX  DrawMessage3, $88D8
         lda     $0954
         ldx     #$2F
 L8AE7:  inx
@@ -6114,9 +6108,7 @@ L8AE7:  inx
         adc     #$3A
         stx     L88D5
         sta     L88D6
-        lda     #$D3
-        ldx     #$88
-        jsr     DrawMessage3
+        CALLAX  DrawMessage3, $88D3
 L8AFD:  rts
 
 L8AFE:  brk
@@ -8330,9 +8322,7 @@ L9C77:  lda     $FB
         lda     #$88
         ldx     #$88
         jsr     L9CFC
-        lda     #$86
-        ldx     #$88
-        jsr     DrawMessage3
+        CALLAX  DrawMessage3, $8886
         ldx     $3E
         pla
         sec
@@ -8353,9 +8343,7 @@ L9CD4:  sta     $B6
         lda     #$8E
         ldx     #$88
         jsr     L9CFC
-        lda     #$8C
-        ldx     #$88
-        jmp     DrawMessage3
+        JUMPAX  DrawMessage3, $888C
 
 L9CE6:  tay
         txa
@@ -8460,9 +8448,7 @@ L9D7A:  clc
         lda     #$94
         ldx     #$88
         jsr     L9CFC
-        lda     #$92
-        ldx     #$88
-        jmp     DrawMessage2
+        JUMPAX  DrawMessage2, $8892
 
 L9D9C:  sta     $BE
         stx     $BF
@@ -8492,9 +8478,7 @@ L9D9C:  sta     $BE
         rts
 
 L9DC3:  jsr     L9EFC
-        lda     #$9F
-        ldx     #$88
-        jsr     DrawMessage3
+        CALLAX  DrawMessage3, $889F
         lda     #$A1
         ldx     #$88
         jsr     L9D9C
@@ -8506,9 +8490,7 @@ L9DDA:  lda     #$FE
 L9DDF:  jsr     L9EFC
         lda     $097B
         bne     L9E08
-        lda     #$A6
-        ldx     #$88
-        jsr     DrawMessage3
+        CALLAX  DrawMessage3, $88A6
         lda     #$A8
         ldx     #$88
         jsr     L9D9C
@@ -8522,9 +8504,7 @@ L9DFD:  and     $08F4
 L9E08:  rts
 
 L9E09:  jsr     L9EFC
-        lda     #$98
-        ldx     #$88
-        jsr     DrawMessage3
+        CALLAX  DrawMessage3, $8898
         lda     #$9A
         ldx     #$88
         jsr     L9D9C
@@ -8553,12 +8533,8 @@ L9E49:  jsr     L9E64
         sty     L88B5
         stx     L88B6
         sta     L88B7
-        lda     #$AD
-        ldx     #$88
-        jsr     DrawMessage2
-        lda     #$B3
-        ldx     #$88
-        jsr     DrawMessage2
+        CALLAX  DrawMessage2, $88AD
+        CALLAX  DrawMessage2, $88B3
 L9E63:  rts
 
 L9E64:  ldy     #$2F
@@ -8598,12 +8574,8 @@ L9EA1:  jsr     L9E64
         sty     L88C1
         stx     L88C2
         sta     L88C3
-        lda     #$B9
-        ldx     #$88
-        jsr     DrawMessage2
-        lda     #$BF
-        ldx     #$88
-        jsr     DrawMessage2
+        CALLAX  DrawMessage2, $88B9
+        CALLAX  DrawMessage2, $88BF
 L9EBB:  rts
 
 L9EBC:  jsr     L9EFC
@@ -8625,9 +8597,8 @@ L9ED7:  inx
         adc     #$3A
         stx     L88E4
         sta     L88E5
-L9EE6:  lda     #$E2
-        ldx     #$88
-        jsr     DrawMessage3
+L9EE6:
+        CALLAX  DrawMessage3, $88E2
 L9EED:  rts
 
 L9EEE:  lda     #$20
@@ -8644,28 +8615,21 @@ L9EFC:  lda     $FC
 L9F04:  rts
 
 L9F05:  jsr     L9EFC
-        lda     #$C5
-        ldx     #$88
-        jsr     DrawMessage3
+        CALLAX  DrawMessage3, $88C5
         rts
 
-L9F10:  lda     #$F0
-        ldx     #$88
+L9F10:  LDAX    #$88F0
         ldy     $0A58
         bne     L9F23
-        lda     #$F7
-        ldx     #$88
-        jsr     DrawMessage2
+        CALLAX  DrawMessage2, $88F7
         jmp     L9F26
 
 L9F23:  jsr     DrawMessage3
 L9F26:  jsr     L9EFC
-        lda     #$E8
-        ldx     #$88
+        LDAX    #$88E8
         ldy     $0A61
         bne     L9F36
-        lda     #$EC
-        ldx     #$88
+        LDAX    #$88EC
 L9F36:  jmp     DrawMessage2
 
 L9F39:  lda     $0990
@@ -8690,9 +8654,7 @@ L9F54:  inx
         adc     #$3A
         stx     L88CE
         sta     L88CF
-        lda     #$CC
-        ldx     #$88
-        jsr     DrawMessage3
+        CALLAX  DrawMessage3, $88CC
 L9F6A:  rts
 
 L9F6B:  lda     $FB
@@ -9445,9 +9407,7 @@ LA4BE:  stx     L8930
         bcc     LA4C8
         ldx     #$58
 LA4C8:  stx     L8931
-        lda     #$2E
-        ldx     #$89
-        jmp     DrawMessage2
+        JUMPAX  DrawMessage2, $892E
 
 LA4D2:  lda     $098C
         ldx     $098D
@@ -10069,9 +10029,7 @@ LAC2F:  lda     LABCC,x
 LAC39:  rts
 
 LAC3A:  jsr     ClearViewportsToBlack
-        lda     #$00
-        ldx     #$A8
-        jsr     DrawMessage4
+        CALLAX  DrawMessage4, $A800
 LAC44:  jsr     L89D0
         cmp     #$61
         beq     LAC59
@@ -10083,9 +10041,7 @@ LAC44:  jsr     L89D0
         beq     LAC6D
         bne     LAC44
 LAC59:  jsr     ClearViewportsToBlack
-        lda     #$3A
-        ldx     #$A9
-        jsr     DrawMessage4
+        CALLAX  DrawMessage4, $A93A
         jmp     LAC44
 
 LAC66:  lda     #$65
@@ -10103,9 +10059,7 @@ LAC77:  lda     ($BE),y
         cpy     #$16
         bne     LAC77
         jsr     ClearViewportsToBlack
-        lda     #$E8
-        ldx     #$A8
-        jsr     DrawMessage4
+        CALLAX  DrawMessage4, $A8E8
 LAC8B:  jsr     L89D0
         cmp     #$41
         beq     LAC98
@@ -10114,14 +10068,10 @@ LAC8B:  jsr     L89D0
         bne     LAC8B
 LAC98:  inc     $092C
         jsr     ClearViewportsToBlack
-        lda     #$20
-        ldx     #$AA
-        jsr     DrawMessage4
+        CALLAX  DrawMessage4, $AA20
         lda     $08C6
         bne     LACB1
-        lda     #$A0
-        ldx     #$AA
-        jsr     DrawMessage4
+        CALLAX  DrawMessage4, $AAA0
 LACB1:  jsr     L89D0
 LACB4:  lda     #$00
         sta     $08A6
@@ -10408,9 +10358,7 @@ LAECC:  pla
         bne     LAEF4
         lda     #$03
         sta     $0A72
-        lda     #$3B
-        ldx     #$A8
-        jsr     DrawMessage4
+        CALLAX  DrawMessage4, $A83B
         ldx     #$00
         ldy     #$00
 LAEEE:  inx

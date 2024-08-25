@@ -56,9 +56,7 @@ LF71A:  brk
 LF71B:  brk
 
 LF71C:  jsr     ClearViewportsToBlack
-        lda     #$00
-        ldx     #$F6
-        jsr     DrawMessage4
+        CALLAX  DrawMessage4, $F600
         jsr     L89D0
         cmp     #$41
         beq     LF742
