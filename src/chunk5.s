@@ -5773,9 +5773,9 @@ L8883:  brk
 
 ;;; Instrument panel displays
 
-m8886:  MESSAGE $A1, $20, "000"
-m888C:  MESSAGE $B1, $20, "000"
-m8892:  MESSAGE $5F, $65, "000"
+msg_heading:            MESSAGE $A1, $20, "000", str_heading
+msg_recip:              MESSAGE $B1, $20, "000", str_recip
+msg_magcompass:         MESSAGE $5F, $65, "000", str_magcompass
 msg_com1:               MESSAGE $6C, $69, "2485", str_com1
 msg_nav1:               MESSAGE $7A, $69, "1000", str_nav1
 msg_nav2:               MESSAGE $88, $69, "1135", str_nav2
@@ -5788,30 +5788,31 @@ msg_rpm:                MESSAGE $B3, $7B, "2370", str_rpm
 msg_clock_hh:           MESSAGE $91, $72, "00", str_clock_hh
 msg_clock_mm:           MESSAGE $91, $7B, "00", str_clock_mm
 msg_clock_ss:           MESSAGE $91, $84, "00", str_clock_ss
-m88E2:  MESSAGE $7A, $7D, "000", s88E2
-
-m88E8:  MESSAGE $9A, $87, "1"
-m88EC:  MESSAGE $9A, $87, "G"
-
-m88F0:  MESSAGE $BB, $6E, "HEAT"
-m88F7:  MESSAGE $BB, $6E, "C.H."
+msg_dme:                MESSAGE $7A, $7D, "000", str_dme
+msg_lights_on:          MESSAGE $9A, $87, "1"
+msg_lights_off:         MESSAGE $9A, $87, "G" ; self-modified to 'O' ???
+msg_carbheat_on:        MESSAGE $BB, $6E, "HEAT"
+msg_carbheat_off:       MESSAGE $BB, $6E, "C.H."
 
         ;; Indexed, 8 bytes apart
-m88FE:  MESSAGE $82, $54, "OFF" ; vor1 flag
+msg_vor_flags:
+        ;; VOR1 flag
+        MESSAGE $82, $54, "OFF"
         .byte   $07, $08
         MESSAGE $82, $54, "TO "
         .byte   $07, $08
         MESSAGE $82, $54, "FR "
         .byte   $07, $08
 
-        MESSAGE $AD, $54, "OFF" ; vor2 flag
+        ;; VOR2 flag
+        MESSAGE $AD, $54, "OFF"
         .byte   $07, $08
         MESSAGE $AD, $54, "TO "
         .byte   $07, $08
         MESSAGE $AD, $54, "FR "
         .byte   $07, $08
 
-m892E:  MESSAGE $6C, $7D, "XX", s892E ; OMI
+msg_omi:  MESSAGE $6C, $7D, "XX", str_omi
 
 L8933:  jsr     L9DC3
         jsr     L9DDF
@@ -8209,10 +8210,9 @@ L9C77:  lda     $FB
         sta     L8881
         pha
         stx     $3E
-        lda     #$88
-        ldx     #$88
+        LDAX    #str_heading
         jsr     L9CFC
-        CALLAX  DrawMessage3, m8886
+        CALLAX  DrawMessage3, msg_heading
         ldx     $3E
         pla
         sec
@@ -8230,10 +8230,9 @@ L9C77:  lda     $FB
 L9CD3:  inx
 L9CD4:  sta     $B6
         stx     $B7
-        lda     #$8E
-        ldx     #$88
+        LDAX    #str_recip
         jsr     L9CFC
-        JUMPAX  DrawMessage3, m888C
+        JUMPAX  DrawMessage3, msg_recip
 
 L9CE6:  tay
         txa
@@ -8335,10 +8334,9 @@ L9D7A:  clc
         sta     $08B2
         stx     $08B3
         jsr     L9CE6
-        lda     #$94
-        ldx     #$88
+        LDAX    #str_magcompass
         jsr     L9CFC
-        JUMPAX  DrawMessage2, m8892
+        JUMPAX  DrawMessage2, msg_magcompass
 
 L9D9C:  sta     $BE
         stx     $BF
@@ -8476,7 +8474,7 @@ L9EBC:  jsr     L9EFC
         lda     $097F
         clc
         adc     #'0'
-        sta     s88E2+3
+        sta     str_dme+3
         lda     $0980
         ldx     #$2F
 L9ED7:  inx
@@ -8485,16 +8483,16 @@ L9ED7:  inx
         bcs     L9ED7
         clc
         adc     #$3A
-        stx     s88E2
-        sta     s88E2+1
+        stx     str_dme
+        sta     str_dme+1
 L9EE6:
-        CALLAX  DrawMessage3, m88E2
+        CALLAX  DrawMessage3, msg_dme
 L9EED:  rts
 
 L9EEE:  lda     #' '
-        sta     s88E2
-        sta     s88E2+1
-        sta     s88E2+1
+        sta     str_dme
+        sta     str_dme+1
+        sta     str_dme+1
         jmp     L9EE6
 
 L9EFC:  lda     $FC
@@ -8508,19 +8506,19 @@ L9F05:  jsr     L9EFC
         CALLAX  DrawMessage3, msg_xpndr
         rts
 
-L9F10:  LDAX    #m88F0
+L9F10:  LDAX    #msg_carbheat_on
         ldy     $0A58
         bne     L9F23
-        CALLAX  DrawMessage2, m88F7
+        CALLAX  DrawMessage2, msg_carbheat_off
         jmp     L9F26
 
 L9F23:  jsr     DrawMessage3
 L9F26:  jsr     L9EFC
-        LDAX    #m88E8
+        LDAX    #msg_lights_on
         ldy     $0A61
         bne     :+
-        LDAX    #m88EC
-:       jmp     DrawMessage2
+        LDAX    #msg_lights_off
+:       jmp     DrawMessage2    ; self-modified???
 
 L9F39:  lda     $0990
         tax
@@ -8929,9 +8927,9 @@ LA22E:  rts
 LA22F:  asl     a               ; *= 8
         asl     a
         asl     a
-        ldx     #<m88FE
+        ldx     #<msg_vor_flags
         clc
-        adc     #>m88FE
+        adc     #>msg_vor_flags
         bcc     :+
         inx
 :       jmp     DrawMessage2
@@ -9291,13 +9289,13 @@ LA4A5:  lda     #$00
         lsr     a
         bcc     LA4BE
         ldx     #'X'
-LA4BE:  stx     s892E
+LA4BE:  stx     str_omi
         ldx     #'0'
         lsr     a
         bcc     LA4C8
         ldx     #'X'
-LA4C8:  stx     s892E+1
-        JUMPAX  DrawMessage2, m892E
+LA4C8:  stx     str_omi+1
+        JUMPAX  DrawMessage2, msg_omi
 
 LA4D2:  lda     $098C
         ldx     $098D
