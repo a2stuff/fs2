@@ -6445,8 +6445,7 @@ L8D5E:  dex
         jsr     L8E10
         jmp     L8EA4
 
-L8D74:  lda     L88A8
-        ldx     L88A9
+L8D74:  LDAX    s88A6
         jsr     L8E10
         jmp     L8EB6
 
@@ -6459,8 +6458,7 @@ L8D80:  dex
         jsr     L8DFC
         jmp     L8ED2
 
-L8D96:  lda     L88AA
-        ldx     L88AB
+L8D96:  LDAX    s88A6+2
         jsr     L8DFC
         jmp     L8EE4
 
@@ -6598,11 +6596,9 @@ L8E91:  dex
 L8EA4:  STAX    s889F
         jmp     L9DC3
 
-L8EAD:  lda     L88A8
-        ldx     L88A9
+L8EAD:  LDAX    s88A6
         jsr     L8F5C
-L8EB6:  sta     L88A8
-        stx     L88A9
+L8EB6:  STAX    s88A6
         jmp     L9DDF
 
 L8EBF:  dex
@@ -6615,11 +6611,9 @@ L8EBF:  dex
 L8ED2:  STAX    s889F+2
         jmp     L9DC3
 
-L8EDB:  lda     L88AA
-        ldx     L88AB
+L8EDB:  LDAX    s88A6+2
         jsr     L8F47
-L8EE4:  sta     L88AA
-        stx     L88AB
+L8EE4:  STAX    s88A6+2
         jmp     L9DDF
 
 L8EED:  dex
