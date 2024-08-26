@@ -5777,12 +5777,8 @@ m8892:  MESSAGE $5F, $65, "000"
 m8898:  MESSAGE $6C, $69, "2485", s8898
 m889F:  MESSAGE $7A, $69, "1000", s889F
 
-L88A6:  dey
-        .byte   $69
-L88A8:  .byte   $31
-L88A9:  .byte   $31
-L88AA:  .byte   $33
-L88AB:  and     $00,x
+m88A6:  MESSAGE $88, $69, "1135", s88A6
+
         .byte   $6C
         .byte   $54
 L88AF:  .byte   $30
@@ -8452,7 +8448,7 @@ L9DDA:  lda     #$FE
 L9DDF:  jsr     L9EFC
         lda     $097B
         bne     L9E08
-        CALLAX  DrawMessage3, L88A6
+        CALLAX  DrawMessage3, m88A6
         lda     #$A8
         ldx     #$88
         jsr     L9D9C
