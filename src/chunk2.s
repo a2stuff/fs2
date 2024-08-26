@@ -11,6 +11,9 @@
 
         .refto __APPLE2__
 
+LCBANK2         := $C083
+LCBANK1         := $C08B
+
 ;;; Possible chunk4 references
 L168F           := $168F
 L1763           := $1763
@@ -263,13 +266,13 @@ LF81D:  jsr     LF8B0
 
 LF8B0:  lda     #$01
         sta     $08B0
-        lda     $C08B
-        lda     $C08B
+        lda     LCBANK1
+        lda     LCBANK1
         rts
 
 LF8BC:  lsr     $08B0
-        lda     $C083
-        lda     $C083
+        lda     LCBANK2
+        lda     LCBANK2
         rts
 
 LF8C6:  lda     LF71A

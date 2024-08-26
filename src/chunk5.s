@@ -10,6 +10,22 @@
 
         .refto __APPLE2__
 
+KBD             := $C000
+KBDSTRB         := $C010
+SPKR            := $C030
+TXTCLR          := $C050
+MIXCLR          := $C052
+LOWSCR          := $C054
+HISCR           := $C055
+HIRES           := $C057
+BUTN0           := $C061
+BUTN1           := $C062
+PADDL0          := $C064
+PADDL1          := $C065
+PTRIG           := $C070
+LCBANK2         := $C083
+RdROMWrRAM1     := $C089
+
 L000E           := $000E
 L003C           := $003C
 L00A5           := $00A5
@@ -609,9 +625,9 @@ L63A2:  lda     $0E99,x
         eor     #$C0
         sta     $8D
         bpl     L63BB
-        sta     $C054
+        sta     LOWSCR
         bmi     L63BE
-L63BB:  sta     $C055
+L63BB:  sta     HISCR
 L63BE:  lda     $8B
         ldx     $8C
         sta     $35
@@ -5916,8 +5932,8 @@ L8A06:  rts
 
         ror     $08AF
         bcs     L8A05
-        lda     $C089
-        lda     $C089
+        lda     RdROMWrRAM1
+        lda     RdROMWrRAM1
         jmp     (L08AD)
 
 L8A15:  sbc     #$11
@@ -5926,13 +5942,13 @@ L8A15:  sbc     #$11
         beq     L8A26
         lda     $099B
         beq     L8A26
-        lda     $C030
+        lda     SPKR
 L8A26:  inc     $34
-        lda     $C000
+        lda     KBD
         bpl     L8A35
         and     #$7F
         jsr     L8BEC
-        sta     $C010
+        sta     KBDSTRB
 L8A35:  lda     L8877
         cmp     L8876
         beq     L8A45
@@ -6148,12 +6164,12 @@ L8BA9:  sta     ($47),y
         sta     ($48),y
         txa
         pha
-        lda     $C000
+        lda     KBD
         .byte   $10
 L8BC7:  php
         and     #$7F
         jsr     L8BEC
-        sta     $C010
+        sta     KBDSTRB
         pla
         tax
         pla
@@ -6205,8 +6221,8 @@ L8BFE:  bmi     L8B8C
         ror     a
         jmp     L91D6
 
-L8C1E:  lda     $C061
-        ora     $C062
+L8C1E:  lda     BUTN0
+        ora     BUTN1
         bpl     L8C2F
         jsr     L8C30
         sty     L8BFB
@@ -6215,19 +6231,19 @@ L8C2F:  rts
 
 L8C30:  ldy     #$00
         ldx     #$00
-        sta     $C070
-L8C37:  lda     $C064
+        sta     PTRIG
+L8C37:  lda     PADDL0
         bpl     L8C49
         inx
         bne     L8C41
         beq     L8C53
-L8C41:  lda     $C065
+L8C41:  lda     PADDL1
         bpl     L8C56
         iny
         bne     L8C37
 L8C49:  nop
         nop
-        lda     $C065
+        lda     PADDL1
         bpl     L8C5A
         iny
         bne     L8C37
@@ -9584,7 +9600,7 @@ LA698:  sta     $9E
         ldx     LA7E1
         sta     $1E03
         stx     $1E04
-LA6CD:  lda     $C055
+LA6CD:  lda     HISCR
 LA6D0:  lda     $9E
         sta     $1E01
         jsr     L1EC4
@@ -10081,10 +10097,10 @@ LAD24:  jsr     L1EAD
         clc
 LAD31:  rts
 
-LAD32:  lda     $C050
-        lda     $C052
-        lda     $C057
-        lda     $C054
+LAD32:  lda     TXTCLR
+        lda     MIXCLR
+        lda     HIRES
+        lda     LOWSCR
         ldy     #$00
         ldx     #$BF
 LAD42:  lda     HiresTableLo,x
@@ -10201,8 +10217,8 @@ LADF8:  dec     L87A5,x
         ldx     $2087,y
         .byte   $FC
         cmp     a:$00,x
-LAE0F:  lda     $C083
-        lda     $C083
+LAE0F:  lda     LCBANK2
+        lda     LCBANK2
         ldx     #$00
 LAE17:  stx     $D000
         cpx     $D000
