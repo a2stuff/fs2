@@ -3,7 +3,6 @@
 ; Input file: ../chunks/4_0200-25ff
 ; Page:       1
 
-
         .setcpu "6502"
         .org $200
 
@@ -3343,13 +3342,19 @@ L14B2:  ora     ($01,x)
         brk
         ora     ($02,x)
         .byte   $01
-L14BE:  brk
-        .byte   $03
-        .byte   $0C
-        .byte   $0F
-        bmi     $14F7
-        .byte   $3C
-        .byte   $3F
+
+;;; Map 3 character bits to pixels (doubled)
+
+CharBitsToPixelsTable:
+        .byte   %000000
+        .byte   %000011
+        .byte   %001100
+        .byte   %001111
+        .byte   %110000
+        .byte   %110011
+        .byte   %111100
+        .byte   %111111
+
 L14C6:  .byte   $80
         sta     ($83,x)
         .byte   $87
@@ -3360,9 +3365,11 @@ L14CD:  inc     $F8FC,x
         beq     L14B2
         cpy     #$80
 
-;;; Character Table ??? (words)
+;;; Character Bitmaps
+;;; 16 bits encode 5x3 pixels; the bits are shifted out to the right
+;;; 3 at a time. Covers ASCII code point $20 (' ') through $5A ('Z')
 
-L14D4:
+CharBitmapTable:
         .word $0000, $2092, $002d, $5f7d, $2492, $588d, $0000, $0012
         .word $2922, $4494, $55d5, $25d2, $2400, $01c0, $2000, $4889
         .word $7b6f, $1249, $79cf, $73cf, $13ed, $73e7, $7be4, $124f
@@ -3370,9 +3377,15 @@ L14D4:
         .word $0000, $5f6a, $6bae, $3923, $6b6e, $79e7, $49e7, $7b27
         .word $5bed, $2492, $7249, $5bad, $7924, $5b7d, $57f5, $7b6f
         .word $49ef, $1f6f, $5def, $73e7, $2497, $7b6d, $256d, $5f6d
-        .word $5aad, $24ad, $788f, $a585, $00b5, $c285, $01b5, $c385
+        .word $5aad, $24ad, $788f
 
-
+        ;; ???
+        ;; Probably not real code, but not bitmaps for "[\]^_" either
+        sta     $A5
+        lda     $00,x
+        sta     $C2
+        lda     $01,x
+        sta     $C3
         lda     $00,y
         sta     $C4
         lda     $01,y
@@ -4493,9 +4506,9 @@ DrawCharacter:
 
         asl     a               ; *= 2
         tax
-        lda     L14D4,x         ; ???
+        lda     CharBitmapTable,x
         sta     char_word
-        lda     L14D4+1,x
+        lda     CharBitmapTable+1,x
         sta     char_word+1
         lda     #5              ; rows
         sta     char_rows
@@ -4540,6 +4553,8 @@ L1D1C:  sta     hires_ptr2+1
         sta     hires_ptr1
         sta     hires_ptr2
         ldy     L123C,x
+
+        ;; Shift 3 bits out
         lda     #$00
         lsr     char_word+1
         ror     char_word
@@ -4551,7 +4566,7 @@ L1D1C:  sta     hires_ptr2+1
         ror     char_word
         rol     a
         tax
-        lda     L14BE,x
+        lda     CharBitsToPixelsTable,x
         ldx     #$00
         stx     $AB
         ldx     $A9
@@ -4661,7 +4676,7 @@ loop:   lda     HiresTableHi,x
         rts
 .endproc
 
-;;; 1DD2 - character bitmaps???
+;;; 1DD2 ???
 
         bmi     :+
         sec
