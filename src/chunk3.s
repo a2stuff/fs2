@@ -2763,8 +2763,7 @@ LE2C7:
         .addr   mE097
         .addr   mE09B
 
-        .byte   $20
-        stx     $1C,y
+        jsr     DrawMessage2
         lda     $0A62
         asl     a
         tax
