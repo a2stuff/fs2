@@ -4715,7 +4715,7 @@ L81F6:  lda     ($8B),y
         sbc     $6A
         sta     $A2
         lda     ($8B),y
-L8200:  iny
+        iny
         sbc     $6B
         bvs     L8207
         cmp     #$80
@@ -5791,22 +5791,12 @@ m88E2:  MESSAGE $7A, $7D, "000", s88E2
 m88E8:  MESSAGE $9A, $87, "1"
 m88EC:  MESSAGE $9A, $87, "G"
 
-        .byte   $BB
-        .byte   $6E
-        pha
-        eor     $41
-        .byte   $54
-        brk
-        .byte   $BB
-        ror     $2E43
-        pha
-        rol     L8200
-        .byte   $54
-        .byte   $4F
-        lsr     $46
-        brk
-        .byte   $07
-        php
+m88F0:  MESSAGE $BB, $6E, "HEAT"
+m88F7:  MESSAGE $BB, $6E, "C.H."
+m88FE:  MESSAGE $82, $54, "OFF"
+        .refto m88FE
+
+        .byte   $07, $08
         .byte   $82
         .byte   $54
         .byte   $54
@@ -8534,10 +8524,10 @@ L9F05:  jsr     L9EFC
         CALLAX  DrawMessage3, m88C5
         rts
 
-L9F10:  LDAX    #$88F0
+L9F10:  LDAX    #m88F0
         ldy     $0A58
         bne     L9F23
-        CALLAX  DrawMessage2, $88F7
+        CALLAX  DrawMessage2, m88F7
         jmp     L9F26
 
 L9F23:  jsr     DrawMessage3
