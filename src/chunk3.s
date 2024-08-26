@@ -29,9 +29,9 @@ L180C           := $180C
 L1931           := $1931
 L1AD2           := $1AD2
 DrawMessage     := $1C0C
-DrawMessage2    := $1C96
-DrawMessage3    := $1C9F
-DrawMessage4    := $1D92
+DrawMessageWhite    := $1C96
+DrawMessageOrange    := $1C9F
+DrawMultiMessage    := $1D92
 ClearViewportsToBlack   := $1DA8
 L1EC6           := $1EC6
 L1FC4           := $1FC4
@@ -1730,7 +1730,7 @@ LDA53:  lda     $BE
         lda     #$24
         ldx     #$DB
         jsr     L9CFC
-        JUMPAX  DrawMessage3, mDB22
+        JUMPAX  DrawMessageOrange, mDB22
 
 mDA79:  MESSAGE $93, $4B, "      "
         tya
@@ -1811,13 +1811,13 @@ mDA79:  MESSAGE $93, $4B, "      "
 mDB22:  MESSAGE $9D, $55, "237"
 
 LDB28:
-        CALLAX  DrawMessage4, mDA79
+        CALLAX  DrawMultiMessage, mDA79
         lda     #$0A
         sta     LD9E9
         ldx     #$04
         jsr     L1931
-        CALLAX  DrawMessage3, mDB22
-        CALLAX  DrawMessage3, mD9EA
+        CALLAX  DrawMessageOrange, mDB22
+        CALLAX  DrawMessageOrange, mD9EA
         rts
 
         lda     $08A9
@@ -1924,7 +1924,7 @@ LDC15:  lda     $FA
         rts
 
 LDC18:  sta     sD9EA+1,x
-        CALLAX  DrawMessage3, mD9EA
+        CALLAX  DrawMessageOrange, mD9EA
         lda     sD9EA+2
         asl     a
         asl     a
@@ -2021,7 +2021,7 @@ LDCD9:  rts
         rts
 
 LDCE9:  jsr     ClearViewportsToBlack
-        CALLAX  DrawMessage3, msg_problem
+        CALLAX  DrawMessageOrange, msg_problem
         lda     $2B
         adc     $5F
         and     #$0E
@@ -2127,7 +2127,7 @@ LDE07:  and     #$06
         ldx     crash_msg_table+1,y
         ldy     #$00
         sty     $0834
-LDE15:  jsr     DrawMessage2
+LDE15:  jsr     DrawMessageWhite
         ldx     #$FF
         jsr     LE311
         ldx     #$01
@@ -2763,7 +2763,7 @@ LE2C7:
         .addr   mE097
         .addr   mE09B
 
-        jsr     DrawMessage2
+        jsr     DrawMessageWhite
         lda     $0A62
         asl     a
         tax
@@ -2772,7 +2772,7 @@ LE2C7:
         lda     LE2C7+1,x
         tax
         pla
-        jsr     DrawMessage2
+        jsr     DrawMessageWhite
         rts
 
         lda     $FA
@@ -2980,7 +2980,7 @@ LE52C:  bne     LE4FA
 LE52E:  cmp     #$20
         beq     LE54F
         sta     L00BA
-        CALLAX  DrawMessage2, $00B8
+        CALLAX  DrawMessageWhite, $00B8
         lda     #$00
         sec
         sbc     $093B
@@ -4727,16 +4727,16 @@ LF13D:  rts
         ora     #$30
         sta     LF118
         jsr     ClearViewportsToBlack
-        CALLAX  DrawMessage4, msg_wr1
-        CALLAX  DrawMessage3, msg_wr2
-        CALLAX  DrawMessage3, msg_wr3
-        CALLAX  DrawMessage3, msg_wr4
-        CALLAX  DrawMessage3, msg_wr5
-        CALLAX  DrawMessage3, msg_wr6
-        CALLAX  DrawMessage3, msg_wr7
-        CALLAX  DrawMessage3, msg_wr8
-        CALLAX  DrawMessage3, msg_wr9
-        CALLAX  DrawMessage3, msg_wr10
+        CALLAX  DrawMultiMessage, msg_wr1
+        CALLAX  DrawMessageOrange, msg_wr2
+        CALLAX  DrawMessageOrange, msg_wr3
+        CALLAX  DrawMessageOrange, msg_wr4
+        CALLAX  DrawMessageOrange, msg_wr5
+        CALLAX  DrawMessageOrange, msg_wr6
+        CALLAX  DrawMessageOrange, msg_wr7
+        CALLAX  DrawMessageOrange, msg_wr8
+        CALLAX  DrawMessageOrange, msg_wr9
+        CALLAX  DrawMessageOrange, msg_wr10
         jsr     L8743
         rts
 

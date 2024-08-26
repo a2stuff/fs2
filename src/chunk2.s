@@ -18,7 +18,7 @@ L1768           := $1768
 L180C           := $180C
 L1818           := $1818
 L1A6E           := $1A6E
-DrawMessage4    := $1D92
+DrawMultiMessage    := $1D92
 ClearViewportsToBlack   := $1DA8
 
 ;;; Possible chunk5 references
@@ -57,7 +57,7 @@ LF71A:  brk
 LF71B:  brk
 
 LF71C:  jsr     ClearViewportsToBlack
-        CALLAX  DrawMessage4, msg_courseplotter
+        CALLAX  DrawMultiMessage, msg_courseplotter
         jsr     L89D0
         cmp     #$41
         beq     LF742

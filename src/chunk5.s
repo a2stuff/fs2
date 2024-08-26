@@ -66,9 +66,9 @@ L1B6D           := $1B6D
 L1B80           := $1B80
 L1B9F           := $1B9F
 L1C73           := $1C73
-DrawMessage2    := $1C96
-DrawMessage3    := $1C9F
-DrawMessage4    := $1D92
+DrawMessageWhite    := $1C96
+DrawMessageOrange    := $1C9F
+DrawMultiMessage    := $1D92
 ClearViewportsToBlack   := $1DA8
 L1EAD           := $1EAD
 L1EB0           := $1EB0
@@ -5881,7 +5881,7 @@ L89B6:  lda     $0834
 L89BC:  lda     #$00
         sta     $0834
         jsr     ClearViewportsToBlack
-        CALLAX  DrawMessage2, msg_crash
+        CALLAX  DrawMessageWhite, msg_crash
         ldx     #$01
         jmp     L9093
 
@@ -5992,7 +5992,7 @@ L8AA9:  inx
         adc     #$3A
         stx     str_clock_ss
         sta     str_clock_ss+1
-        CALLAX  DrawMessage3, msg_clock_ss
+        CALLAX  DrawMessageOrange, msg_clock_ss
         lda     $08F0
         bne     L8AFD
 L8AC4:  jsr     L9EFC
@@ -6006,7 +6006,7 @@ L8ACC:  inx
         adc     #$3A
         stx     str_clock_mm
         sta     str_clock_mm+1
-        CALLAX  DrawMessage3, msg_clock_mm
+        CALLAX  DrawMessageOrange, msg_clock_mm
         lda     $0954
         ldx     #$2F
 L8AE7:  inx
@@ -6017,7 +6017,7 @@ L8AE7:  inx
         adc     #$3A
         stx     str_clock_hh
         sta     str_clock_hh+1
-        CALLAX  DrawMessage3, msg_clock_hh
+        CALLAX  DrawMessageOrange, msg_clock_hh
 L8AFD:  rts
 
 L8AFE:  brk
@@ -8212,7 +8212,7 @@ L9C77:  lda     $FB
         stx     $3E
         LDAX    #str_heading
         jsr     L9CFC
-        CALLAX  DrawMessage3, msg_heading
+        CALLAX  DrawMessageOrange, msg_heading
         ldx     $3E
         pla
         sec
@@ -8232,7 +8232,7 @@ L9CD4:  sta     $B6
         stx     $B7
         LDAX    #str_recip
         jsr     L9CFC
-        JUMPAX  DrawMessage3, msg_recip
+        JUMPAX  DrawMessageOrange, msg_recip
 
 L9CE6:  tay
         txa
@@ -8336,7 +8336,7 @@ L9D7A:  clc
         jsr     L9CE6
         LDAX    #str_magcompass
         jsr     L9CFC
-        JUMPAX  DrawMessage2, msg_magcompass
+        JUMPAX  DrawMessageWhite, msg_magcompass
 
 L9D9C:  sta     $BE
         stx     $BF
@@ -8366,7 +8366,7 @@ L9D9C:  sta     $BE
         rts
 
 L9DC3:  jsr     L9EFC
-        CALLAX  DrawMessage3, msg_nav1
+        CALLAX  DrawMessageOrange, msg_nav1
         lda     #$A1
         ldx     #$88
         jsr     L9D9C
@@ -8378,7 +8378,7 @@ L9DDA:  lda     #$FE
 L9DDF:  jsr     L9EFC
         lda     $097B
         bne     L9E08
-        CALLAX  DrawMessage3, msg_nav2
+        CALLAX  DrawMessageOrange, msg_nav2
         lda     #$A8
         ldx     #$88
         jsr     L9D9C
@@ -8392,7 +8392,7 @@ L9DFD:  and     $08F4
 L9E08:  rts
 
 L9E09:  jsr     L9EFC
-        CALLAX  DrawMessage3, msg_com1
+        CALLAX  DrawMessageOrange, msg_com1
         lda     #$9A
         ldx     #$88
         jsr     L9D9C
@@ -8421,8 +8421,8 @@ L9E49:  jsr     L9E64
         sty     str_vor1_recip
         stx     str_vor1_recip+1
         sta     str_vor1_recip+2
-        CALLAX  DrawMessage2, msg_vor1_course
-        CALLAX  DrawMessage2, msg_vor1_recip
+        CALLAX  DrawMessageWhite, msg_vor1_course
+        CALLAX  DrawMessageWhite, msg_vor1_recip
 L9E63:  rts
 
 L9E64:  ldy     #$2F
@@ -8462,8 +8462,8 @@ L9EA1:  jsr     L9E64
         sty     str_vor2_recip
         stx     str_vor2_recip+1
         sta     str_vor2_recip+2
-        CALLAX  DrawMessage2, msg_vor2_course
-        CALLAX  DrawMessage2, msg_vor2_recip
+        CALLAX  DrawMessageWhite, msg_vor2_course
+        CALLAX  DrawMessageWhite, msg_vor2_recip
 L9EBB:  rts
 
 L9EBC:  jsr     L9EFC
@@ -8486,7 +8486,7 @@ L9ED7:  inx
         stx     str_dme
         sta     str_dme+1
 L9EE6:
-        CALLAX  DrawMessage3, msg_dme
+        CALLAX  DrawMessageOrange, msg_dme
 L9EED:  rts
 
 L9EEE:  lda     #' '
@@ -8503,22 +8503,22 @@ L9EFC:  lda     $FC
 L9F04:  rts
 
 L9F05:  jsr     L9EFC
-        CALLAX  DrawMessage3, msg_xpndr
+        CALLAX  DrawMessageOrange, msg_xpndr
         rts
 
 L9F10:  LDAX    #msg_carbheat_on
         ldy     $0A58
         bne     L9F23
-        CALLAX  DrawMessage2, msg_carbheat_off
+        CALLAX  DrawMessageWhite, msg_carbheat_off
         jmp     L9F26
 
-L9F23:  jsr     DrawMessage3
+L9F23:  jsr     DrawMessageOrange
 L9F26:  jsr     L9EFC
         LDAX    #msg_lights_on
         ldy     $0A61
         bne     :+
         LDAX    #msg_lights_off
-:       jmp     DrawMessage2    ; self-modified???
+:       jmp     DrawMessageWhite    ; self-modified???
 
 L9F39:  lda     $0990
         tax
@@ -8542,7 +8542,7 @@ L9F54:  inx
         adc     #$3A
         stx     str_rpm
         sta     str_rpm+1
-        CALLAX  DrawMessage3, msg_rpm
+        CALLAX  DrawMessageOrange, msg_rpm
 L9F6A:  rts
 
 L9F6B:  lda     $FB
@@ -8932,7 +8932,7 @@ LA22F:  asl     a               ; *= 8
         adc     #<msg_vor_flags
         bcc     :+
         inx
-:       jmp     DrawMessage2
+:       jmp     DrawMessageWhite
 
 LA23D:  lda     $63
         sec
@@ -9295,7 +9295,7 @@ LA4BE:  stx     str_omi
         bcc     LA4C8
         ldx     #'X'
 LA4C8:  stx     str_omi+1
-        JUMPAX  DrawMessage2, msg_omi
+        JUMPAX  DrawMessageWhite, msg_omi
 
 LA4D2:  lda     $098C
         ldx     $098D
@@ -9927,7 +9927,7 @@ LAC2F:  lda     LABCC,x
 LAC39:  rts
 
 LAC3A:  jsr     ClearViewportsToBlack
-        CALLAX  DrawMessage4, msg_intro
+        CALLAX  DrawMultiMessage, msg_intro
 LAC44:  jsr     L89D0
         cmp     #'a'
         beq     LAC59
@@ -9939,7 +9939,7 @@ LAC44:  jsr     L89D0
         beq     LAC6D
         bne     LAC44
 LAC59:  jsr     ClearViewportsToBlack
-        CALLAX  DrawMessage4, msg_lowercase
+        CALLAX  DrawMultiMessage, msg_lowercase
         jmp     LAC44
 
 LAC66:  lda     #$65
@@ -9957,7 +9957,7 @@ LAC77:  lda     ($BE),y
         cpy     #$16
         bne     LAC77
         jsr     ClearViewportsToBlack
-        CALLAX  DrawMessage4, msg_select_mode
+        CALLAX  DrawMultiMessage, msg_select_mode
 LAC8B:  jsr     L89D0
         cmp     #$41
         beq     LAC98
@@ -9966,10 +9966,10 @@ LAC8B:  jsr     L89D0
         bne     LAC8B
 LAC98:  inc     $092C
         jsr     ClearViewportsToBlack
-        CALLAX  DrawMessage4, msg_demo
+        CALLAX  DrawMultiMessage, msg_demo
         lda     $08C6
         bne     LACB1
-        CALLAX  DrawMessage4, msg_48k_demo
+        CALLAX  DrawMultiMessage, msg_48k_demo
 LACB1:  jsr     L89D0
 LACB4:  lda     #$00
         sta     $08A6
@@ -10250,13 +10250,13 @@ LAECC:  pla
         rts
 
         tay
-        jsr     DrawMessage4
+        jsr     DrawMultiMessage
         lda     $0A72
         cmp     #$01
         bne     LAEF4
         lda     #$03
         sta     $0A72
-        CALLAX  DrawMessage4, $A83B ; In middle of another MESSAGE ???
+        CALLAX  DrawMultiMessage, $A83B ; In middle of another MESSAGE ???
         ldx     #$00
         ldy     #$00
 LAEEE:  inx

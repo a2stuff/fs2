@@ -4500,10 +4500,9 @@ L1C90:  ldy     $A7
         sta     ($B8),y
         rts
 
-;;; Alternate entry point 1C96
 ;;; Color mask is white
-DrawMessage2:
-        .refto DrawMessage2
+DrawMessageWhite:
+        .refto DrawMessageWhite
 
         sta     msg_ptr
         stx     msg_ptr+1
@@ -4511,10 +4510,9 @@ L1C9A:  lda     #$7F
         tax
         bne     L1CAD           ; always
 
-;;; Alternate entry point 1C9F
 ;;; Color mask is orange
-DrawMessage3:
-        .refto DrawMessage3
+DrawMessageOrange:
+        .refto DrawMessageOrange
 
         sta     msg_ptr
         stx     msg_ptr+1
@@ -4671,10 +4669,9 @@ NextCharacter:
         bmi     L1DA7           ; end of string
         jmp     DrawCharacter
 
-;;; Alternate entry point 1D92
-;;; If col/row are 0, no-op
-DrawMessage4:
-        .refto DrawMessage4
+;;; Draws multiple message, until sentinel is reached
+DrawMultiMessage:
+        .refto DrawMultiMessage
 
         sta     msg_ptr
         stx     msg_ptr+1
@@ -4769,6 +4766,7 @@ loop:   lda     HiresTableHi,x
         brk
         .byte   $20
         brk
+
 L1E03:  .byte   $05
 L1E04:  brk
         brk
@@ -5049,6 +5047,7 @@ L1FB3:  brk
         brk
         brk
         brk
+
         lda     L1E03
         sta     $A5
         lda     L1E04
