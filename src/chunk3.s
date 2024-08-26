@@ -1668,6 +1668,7 @@ LD9E8:  brk
 LD9E9:  .byte   $FF
 
 mD9EA:  MESSAGE $88, $67, " 287", sD9EA
+
         lda     $097B
         beq     LDA52
         lsr     LD9E5
@@ -2100,16 +2101,19 @@ LDD94:  lda     $089B
         sta     $0919
 LDDA6:  rts
 
-LDDA7:          MESSAGE $32, $14, "MOUNTAIN CRASH"
-                MESSAGE $32, $14, "CRASH"
-LDDC0:          MESSAGE $32, $14, "BUILDING CRASH"
-                MESSAGE $32, $14, "SPLASH!"
-msg_problem:    MESSAGE $32, $14, "AIRCRAFT PROBLEM !!!!"
+msg_mountain_crash:     MESSAGE $32, $14, "MOUNTAIN CRASH"
+msg_crash:              MESSAGE $32, $14, "CRASH"
+msg_building_crash:     MESSAGE $32, $14, "BUILDING CRASH"
+msg_splash:             MESSAGE $32, $14, "SPLASH!"
+msg_problem:            MESSAGE $32, $14, "AIRCRAFT PROBLEM !!!!"
 
-LDDF3:  clv
-LDDF4:  cmp     LDDA7,x
-        clv
-        cmp     LDDC0,x
+;;; Address table
+crash_msg_table:
+        .addr   msg_crash
+        .addr   msg_mountain_crash
+        .addr   msg_crash
+        .addr   msg_building_crash
+
 LDDFB:  brk
         lda     $0834
         bne     LDE07
@@ -2119,8 +2123,8 @@ LDDFB:  brk
 
 LDE07:  and     #$06
         tay
-        lda     LDDF3,y
-        ldx     LDDF4,y
+        lda     crash_msg_table,y
+        ldx     crash_msg_table+1,y
         ldy     #$00
         sty     $0834
 LDE15:  jsr     DrawMessage2
@@ -2143,8 +2147,7 @@ LDE22:  lda     $2A36
         lda     LDDFB
         cmp     #$05
         bne     LDE51
-        lda     #$D1
-        ldx     #$DD
+        LDAX    #msg_splash
         jmp     LDE15
 
 LDE4C:  lda     #$00
@@ -2473,7 +2476,7 @@ LE04B:  ora     $110F
         .byte   $2B
         bit     $2E2D
         .byte   $2F
-        bmi     LE09B
+        bmi     $E09B
         .byte   $32
 LE06B:  brk
         .byte   $03
@@ -2495,21 +2498,14 @@ LE06B:  brk
         and     $3D3B,y
         .byte   $3F
         eor     ($43,x)
-        lsr     $9A
-        ror     $4F,x
-        brk
-        txs
-        ror     $4C,x
-        brk
-        txs
-        ror     $52,x
-        brk
-        txs
-        ror     $42,x
-        brk
-LE09B:  txs
-        ror     $53,x
-        brk
+        .byte   $46
+
+mE08B:  MESSAGE $9A, $76, "O"
+mE08F:  MESSAGE $9A, $76, "L"
+mE093:  MESSAGE $9A, $76, "R"
+mE097:  MESSAGE $9A, $76, "B"
+mE09B:  MESSAGE $9A, $76, "S"
+
         lda     $093A
         bne     LE0C8
         lda     $0938
@@ -2758,19 +2754,23 @@ LE2AD:  lda     #$00
 LE2C1:  stx     $0A62
         jmp     L9F10
 
-LE2C7:  .byte   $8B
-LE2C8:  cpx     #$8F
-        cpx     #$93
-        cpx     #$97
-        cpx     #$9B
-        cpx     #$20
+;;; Message table
+
+LE2C7:
+        .addr   mE08B
+        .addr   mE08F
+        .addr   mE093
+        .addr   mE097
+        .addr   mE09B
+
+        .byte   $20
         stx     $1C,y
         lda     $0A62
         asl     a
         tax
         lda     LE2C7,x
         pha
-        lda     LE2C8,x
+        lda     LE2C7+1,x
         tax
         pla
         jsr     DrawMessage2
