@@ -5771,21 +5771,23 @@ L8883:  brk
         brk
         brk
 
+;;; Instrument panel displays
+
 m8886:  MESSAGE $A1, $20, "000"
 m888C:  MESSAGE $B1, $20, "000"
 m8892:  MESSAGE $5F, $65, "000"
-m8898:  MESSAGE $6C, $69, "2485", s8898
-m889F:  MESSAGE $7A, $69, "1000", s889F
-m88A6:  MESSAGE $88, $69, "1135", s88A6
-m88AD:  MESSAGE $6C, $54, "000", s88AD
-m88B3:  MESSAGE $8C, $54, "000", s88B3
-m88B9:  MESSAGE $97, $54, "000", s88B9
-m88BF:  MESSAGE $B7, $54, "000", s88BF
-m88C5:  MESSAGE $88, $7B, "1200", s88C5
-m88CC:  MESSAGE $B3, $7B, "2370", s88CC
-m88D3:  MESSAGE $91, $72, "00", s88D3
-m88D8:  MESSAGE $91, $7B, "00", s88D8
-m88DD:  MESSAGE $91, $84, "00", s88DD
+msg_com1:               MESSAGE $6C, $69, "2485", str_com1
+msg_nav1:               MESSAGE $7A, $69, "1000", str_nav1
+msg_nav2:               MESSAGE $88, $69, "1135", str_nav2
+msg_vor1_course:        MESSAGE $6C, $54, "000", str_vor1_course
+msg_vor1_recip:         MESSAGE $8C, $54, "000", str_vor1_recip
+msg_vor2_course:        MESSAGE $97, $54, "000", str_vor2_course
+msg_vor2_recip:         MESSAGE $B7, $54, "000", str_vor2_recip
+msg_xpndr:              MESSAGE $88, $7B, "1200", str_xpndr
+msg_rpm:                MESSAGE $B3, $7B, "2370", str_rpm
+msg_clock_hh:           MESSAGE $91, $72, "00", str_clock_hh
+msg_clock_mm:           MESSAGE $91, $7B, "00", str_clock_mm
+msg_clock_ss:           MESSAGE $91, $84, "00", str_clock_ss
 m88E2:  MESSAGE $7A, $7D, "000", s88E2
 
 m88E8:  MESSAGE $9A, $87, "1"
@@ -5795,21 +5797,21 @@ m88F0:  MESSAGE $BB, $6E, "HEAT"
 m88F7:  MESSAGE $BB, $6E, "C.H."
 
         ;; Indexed, 8 bytes apart
-m88FE:  MESSAGE $82, $54, "OFF"
+m88FE:  MESSAGE $82, $54, "OFF" ; vor1 flag
         .byte   $07, $08
         MESSAGE $82, $54, "TO "
         .byte   $07, $08
         MESSAGE $82, $54, "FR "
         .byte   $07, $08
 
-        MESSAGE $AD, $54, "OFF"
+        MESSAGE $AD, $54, "OFF" ; vor2 flag
         .byte   $07, $08
         MESSAGE $AD, $54, "TO "
         .byte   $07, $08
         MESSAGE $AD, $54, "FR "
         .byte   $07, $08
 
-m892E:  MESSAGE $6C, $7D, "XX", s892E
+m892E:  MESSAGE $6C, $7D, "XX", s892E ; OMI
 
 L8933:  jsr     L9DC3
         jsr     L9DDF
@@ -5987,9 +5989,9 @@ L8AA9:  inx
         bcs     L8AA9
         clc
         adc     #$3A
-        stx     s88DD
-        sta     s88DD+1
-        CALLAX  DrawMessage3, m88DD
+        stx     str_clock_ss
+        sta     str_clock_ss+1
+        CALLAX  DrawMessage3, msg_clock_ss
         lda     $08F0
         bne     L8AFD
 L8AC4:  jsr     L9EFC
@@ -6001,9 +6003,9 @@ L8ACC:  inx
         bcs     L8ACC
         clc
         adc     #$3A
-        stx     s88D8
-        sta     s88D8+1
-        CALLAX  DrawMessage3, m88D8
+        stx     str_clock_mm
+        sta     str_clock_mm+1
+        CALLAX  DrawMessage3, msg_clock_mm
         lda     $0954
         ldx     #$2F
 L8AE7:  inx
@@ -6012,9 +6014,9 @@ L8AE7:  inx
         bcs     L8AE7
         clc
         adc     #$3A
-        stx     s88D3
-        sta     s88D3+1
-        CALLAX  DrawMessage3, m88D3
+        stx     str_clock_hh
+        sta     str_clock_hh+1
+        CALLAX  DrawMessage3, msg_clock_hh
 L8AFD:  rts
 
 L8AFE:  brk
@@ -6350,7 +6352,7 @@ L8D28:  sec
         sbc     #$02
         tax
         bne     L8D4F
-        LDAX    s8898
+        LDAX    str_com1
         cmp     #$31
         bne     L8D42
         cpx     #$38
@@ -6368,7 +6370,7 @@ L8D4C:  jmp     L8E73
 
 L8D4F:  dex
         bne     L8D5E
-        LDAX    s8898+2
+        LDAX    str_com1+2
         jsr     L8DFC
         jmp     L8E88
 
@@ -6377,11 +6379,11 @@ L8D5E:  dex
         lda     $0A63
         cmp     #$02
         beq     L8D74
-        LDAX    s889F
+        LDAX    str_nav1
         jsr     L8E10
         jmp     L8EA4
 
-L8D74:  LDAX    s88A6
+L8D74:  LDAX    str_nav2
         jsr     L8E10
         jmp     L8EB6
 
@@ -6390,24 +6392,24 @@ L8D80:  dex
         lda     $0A63
         cmp     #$02
         beq     L8D96
-        LDAX    s889F+2
+        LDAX    str_nav1+2
         jsr     L8DFC
         jmp     L8ED2
 
-L8D96:  LDAX    s88A6+2
+L8D96:  LDAX    str_nav2+2
         jsr     L8DFC
         jmp     L8EE4
 
 L8DA2:  dex
         cpx     #$04
         bcs     L8DB9
-        lda     s88C5,x
+        lda     str_xpndr,x
         cmp     #'0'
         bne     L8DB0
         lda     #'8'
 L8DB0:  sec
         sbc     #$01
-        sta     s88C5,x
+        sta     str_xpndr,x
         jmp     L9F05
 
 L8DB9:  dex
@@ -6498,7 +6500,7 @@ L8E4F:  sec
         sbc     #$02
         tax
         bne     L8E7C
-        LDAX    s8898
+        LDAX    str_com1
         cmp     #$33
         bne     L8E69
         cpx     #$35
@@ -6512,14 +6514,14 @@ L8E69:  inx
         ldx     #$30
         clc
         adc     #$01
-L8E73:  STAX    s8898
+L8E73:  STAX    str_com1
         jmp     L8E8E
 
 L8E7C:  dex
         bne     L8E91
-        LDAX    s8898+2
+        LDAX    str_com1+2
         jsr     L8F47
-L8E88:  STAX    s8898+2
+L8E88:  STAX    str_com1+2
 L8E8E:  jmp     L9E09
 
 L8E91:  dex
@@ -6527,14 +6529,14 @@ L8E91:  dex
         lda     $0A63
         cmp     #$02
         beq     L8EAD
-        LDAX    s889F
+        LDAX    str_nav1
         jsr     L8F5C
-L8EA4:  STAX    s889F
+L8EA4:  STAX    str_nav1
         jmp     L9DC3
 
-L8EAD:  LDAX    s88A6
+L8EAD:  LDAX    str_nav2
         jsr     L8F5C
-L8EB6:  STAX    s88A6
+L8EB6:  STAX    str_nav2
         jmp     L9DDF
 
 L8EBF:  dex
@@ -6542,26 +6544,26 @@ L8EBF:  dex
         lda     $0A63
         cmp     #$02
         beq     L8EDB
-        LDAX    s889F+2
+        LDAX    str_nav1+2
         jsr     L8F47
-L8ED2:  STAX    s889F+2
+L8ED2:  STAX    str_nav1+2
         jmp     L9DC3
 
-L8EDB:  LDAX    s88A6+2
+L8EDB:  LDAX    str_nav2+2
         jsr     L8F47
-L8EE4:  STAX    s88A6+2
+L8EE4:  STAX    str_nav2+2
         jmp     L9DDF
 
 L8EED:  dex
         cpx     #$04
         bcs     L8F04
-        lda     s88C5,x
+        lda     str_xpndr,x
         cmp     #$37
         bne     L8EFB
         lda     #$2F
 L8EFB:  clc
         adc     #$01
-        sta     s88C5,x
+        sta     str_xpndr,x
         jmp     L9F05
 
 L8F04:  dex
@@ -8366,7 +8368,7 @@ L9D9C:  sta     $BE
         rts
 
 L9DC3:  jsr     L9EFC
-        CALLAX  DrawMessage3, m889F
+        CALLAX  DrawMessage3, msg_nav1
         lda     #$A1
         ldx     #$88
         jsr     L9D9C
@@ -8378,7 +8380,7 @@ L9DDA:  lda     #$FE
 L9DDF:  jsr     L9EFC
         lda     $097B
         bne     L9E08
-        CALLAX  DrawMessage3, m88A6
+        CALLAX  DrawMessage3, msg_nav2
         lda     #$A8
         ldx     #$88
         jsr     L9D9C
@@ -8392,7 +8394,7 @@ L9DFD:  and     $08F4
 L9E08:  rts
 
 L9E09:  jsr     L9EFC
-        CALLAX  DrawMessage3, m8898
+        CALLAX  DrawMessage3, msg_com1
         lda     #$9A
         ldx     #$88
         jsr     L9D9C
@@ -8408,9 +8410,9 @@ L9E29:  lda     $FB
         beq     L9E63
         lda     L8880
         jsr     L9E64
-        sty     s88AD
-        stx     s88AD+1
-        sta     s88AD+2
+        sty     str_vor1_course
+        stx     str_vor1_course+1
+        sta     str_vor1_course+2
         lda     L8880
         sec
         sbc     #$5A
@@ -8418,11 +8420,11 @@ L9E29:  lda     $FB
         clc
         adc     #$B4
 L9E49:  jsr     L9E64
-        sty     s88B3
-        stx     s88B3+1
-        sta     s88B3+2
-        CALLAX  DrawMessage2, m88AD
-        CALLAX  DrawMessage2, m88B3
+        sty     str_vor1_recip
+        stx     str_vor1_recip+1
+        sta     str_vor1_recip+2
+        CALLAX  DrawMessage2, msg_vor1_course
+        CALLAX  DrawMessage2, msg_vor1_recip
 L9E63:  rts
 
 L9E64:  ldy     #$2F
@@ -8449,9 +8451,9 @@ L9E7C:  lda     $097B
         beq     L9EBB
         lda     L8883
         jsr     L9E64
-        sty     s88B9
-        stx     s88B9+1
-        sta     s88B9+2
+        sty     str_vor2_course
+        stx     str_vor2_course+1
+        sta     str_vor2_course+2
         lda     L8883
         sec
         sbc     #$5A
@@ -8459,11 +8461,11 @@ L9E7C:  lda     $097B
         clc
         adc     #$B4
 L9EA1:  jsr     L9E64
-        sty     s88BF
-        stx     s88BF+1
-        sta     s88BF+2
-        CALLAX  DrawMessage2, m88B9
-        CALLAX  DrawMessage2, m88BF
+        sty     str_vor2_recip
+        stx     str_vor2_recip+1
+        sta     str_vor2_recip+2
+        CALLAX  DrawMessage2, msg_vor2_course
+        CALLAX  DrawMessage2, msg_vor2_recip
 L9EBB:  rts
 
 L9EBC:  jsr     L9EFC
@@ -8503,7 +8505,7 @@ L9EFC:  lda     $FC
 L9F04:  rts
 
 L9F05:  jsr     L9EFC
-        CALLAX  DrawMessage3, m88C5
+        CALLAX  DrawMessage3, msg_xpndr
         rts
 
 L9F10:  LDAX    #m88F0
@@ -8531,7 +8533,7 @@ L9F39:  lda     $0990
         lda     #$30
         bcc     L9F4E
         lda     #$35
-L9F4E:  sta     s88CC+3
+L9F4E:  sta     str_rpm+3
         txa
         ldx     #$2F
 L9F54:  inx
@@ -8540,9 +8542,9 @@ L9F54:  inx
         bcs     L9F54
         clc
         adc     #$3A
-        stx     s88CC
-        sta     s88CC+1
-        CALLAX  DrawMessage3, m88CC
+        stx     str_rpm
+        sta     str_rpm+1
+        CALLAX  DrawMessage3, msg_rpm
 L9F6A:  rts
 
 L9F6B:  lda     $FB
