@@ -5770,28 +5770,13 @@ L8882:  brk
 L8883:  brk
         brk
         brk
-        lda     ($20,x)
-        bmi     L88BA
-        bmi     L888C
-L888C:  lda     ($20),y
-        bmi     L88C0
-        bmi     L8892
-L8892:  .byte   $5F
-        adc     $30
-        bmi     L88C7
-        brk
-        .byte   $6C
-        .byte   $69
-L889A:  .byte   $32
-L889B:  .byte   $34
-L889C:  sec
-L889D:  and     $00,x
-        .byte   $7A
-        .byte   $69
-L88A1:  .byte   $31
-L88A2:  .byte   $30
-L88A3:  .byte   $30
-L88A4:  bmi     L88A6
+
+m8886:  MESSAGE $A1, $20, "000"
+m888C:  MESSAGE $B1, $20, "000"
+m8892:  MESSAGE $5F, $65, "000"
+m8898:  MESSAGE $6C, $69, "2485", s8898
+m889F:  MESSAGE $7A, $69, "1000", s889F
+
 L88A6:  dey
         .byte   $69
 L88A8:  .byte   $31
@@ -5809,12 +5794,12 @@ L88B5:  .byte   $30
 L88B6:  .byte   $30
 L88B7:  bmi     * + (2)
         .byte   $97
-L88BA:  .byte   $54
+        .byte   $54
 L88BB:  .byte   $30
 L88BC:  .byte   $30
 L88BD:  bmi     L88BF
 L88BF:  .byte   $B7
-L88C0:  .byte   $54
+        .byte   $54
 L88C1:  .byte   $30
 L88C2:  .byte   $30
 L88C3:  bmi     L88C5
@@ -5828,18 +5813,13 @@ L88C7:  and     ($32),y
 L88CE:  .byte   $32
 L88CF:  .byte   $33
 L88D0:  .byte   $37
-        bmi     L88D3
-L88D3:  .byte   $91
-        .byte   $72
-L88D5:  .byte   $30
-L88D6:  bmi     * + (2)
-        sta     ($7B),y
-L88DA:  .byte   $30
-L88DB:  bmi     * + (2)
-        sta     ($84),y
-L88DF:  .byte   $30
-L88E0:  bmi     L88E2
-L88E2:  .byte   $7A
+        bmi     *+1
+
+m88D3:  MESSAGE $91, $72, "00", s88D3
+m88D8:  MESSAGE $91, $7B, "00", s88D8
+m88DD:  MESSAGE $91, $84, "00", s88DD
+
+        .byte   $7A
         .byte   $7D
 L88E4:  .byte   $30
 L88E5:  .byte   $30
@@ -5957,14 +5937,8 @@ L89A1:  lda     #$03
         sta     $60
 L89A9:  rts
 
-        .byte   $32
-        .byte   $14
-        .byte   $43
-        .byte   $52
-        eor     ($53,x)
-        pha
-        jsr     $2121
-        and     ($00,x)
+msg_crash:      MESSAGE $32, $14, "CRASH !!!"
+
 L89B6:  lda     $0834
         bne     L89BC
         rts
@@ -5972,7 +5946,7 @@ L89B6:  lda     $0834
 L89BC:  lda     #$00
         sta     $0834
         jsr     ClearViewportsToBlack
-        CALLAX  DrawMessage2, $89AA
+        CALLAX  DrawMessage2, msg_crash
         ldx     #$01
         jmp     L9093
 
@@ -6081,9 +6055,9 @@ L8AA9:  inx
         bcs     L8AA9
         clc
         adc     #$3A
-        stx     L88DF
-        sta     L88E0
-        CALLAX  DrawMessage3, $88DD
+        stx     s88DD
+        sta     s88DD+1
+        CALLAX  DrawMessage3, m88DD
         lda     $08F0
         bne     L8AFD
 L8AC4:  jsr     L9EFC
@@ -6095,9 +6069,9 @@ L8ACC:  inx
         bcs     L8ACC
         clc
         adc     #$3A
-        stx     L88DA
-        sta     L88DB
-        CALLAX  DrawMessage3, $88D8
+        stx     s88D8
+        sta     s88D8+1
+        CALLAX  DrawMessage3, m88D8
         lda     $0954
         ldx     #$2F
 L8AE7:  inx
@@ -6106,9 +6080,9 @@ L8AE7:  inx
         bcs     L8AE7
         clc
         adc     #$3A
-        stx     L88D5
-        sta     L88D6
-        CALLAX  DrawMessage3, $88D3
+        stx     s88D3
+        sta     s88D3+1
+        CALLAX  DrawMessage3, m88D3
 L8AFD:  rts
 
 L8AFE:  brk
@@ -6444,8 +6418,7 @@ L8D28:  sec
         sbc     #$02
         tax
         bne     L8D4F
-        lda     L889A
-        ldx     L889B
+        LDAX    s8898
         cmp     #$31
         bne     L8D42
         cpx     #$38
@@ -6463,8 +6436,7 @@ L8D4C:  jmp     L8E73
 
 L8D4F:  dex
         bne     L8D5E
-        lda     L889C
-        ldx     L889D
+        LDAX    s8898+2
         jsr     L8DFC
         jmp     L8E88
 
@@ -6473,8 +6445,7 @@ L8D5E:  dex
         lda     $0A63
         cmp     #$02
         beq     L8D74
-        lda     L88A1
-        ldx     L88A2
+        LDAX    s889F
         jsr     L8E10
         jmp     L8EA4
 
@@ -6488,8 +6459,7 @@ L8D80:  dex
         lda     $0A63
         cmp     #$02
         beq     L8D96
-        lda     L88A3
-        ldx     L88A4
+        LDAX    s889F+2
         jsr     L8DFC
         jmp     L8ED2
 
@@ -6598,8 +6568,7 @@ L8E4F:  sec
         sbc     #$02
         tax
         bne     L8E7C
-        lda     L889A
-        ldx     L889B
+        LDAX    s8898
         cmp     #$33
         bne     L8E69
         cpx     #$35
@@ -6613,17 +6582,14 @@ L8E69:  inx
         ldx     #$30
         clc
         adc     #$01
-L8E73:  sta     L889A
-        stx     L889B
+L8E73:  STAX    s8898
         jmp     L8E8E
 
 L8E7C:  dex
         bne     L8E91
-        lda     L889C
-        ldx     L889D
+        LDAX    s8898+2
         jsr     L8F47
-L8E88:  sta     L889C
-        stx     L889D
+L8E88:  STAX    s8898+2
 L8E8E:  jmp     L9E09
 
 L8E91:  dex
@@ -6631,11 +6597,9 @@ L8E91:  dex
         lda     $0A63
         cmp     #$02
         beq     L8EAD
-        lda     L88A1
-        ldx     L88A2
+        LDAX    s889F
         jsr     L8F5C
-L8EA4:  sta     L88A1
-        stx     L88A2
+L8EA4:  STAX    s889F
         jmp     L9DC3
 
 L8EAD:  lda     L88A8
@@ -6650,11 +6614,9 @@ L8EBF:  dex
         lda     $0A63
         cmp     #$02
         beq     L8EDB
-        lda     L88A3
-        ldx     L88A4
+        LDAX    s889F+2
         jsr     L8F47
-L8ED2:  sta     L88A3
-        stx     L88A4
+L8ED2:  STAX    s889F+2
         jmp     L9DC3
 
 L8EDB:  lda     L88AA
@@ -8322,7 +8284,7 @@ L9C77:  lda     $FB
         lda     #$88
         ldx     #$88
         jsr     L9CFC
-        CALLAX  DrawMessage3, $8886
+        CALLAX  DrawMessage3, m8886
         ldx     $3E
         pla
         sec
@@ -8343,7 +8305,7 @@ L9CD4:  sta     $B6
         lda     #$8E
         ldx     #$88
         jsr     L9CFC
-        JUMPAX  DrawMessage3, $888C
+        JUMPAX  DrawMessage3, m888C
 
 L9CE6:  tay
         txa
@@ -8448,7 +8410,7 @@ L9D7A:  clc
         lda     #$94
         ldx     #$88
         jsr     L9CFC
-        JUMPAX  DrawMessage2, $8892
+        JUMPAX  DrawMessage2, m8892
 
 L9D9C:  sta     $BE
         stx     $BF
@@ -8478,7 +8440,7 @@ L9D9C:  sta     $BE
         rts
 
 L9DC3:  jsr     L9EFC
-        CALLAX  DrawMessage3, $889F
+        CALLAX  DrawMessage3, m889F
         lda     #$A1
         ldx     #$88
         jsr     L9D9C
@@ -8490,7 +8452,7 @@ L9DDA:  lda     #$FE
 L9DDF:  jsr     L9EFC
         lda     $097B
         bne     L9E08
-        CALLAX  DrawMessage3, $88A6
+        CALLAX  DrawMessage3, L88A6
         lda     #$A8
         ldx     #$88
         jsr     L9D9C
@@ -8504,7 +8466,7 @@ L9DFD:  and     $08F4
 L9E08:  rts
 
 L9E09:  jsr     L9EFC
-        CALLAX  DrawMessage3, $8898
+        CALLAX  DrawMessage3, m8898
         lda     #$9A
         ldx     #$88
         jsr     L9D9C
@@ -9865,6 +9827,7 @@ LAAB5   := $AAB5
 
         .assert * = $A800, error, "location mismatch"
 
+msg_intro:
         MESSAGE $0C, $0D, "SUBLOGIC FLIGHT SIMULATOR II"
         MESSAGE $14, $2D, "VERSION 2.0"
         MESSAGE $1C, $08, "COPYRIGHT 1984 BY BRUCE ARTWICK"
@@ -9875,28 +9838,33 @@ LAAB5   := $AAB5
         MESSAGE $58, $0A, "(TYPE A OR B)"
         .byte   0, 0
 
+msg_select_mode:
         MESSAGE $28, $0A, "SELECT OPERATING MODE"
         MESSAGE $30, $0A, "A. DEMO MODE"
         MESSAGE $38, $0A, "B. REGULAR FLIGHT MODE"
         MESSAGE $4C, $0A, "(TYPE A OR B)"
         .byte   0, 0
 
+msg_lowercase:
         MESSAGE $0C, $0A, "A LOWER CASE CHARACTER WAS TYPED."
         MESSAGE $14, $0A, "IF YOU ARE USING AN APPLE IIE"
         MESSAGE $1C, $0A, "MAKE SURE THE CAPS LOCK KEY"
         MESSAGE $24, $0A, "IS PRESSED."
+
         MESSAGE $32, $0A, "WHAT DISPLAY ARE YOU USING?"
         MESSAGE $3C, $0A, "A. COLOR TV OR COMPOSITE MONITOR"
         MESSAGE $44, $0A, "B. BLACK AND WHITE TV OR MONITOR"
         MESSAGE $58, $0A, "(TYPE A OR B)"
         .byte   0, 0
 
+msg_demo:
         MESSAGE $0C, $0A, "DEMO RUNS CONTINUOUSLY. PRESS"
         MESSAGE $14, $0A, "THE K KEY TO BREAK OUT OF DEMO"
         MESSAGE $1C, $0A, "AND RESUME NORMAL FLIGHT."
         MESSAGE $32, $0A, "PRESS ANY KEY TO CONTINUE....."
         .byte   0, 0
 
+msg_48k_demo:
         MESSAGE $0C, $0A, "SIMPLE 48K DEMO ACTIVATED. THE"
         MESSAGE $14, $0A, "AIRCRAFT WILL TAKE OFF AND FLY"
         MESSAGE $1C, $0A, "STRAIGHT ONLY. A BETTER DEMO IS"
@@ -9958,6 +9926,10 @@ LAB91:  nop
         bcs     LABB4
         jsr     LA6F9
         bcs     LABB4
+
+.assert * = $ABAE, error, "mismatch"
+
+;;; Per @qkumba, this is entry point after all chunks are loaded
         jsr     LAE9F
         jmp     LABBA
 
@@ -10029,19 +10001,19 @@ LAC2F:  lda     LABCC,x
 LAC39:  rts
 
 LAC3A:  jsr     ClearViewportsToBlack
-        CALLAX  DrawMessage4, $A800
+        CALLAX  DrawMessage4, msg_intro
 LAC44:  jsr     L89D0
-        cmp     #$61
+        cmp     #'a'
         beq     LAC59
-        cmp     #$62
+        cmp     #'b'
         beq     LAC59
-        cmp     #$41
+        cmp     #'A'
         beq     LAC66
-        cmp     #$42
+        cmp     #'B'
         beq     LAC6D
         bne     LAC44
 LAC59:  jsr     ClearViewportsToBlack
-        CALLAX  DrawMessage4, $A93A
+        CALLAX  DrawMessage4, msg_lowercase
         jmp     LAC44
 
 LAC66:  lda     #$65
@@ -10059,7 +10031,7 @@ LAC77:  lda     ($BE),y
         cpy     #$16
         bne     LAC77
         jsr     ClearViewportsToBlack
-        CALLAX  DrawMessage4, $A8E8
+        CALLAX  DrawMessage4, msg_select_mode
 LAC8B:  jsr     L89D0
         cmp     #$41
         beq     LAC98
@@ -10068,10 +10040,10 @@ LAC8B:  jsr     L89D0
         bne     LAC8B
 LAC98:  inc     $092C
         jsr     ClearViewportsToBlack
-        CALLAX  DrawMessage4, $AA20
+        CALLAX  DrawMessage4, msg_demo
         lda     $08C6
         bne     LACB1
-        CALLAX  DrawMessage4, $AAA0
+        CALLAX  DrawMessage4, msg_48k_demo
 LACB1:  jsr     L89D0
 LACB4:  lda     #$00
         sta     $08A6
@@ -10358,7 +10330,7 @@ LAECC:  pla
         bne     LAEF4
         lda     #$03
         sta     $0A72
-        CALLAX  DrawMessage4, $A83B
+        CALLAX  DrawMessage4, $A83B ; In middle of another MESSAGE ???
         ldx     #$00
         ldy     #$00
 LAEEE:  inx

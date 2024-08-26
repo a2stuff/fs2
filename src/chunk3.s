@@ -1666,13 +1666,8 @@ LD9E6:  brk
 LD9E7:  brk
 LD9E8:  brk
 LD9E9:  .byte   $FF
-        dey
-        .byte   $67
-        .byte   $20
-LD9ED:  .byte   $32
-LD9EE:  sec
-LD9EF:  .byte   $37
-        brk
+
+mD9EA:  MESSAGE $88, $67, " 287", sD9EA
         lda     $097B
         beq     LDA52
         lsr     LD9E5
@@ -1734,13 +1729,9 @@ LDA53:  lda     $BE
         lda     #$24
         ldx     #$DB
         jsr     L9CFC
-        JUMPAX  DrawMessage3, $DB22
+        JUMPAX  DrawMessage3, mDB22
 
-        .byte   $93
-        .byte   $4B
-        jsr     $2020
-        jsr     $2020
-        brk
+mDA79:  MESSAGE $93, $4B, "      "
         tya
         .byte   $4B
         jsr     $2020
@@ -1815,18 +1806,17 @@ LDA53:  lda     $BE
         brk
         brk
         brk
-        sta     $3255,x
-        .byte   $33
-        .byte   $37
-        brk
+
+mDB22:  MESSAGE $9D, $55, "237"
+
 LDB28:
-        CALLAX  DrawMessage4, $DA79
+        CALLAX  DrawMessage4, mDA79
         lda     #$0A
         sta     LD9E9
         ldx     #$04
         jsr     L1931
-        CALLAX  DrawMessage3, $DB22
-        CALLAX  DrawMessage3, $D9EA
+        CALLAX  DrawMessage3, mDB22
+        CALLAX  DrawMessage3, mD9EA
         rts
 
         lda     $08A9
@@ -1889,7 +1879,7 @@ LDBAE:  jmp     L9071
         sec
         sbc     #$0D
         tax
-        lda     LD9ED,x
+        lda     sD9EA,x
         cmp     #$30
         bne     LDBCD
         lda     #$3A
@@ -1914,7 +1904,7 @@ LDBD3:  lda     $FA
         sec
         sbc     #$0D
         tax
-        lda     LD9ED,x
+        lda     sD9EA,x
         cmp     #$39
         bne     LDBFF
         lda     #$2F
@@ -1932,19 +1922,19 @@ LDC11:  txa
 LDC15:  lda     $FA
         rts
 
-LDC18:  sta     LD9ED,x
-        CALLAX  DrawMessage3, $D9EA
-        lda     LD9EE
+LDC18:  sta     sD9EA,x
+        CALLAX  DrawMessage3, mD9EA
+        lda     sD9EA+1
         asl     a
         asl     a
         asl     a
         asl     a
         sta     $B7
-        lda     LD9EF
+        lda     sD9EA+2
         and     #$0F
         ora     $B7
         sta     LD9E7
-        lda     LD9ED
+        lda     sD9EA
         and     #$0F
         sta     LD9E8
         ldx     #$00
@@ -2030,7 +2020,7 @@ LDCD9:  rts
         rts
 
 LDCE9:  jsr     ClearViewportsToBlack
-        CALLAX  DrawMessage3, $DDDB
+        CALLAX  DrawMessage3, msg_problem
         lda     $2B
         adc     $5F
         and     #$0E
@@ -2110,11 +2100,12 @@ LDD94:  lda     $089B
         sta     $0919
 LDDA6:  rts
 
-LDDA7:  MESSAGE $32, $14, "MOUNTAIN CRASH"
-        MESSAGE $32, $14, "CRASH"
-LDDC0:  MESSAGE $32, $14, "BUILDING CRASH"
-        MESSAGE $32, $14, "SPLASH!"
-        MESSAGE $32, $14, "AIRCRAFT PROBLEM !!!!"
+LDDA7:          MESSAGE $32, $14, "MOUNTAIN CRASH"
+                MESSAGE $32, $14, "CRASH"
+LDDC0:          MESSAGE $32, $14, "BUILDING CRASH"
+                MESSAGE $32, $14, "SPLASH!"
+msg_problem:    MESSAGE $32, $14, "AIRCRAFT PROBLEM !!!!"
+
 LDDF3:  clv
 LDDF4:  cmp     LDDA7,x
         clv
@@ -4658,34 +4649,34 @@ LEFA4:  lda     L0045
         inc     $FFFF,x
         .byte   0, 0
 
-        MESSAGE $00, $18, "***** WAR REPORT *****"
-        MESSAGE $0C, $04, "ENEMY PLANES SHOT DOWN = "
-        MESSAGE $0C, $68, "000"
-        MESSAGE $12, $04, "BOMB HITS = "
-        MESSAGE $12, $34, "000"
-        MESSAGE $18, $04, "AIRCRAFT DAMAGE BY ENEMY = "
-        MESSAGE $18, $70, "000"
-        MESSAGE $24, $04, "ENEMY STATUS: 0=SHOT DOWN"
-        MESSAGE $2A, $3C, "1=RETURNING OR HOME"
-        MESSAGE $30, $3C, "2=ATTACKING"
+msg_wr1:        MESSAGE $00, $18, "***** WAR REPORT *****"
+                MESSAGE $0C, $04, "ENEMY PLANES SHOT DOWN = "
+msg_wr2:        MESSAGE $0C, $68, "000"
+                MESSAGE $12, $04, "BOMB HITS = "
+msg_wr3:        MESSAGE $12, $34, "000"
+                MESSAGE $18, $04, "AIRCRAFT DAMAGE BY ENEMY = "
+msg_wr4:        MESSAGE $18, $70, "000"
+                MESSAGE $24, $04, "ENEMY STATUS: 0=SHOT DOWN"
+                MESSAGE $2A, $3C, "1=RETURNING OR HOME"
+                MESSAGE $30, $3C, "2=ATTACKING"
 
-        MESSAGE $3C, $04, "ENEMY 1 = "
-        MESSAGE $3C, $2C, "0", LF0C3
+                MESSAGE $3C, $04, "ENEMY 1 = "
+msg_wr5:        MESSAGE $3C, $2C, "0", LF0C3
 
-        MESSAGE $3C, $3C, "ENEMY 2 = "
-        MESSAGE $3C, $64, "0", LF0D4
+                MESSAGE $3C, $3C, "ENEMY 2 = "
+msg_wr6:        MESSAGE $3C, $64, "0", LF0D4
 
-        MESSAGE $42, $04, "ENEMY 3 = "
-        MESSAGE $42, $2C, "0", LF0E5
+                MESSAGE $42, $04, "ENEMY 3 = "
+msg_wr7:        MESSAGE $42, $2C, "0", LF0E5
 
-        MESSAGE $42, $3C, "ENEMY 4 = "
-        MESSAGE $42, $64, "0", LF0F6
+                MESSAGE $42, $3C, "ENEMY 4 = "
+msg_wr8:        MESSAGE $42, $64, "0", LF0F6
 
-        MESSAGE $48, $04, "ENEMY 5 = "
-        MESSAGE $48, $2C, "0", LF107
+                MESSAGE $48, $04, "ENEMY 5 = "
+msg_wr9:        MESSAGE $48, $2C, "0", LF107
 
-        MESSAGE $48, $3C, "ENEMY 6 = "
-        MESSAGE $48, $64, "0", LF118
+                MESSAGE $48, $3C, "ENEMY 6 = "
+msg_wr10:       MESSAGE $48, $64, "0", LF118
 
         MESSAGE $54, $00, "PRESS ANY KEY TO RESUME BATTLE"
         .byte   0, 0
@@ -4737,16 +4728,16 @@ LF13D:  rts
         ora     #$30
         sta     LF118
         jsr     ClearViewportsToBlack
-        CALLAX  DrawMessage4, $F000
-        CALLAX  DrawMessage3, $F035
-        CALLAX  DrawMessage3, $F04A
-        CALLAX  DrawMessage3, $F06E
-        CALLAX  DrawMessage3, $F0C1
-        CALLAX  DrawMessage3, $F0D2
-        CALLAX  DrawMessage3, $F0E3
-        CALLAX  DrawMessage3, $F0F4
-        CALLAX  DrawMessage3, $F105
-        CALLAX  DrawMessage3, $F116
+        CALLAX  DrawMessage4, msg_wr1
+        CALLAX  DrawMessage3, msg_wr2
+        CALLAX  DrawMessage3, msg_wr3
+        CALLAX  DrawMessage3, msg_wr4
+        CALLAX  DrawMessage3, msg_wr5
+        CALLAX  DrawMessage3, msg_wr6
+        CALLAX  DrawMessage3, msg_wr7
+        CALLAX  DrawMessage3, msg_wr8
+        CALLAX  DrawMessage3, msg_wr9
+        CALLAX  DrawMessage3, msg_wr10
         jsr     L8743
         rts
 

@@ -61,3 +61,10 @@ label:                          ; optional label
         _op_hi ldx, {arg}
     .endif
 .endmacro
+
+;;; Store A,X
+;;;    STAX $1234       ; absolute
+.macro STAX arg
+        sta     arg
+        stx     arg+1
+.endmacro

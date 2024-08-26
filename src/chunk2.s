@@ -35,6 +35,7 @@ LA23D           := $A23D
 LA4D2           := $A4D2
 
 
+msg_courseplotter:
         MESSAGE $0C, $0A, "**** COURSE PLOTTER SYSTEM ****"
         MESSAGE $14, $2D, " "
         MESSAGE $1C, $06, "A. BEGIN NORMAL COURSE RECORDING"
@@ -56,7 +57,7 @@ LF71A:  brk
 LF71B:  brk
 
 LF71C:  jsr     ClearViewportsToBlack
-        CALLAX  DrawMessage4, $F600
+        CALLAX  DrawMessage4, msg_courseplotter
         jsr     L89D0
         cmp     #$41
         beq     LF742
