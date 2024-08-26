@@ -5788,13 +5788,9 @@ m88D8:  MESSAGE $91, $7B, "00", s88D8
 m88DD:  MESSAGE $91, $84, "00", s88DD
 m88E2:  MESSAGE $7A, $7D, "000", s88E2
 
-        txs
-        .byte   $87
-        and     ($00),y
-        txs
-        .byte   $87
-        .byte   $4F
-        brk
+m88E8:  MESSAGE $9A, $87, "1"
+m88EC:  MESSAGE $9A, $87, "G"
+
         .byte   $BB
         .byte   $6E
         pha
@@ -8546,11 +8542,11 @@ L9F10:  LDAX    #$88F0
 
 L9F23:  jsr     DrawMessage3
 L9F26:  jsr     L9EFC
-        LDAX    #$88E8
+        LDAX    #m88E8
         ldy     $0A61
-        bne     L9F36
-        LDAX    #$88EC
-L9F36:  jmp     DrawMessage2
+        bne     :+
+        LDAX    #m88EC
+:       jmp     DrawMessage2
 
 L9F39:  lda     $0990
         tax
