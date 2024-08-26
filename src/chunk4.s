@@ -3321,7 +3321,7 @@ L148D:  ora     $C7,x
         .byte   $FC
         .byte   $3F
         .byte   $7C
-        bvs     L14E2
+        bvs     $14E2
         ror     $6078,x
         brk
         ora     ($07,x)
@@ -3347,7 +3347,7 @@ L14BE:  brk
         .byte   $03
         .byte   $0C
         .byte   $0F
-        bmi     L14F7
+        bmi     $14F7
         .byte   $3C
         .byte   $3F
 L14C6:  .byte   $80
@@ -3362,83 +3362,17 @@ L14CD:  inc     $F8FC,x
 
 ;;; Character Table ??? (words)
 
-L14D4:  brk
-        brk
-        .byte   $92
-        jsr     L002D
-        adc     $925F,x
-        bit     $8D
-        cli
-        brk
-        brk
-L14E2:  .byte   $12
-        brk
-        .byte   $22
-        and     #$94
-        .byte   $44
-        cmp     $55,x
-        .byte   $D2
-        and     $00
-        bit     $C0
-        ora     ($00,x)
-        jsr     $4889
-        .byte   $6F
-        .byte   $7B
-        .byte   $49
-L14F7:  .byte   $12
-        .byte   $CF
-        adc     $73CF,y
-        sbc     $E713
-        .byte   $73
-        cpx     $7B
-        .byte   $4F
-        .byte   $12
-        .byte   $EF
-        .byte   $7B
-        .byte   $EF
-        .byte   $13
-        bpl     L150E
-        bpl     L1530
-        cpy     #$24
-L150E:  sec
-        asl     a:$00
-        ror     a
-        bit     $00
-        brk
-        ror     a
-        .byte   $5F
-        ldx     $236B
-        and     $6B6E,y
-        .byte   $E7
-        adc     $49E7,y
-        .byte   $27
-        .byte   $7B
-        sbc     $925B
-        bit     $49
-        .byte   $72
-        lda     $245B
-        adc     $5B7D,y
-L1530:  sbc     $57,x
-        .byte   $6F
-        .byte   $7B
-        .byte   $EF
-        eor     #$6F
-        .byte   $1F
-        .byte   $EF
-        eor     $73E7,x
-        .byte   $97
-        bit     $6D
-        .byte   $7B
-        adc     $6D25
-        .byte   $5F
-        lda     $AD5A
-        bit     $8F
-        sei
-        sta     $A5
-        lda     $00,x
-        sta     $C2
-        lda     $01,x
-        sta     $C3
+L14D4:
+        .word $0000, $2092, $002d, $5f7d, $2492, $588d, $0000, $0012
+        .word $2922, $4494, $55d5, $25d2, $2400, $01c0, $2000, $4889
+        .word $7b6f, $1249, $79cf, $73cf, $13ed, $73e7, $7be4, $124f
+        .word $7bef, $13ef, $0410, $2410, $24c0, $0e38, $0000, $246a
+        .word $0000, $5f6a, $6bae, $3923, $6b6e, $79e7, $49e7, $7b27
+        .word $5bed, $2492, $7249, $5bad, $7924, $5b7d, $57f5, $7b6f
+        .word $49ef, $1f6f, $5def, $73e7, $2497, $7b6d, $256d, $5f6d
+        .word $5aad, $24ad, $788f, $a585, $00b5, $c285, $01b5, $c385
+
+
         lda     $00,y
         sta     $C4
         lda     $01,y
