@@ -5782,24 +5782,13 @@ m88B3:  MESSAGE $8C, $54, "000", s88B3
 m88B9:  MESSAGE $97, $54, "000", s88B9
 m88BF:  MESSAGE $B7, $54, "000", s88BF
 m88C5:  MESSAGE $88, $7B, "1200", s88C5
-
-        .byte   $B3
-        .byte   $7B
-L88CE:  .byte   $32
-L88CF:  .byte   $33
-L88D0:  .byte   $37
-        bmi     *+1
-
+m88CC:  MESSAGE $B3, $7B, "2370", s88CC
 m88D3:  MESSAGE $91, $72, "00", s88D3
 m88D8:  MESSAGE $91, $7B, "00", s88D8
 m88DD:  MESSAGE $91, $84, "00", s88DD
+m88E2:  MESSAGE $7A, $7D, "000", s88E2
 
-        .byte   $7A
-        .byte   $7D
-L88E4:  .byte   $30
-L88E5:  .byte   $30
-L88E6:  bmi     L88E8
-L88E8:  txs
+        txs
         .byte   $87
         and     ($00),y
         txs
@@ -8516,8 +8505,8 @@ L9EBC:  jsr     L9EFC
         bne     L9EEE
         lda     $097F
         clc
-        adc     #$30
-        sta     L88E6
+        adc     #'0'
+        sta     s88E2+3
         lda     $0980
         ldx     #$2F
 L9ED7:  inx
@@ -8526,16 +8515,16 @@ L9ED7:  inx
         bcs     L9ED7
         clc
         adc     #$3A
-        stx     L88E4
-        sta     L88E5
+        stx     s88E2
+        sta     s88E2+1
 L9EE6:
-        CALLAX  DrawMessage3, $88E2
+        CALLAX  DrawMessage3, m88E2
 L9EED:  rts
 
-L9EEE:  lda     #$20
-        sta     L88E4
-        sta     L88E5
-        sta     L88E6
+L9EEE:  lda     #' '
+        sta     s88E2
+        sta     s88E2+1
+        sta     s88E2+1
         jmp     L9EE6
 
 L9EFC:  lda     $FC
@@ -8574,7 +8563,7 @@ L9F39:  lda     $0990
         lda     #$30
         bcc     L9F4E
         lda     #$35
-L9F4E:  sta     L88D0
+L9F4E:  sta     s88CC+3
         txa
         ldx     #$2F
 L9F54:  inx
@@ -8583,9 +8572,9 @@ L9F54:  inx
         bcs     L9F54
         clc
         adc     #$3A
-        stx     L88CE
-        sta     L88CF
-        CALLAX  DrawMessage3, $88CC
+        stx     s88CC
+        sta     s88CC+1
+        CALLAX  DrawMessage3, m88CC
 L9F6A:  rts
 
 L9F6B:  lda     $FB
