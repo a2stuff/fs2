@@ -3370,14 +3370,14 @@ L14CD:  inc     $F8FC,x
 ;;; 3 at a time. Covers ASCII code point $20 (' ') through $5A ('Z')
 
 CharBitmapTable:
-        .word $0000, $2092, $002d, $5f7d, $2492, $588d, $0000, $0012
-        .word $2922, $4494, $55d5, $25d2, $2400, $01c0, $2000, $4889
-        .word $7b6f, $1249, $79cf, $73cf, $13ed, $73e7, $7be4, $124f
-        .word $7bef, $13ef, $0410, $2410, $24c0, $0e38, $0000, $246a
-        .word $0000, $5f6a, $6bae, $3923, $6b6e, $79e7, $49e7, $7b27
-        .word $5bed, $2492, $7249, $5bad, $7924, $5b7d, $57f5, $7b6f
-        .word $49ef, $1f6f, $5def, $73e7, $2497, $7b6d, $256d, $5f6d
-        .word $5aad, $24ad, $788f
+        .word $0000, $2092, $002d, $5f7d, $2492, $588d, $0000, $0012 ;  !"#$%&'
+        .word $2922, $4494, $55d5, $25d2, $2400, $01c0, $2000, $4889 ; ()*+,-./
+        .word $7b6f, $1249, $79cf, $73cf, $13ed, $73e7, $7be4, $124f ; 01234567
+        .word $7bef, $13ef, $0410, $2410, $24c0, $0e38, $0000, $246a ; 89:;<=>?
+        .word $0000, $5f6a, $6bae, $3923, $6b6e, $79e7, $49e7, $7b27 ; @ABCDEFG
+        .word $5bed, $2492, $7249, $5bad, $7924, $5b7d, $57f5, $7b6f ; HIJKLMNO
+        .word $49ef, $1f6f, $5def, $73e7, $2497, $7b6d, $256d, $5f6d ; PQRSTUVW
+        .word $5aad, $24ad, $788f                                    ; XYZ
 
         ;; ???
         ;; Probably not real code, but not bitmaps for "[\]^_" either
