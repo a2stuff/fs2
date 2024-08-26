@@ -4648,7 +4648,11 @@ LEFA4:  lda     L0045
         inc     $FFFF,x
         .byte   0, 0
 
-msg_wr1:        MESSAGE $00, $18, "***** WAR REPORT *****"
+;;; "War Report" for "World War 1 Ace" mode
+;;; The whole display is rendered, then the stats are re-rendered
+;;; in orange.
+
+msg_war_report: MESSAGE $00, $18, "***** WAR REPORT *****"
                 MESSAGE $0C, $04, "ENEMY PLANES SHOT DOWN = "
 msg_wr2:        MESSAGE $0C, $68, "000"
                 MESSAGE $12, $04, "BOMB HITS = "
@@ -4677,8 +4681,8 @@ msg_wr9:        MESSAGE $48, $2C, "0", LF107
                 MESSAGE $48, $3C, "ENEMY 6 = "
 msg_wr10:       MESSAGE $48, $64, "0", LF118
 
-        MESSAGE $54, $00, "PRESS ANY KEY TO RESUME BATTLE"
-        .byte   0, 0
+                MESSAGE $54, $00, "PRESS ANY KEY TO RESUME BATTLE"
+        .byte   0, 0            ; sentinel
 
 LF13D:  rts
 
@@ -4727,7 +4731,7 @@ LF13D:  rts
         ora     #$30
         sta     LF118
         jsr     ClearViewportsToBlack
-        CALLAX  DrawMultiMessage, msg_wr1
+        CALLAX  DrawMultiMessage, msg_war_report
         CALLAX  DrawMessageOrange, msg_wr2
         CALLAX  DrawMessageOrange, msg_wr3
         CALLAX  DrawMessageOrange, msg_wr4
