@@ -5781,12 +5781,8 @@ m88AD:  MESSAGE $6C, $54, "000", s88AD
 m88B3:  MESSAGE $8C, $54, "000", s88B3
 m88B9:  MESSAGE $97, $54, "000", s88B9
 m88BF:  MESSAGE $B7, $54, "000", s88BF
+m88C5:  MESSAGE $88, $7B, "1200", s88C5
 
-        dey
-        .byte   $7B
-L88C7:  and     ($32),y
-        bmi     L88FB
-        brk
         .byte   $B3
         .byte   $7B
 L88CE:  .byte   $32
@@ -5818,7 +5814,7 @@ L88E8:  txs
         brk
         .byte   $BB
         ror     $2E43
-L88FB:  pha
+        pha
         rol     L8200
         .byte   $54
         .byte   $4F
@@ -6448,13 +6444,13 @@ L8D96:  LDAX    s88A6+2
 L8DA2:  dex
         cpx     #$04
         bcs     L8DB9
-        lda     L88C7,x
-        cmp     #$30
+        lda     s88C5,x
+        cmp     #'0'
         bne     L8DB0
-        lda     #$38
+        lda     #'8'
 L8DB0:  sec
         sbc     #$01
-        sta     L88C7,x
+        sta     s88C5,x
         jmp     L9F05
 
 L8DB9:  dex
@@ -6602,13 +6598,13 @@ L8EE4:  STAX    s88A6+2
 L8EED:  dex
         cpx     #$04
         bcs     L8F04
-        lda     L88C7,x
+        lda     s88C5,x
         cmp     #$37
         bne     L8EFB
         lda     #$2F
 L8EFB:  clc
         adc     #$01
-        sta     L88C7,x
+        sta     s88C5,x
         jmp     L9F05
 
 L8F04:  dex
@@ -8550,7 +8546,7 @@ L9EFC:  lda     $FC
 L9F04:  rts
 
 L9F05:  jsr     L9EFC
-        CALLAX  DrawMessage3, $88C5
+        CALLAX  DrawMessage3, m88C5
         rts
 
 L9F10:  LDAX    #$88F0
