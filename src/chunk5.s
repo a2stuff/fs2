@@ -5793,42 +5793,24 @@ m88EC:  MESSAGE $9A, $87, "G"
 
 m88F0:  MESSAGE $BB, $6E, "HEAT"
 m88F7:  MESSAGE $BB, $6E, "C.H."
-m88FE:  MESSAGE $82, $54, "OFF"
-        .refto m88FE
 
+        ;; Indexed, 8 bytes apart
+m88FE:  MESSAGE $82, $54, "OFF"
         .byte   $07, $08
-        .byte   $82
-        .byte   $54
-        .byte   $54
-        .byte   $4F
-        .byte   $20
-        brk
-        .byte   $07
-        php
-        .byte   $82
-        .byte   $54
-        .byte   $46
-        .byte   $52
-        jsr     $0700
-        php
-        lda     $4F54
-        lsr     $46
-        brk
-        .byte   $07
-        php
-        lda     $5454
-        .byte   $4F
-        jsr     $0700
-        php
-        lda     $4654
-        .byte   $52
-        jsr     $0700
-        php
-        .byte   $6C
-        .byte   $7D
-L8930:  cli
-L8931:  cli
-        brk
+        MESSAGE $82, $54, "TO "
+        .byte   $07, $08
+        MESSAGE $82, $54, "FR "
+        .byte   $07, $08
+
+        MESSAGE $AD, $54, "OFF"
+        .byte   $07, $08
+        MESSAGE $AD, $54, "TO "
+        .byte   $07, $08
+        MESSAGE $AD, $54, "FR "
+        .byte   $07, $08
+
+m892E:  MESSAGE $6C, $7D, "XX", s892E
+
 L8933:  jsr     L9DC3
         jsr     L9DDF
         jsr     L9E09
@@ -8942,15 +8924,15 @@ LA225:  iny
         sta     ($3E),y
 LA22E:  rts
 
-LA22F:  asl     a
+LA22F:  asl     a               ; *= 8
         asl     a
         asl     a
-        ldx     #$88
+        ldx     #<m88FE
         clc
-        adc     #$FE
-        bcc     LA23A
+        adc     #>m88FE
+        bcc     :+
         inx
-LA23A:  jmp     DrawMessage2
+:       jmp     DrawMessage2
 
 LA23D:  lda     $63
         sec
@@ -9303,17 +9285,17 @@ LA4A5:  lda     #$00
         cmp     $098B
         sta     $098B
         beq     LA496
-        ldx     #$30
+        ldx     #'0'
         lsr     a
         bcc     LA4BE
-        ldx     #$58
-LA4BE:  stx     L8930
-        ldx     #$30
+        ldx     #'X'
+LA4BE:  stx     s892E
+        ldx     #'0'
         lsr     a
         bcc     LA4C8
-        ldx     #$58
-LA4C8:  stx     L8931
-        JUMPAX  DrawMessage2, $892E
+        ldx     #'X'
+LA4C8:  stx     s892E+1
+        JUMPAX  DrawMessage2, m892E
 
 LA4D2:  lda     $098C
         ldx     $098D
