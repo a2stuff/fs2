@@ -5776,30 +5776,13 @@ m888C:  MESSAGE $B1, $20, "000"
 m8892:  MESSAGE $5F, $65, "000"
 m8898:  MESSAGE $6C, $69, "2485", s8898
 m889F:  MESSAGE $7A, $69, "1000", s889F
-
 m88A6:  MESSAGE $88, $69, "1135", s88A6
+m88AD:  MESSAGE $6C, $54, "000", s88AD
+m88B3:  MESSAGE $8C, $54, "000", s88B3
+m88B9:  MESSAGE $97, $54, "000", s88B9
+m88BF:  MESSAGE $B7, $54, "000", s88BF
 
-        .byte   $6C
-        .byte   $54
-L88AF:  .byte   $30
-L88B0:  .byte   $30
-L88B1:  bmi     * + (2)
-        .byte   $8C
-        .byte   $54
-L88B5:  .byte   $30
-L88B6:  .byte   $30
-L88B7:  bmi     * + (2)
-        .byte   $97
-        .byte   $54
-L88BB:  .byte   $30
-L88BC:  .byte   $30
-L88BD:  bmi     L88BF
-L88BF:  .byte   $B7
-        .byte   $54
-L88C1:  .byte   $30
-L88C2:  .byte   $30
-L88C3:  bmi     L88C5
-L88C5:  dey
+        dey
         .byte   $7B
 L88C7:  and     ($32),y
         bmi     L88FB
@@ -8472,9 +8455,9 @@ L9E29:  lda     $FB
         beq     L9E63
         lda     L8880
         jsr     L9E64
-        sty     L88AF
-        stx     L88B0
-        sta     L88B1
+        sty     s88AD
+        stx     s88AD+1
+        sta     s88AD+2
         lda     L8880
         sec
         sbc     #$5A
@@ -8482,11 +8465,11 @@ L9E29:  lda     $FB
         clc
         adc     #$B4
 L9E49:  jsr     L9E64
-        sty     L88B5
-        stx     L88B6
-        sta     L88B7
-        CALLAX  DrawMessage2, $88AD
-        CALLAX  DrawMessage2, $88B3
+        sty     s88B3
+        stx     s88B3+1
+        sta     s88B3+2
+        CALLAX  DrawMessage2, m88AD
+        CALLAX  DrawMessage2, m88B3
 L9E63:  rts
 
 L9E64:  ldy     #$2F
@@ -8513,9 +8496,9 @@ L9E7C:  lda     $097B
         beq     L9EBB
         lda     L8883
         jsr     L9E64
-        sty     L88BB
-        stx     L88BC
-        sta     L88BD
+        sty     s88B9
+        stx     s88B9+1
+        sta     s88B9+2
         lda     L8883
         sec
         sbc     #$5A
@@ -8523,11 +8506,11 @@ L9E7C:  lda     $097B
         clc
         adc     #$B4
 L9EA1:  jsr     L9E64
-        sty     L88C1
-        stx     L88C2
-        sta     L88C3
-        CALLAX  DrawMessage2, $88B9
-        CALLAX  DrawMessage2, $88BF
+        sty     s88BF
+        stx     s88BF+1
+        sta     s88BF+2
+        CALLAX  DrawMessage2, m88B9
+        CALLAX  DrawMessage2, m88BF
 L9EBB:  rts
 
 L9EBC:  jsr     L9EFC
