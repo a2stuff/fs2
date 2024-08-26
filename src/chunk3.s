@@ -1879,7 +1879,7 @@ LDBAE:  jmp     L9071
         sec
         sbc     #$0D
         tax
-        lda     sD9EA,x
+        lda     sD9EA+1,x
         cmp     #$30
         bne     LDBCD
         lda     #$3A
@@ -1904,7 +1904,7 @@ LDBD3:  lda     $FA
         sec
         sbc     #$0D
         tax
-        lda     sD9EA,x
+        lda     sD9EA+1,x
         cmp     #$39
         bne     LDBFF
         lda     #$2F
@@ -1922,19 +1922,19 @@ LDC11:  txa
 LDC15:  lda     $FA
         rts
 
-LDC18:  sta     sD9EA,x
+LDC18:  sta     sD9EA+1,x
         CALLAX  DrawMessage3, mD9EA
-        lda     sD9EA+1
+        lda     sD9EA+2
         asl     a
         asl     a
         asl     a
         asl     a
         sta     $B7
-        lda     sD9EA+2
+        lda     sD9EA+3
         and     #$0F
         ora     $B7
         sta     LD9E7
-        lda     sD9EA
+        lda     sD9EA+1
         and     #$0F
         sta     LD9E8
         ldx     #$00

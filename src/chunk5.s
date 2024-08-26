@@ -5790,7 +5790,7 @@ msg_clock_mm:           MESSAGE $91, $7B, "00", str_clock_mm
 msg_clock_ss:           MESSAGE $91, $84, "00", str_clock_ss
 msg_dme:                MESSAGE $7A, $7D, "000", str_dme
 msg_lights_on:          MESSAGE $9A, $87, "1"
-msg_lights_off:         MESSAGE $9A, $87, "G" ; self-modified to 'O' ???
+msg_lights_off:         MESSAGE $9A, $87, "O"
 msg_carbheat_on:        MESSAGE $BB, $6E, "HEAT"
 msg_carbheat_off:       MESSAGE $BB, $6E, "C.H."
 
@@ -8474,7 +8474,7 @@ L9EBC:  jsr     L9EFC
         lda     $097F
         clc
         adc     #'0'
-        sta     str_dme+3
+        sta     str_dme+2
         lda     $0980
         ldx     #$2F
 L9ED7:  inx
@@ -8492,7 +8492,7 @@ L9EED:  rts
 L9EEE:  lda     #' '
         sta     str_dme
         sta     str_dme+1
-        sta     str_dme+1
+        sta     str_dme+2
         jmp     L9EE6
 
 L9EFC:  lda     $FC
@@ -8531,7 +8531,7 @@ L9F39:  lda     $0990
         lda     #$30
         bcc     L9F4E
         lda     #$35
-L9F4E:  sta     str_rpm+3
+L9F4E:  sta     str_rpm+2
         txa
         ldx     #$2F
 L9F54:  inx
@@ -8927,9 +8927,9 @@ LA22E:  rts
 LA22F:  asl     a               ; *= 8
         asl     a
         asl     a
-        ldx     #<msg_vor_flags
+        ldx     #>msg_vor_flags
         clc
-        adc     #>msg_vor_flags
+        adc     #<msg_vor_flags
         bcc     :+
         inx
 :       jmp     DrawMessage2
