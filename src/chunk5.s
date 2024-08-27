@@ -6058,9 +6058,9 @@ KeyTable:
 Ignore := L9147                 ; convenient RTS
 
         .addr   Ignore          ; Ctrl+@
-        .addr   L8FC3           ; Ctrl+A
+        .addr   ADF             ; Ctrl+A
         .addr   AltimeterAdjust ; Ctrl+B
-        .addr   L9041           ; Ctrl+C
+        .addr   ComRadio        ; Ctrl+C
         .addr   HeadingAdjust   ; Ctrl+D
         .addr   LA7FA           ; Ctrl+E
         .addr   FuelTankSelect  ; Ctrl+F
@@ -6077,11 +6077,11 @@ Ignore := L9147                 ; convenient RTS
         .addr   Ignore          ; Ctrl+Q
         .addr   Ignore          ; Ctrl+R
         .addr   Ignore          ; Ctrl+S
-        .addr   L8F7D           ; Ctrl+T
+        .addr   Transponder     ; Ctrl+T
         .addr   MoreThrottle    ; Ctrl+U Right Arrow
-        .addr   L905C           ; Ctrl+V
+        .addr   VORS            ; Ctrl+V
         .addr   Ignore          ; Ctrl+W
-        .addr   L8FAB           ; Ctrl+X
+        .addr   ReadModeFromDisk    ; Ctrl+X
         .addr   Ignore          ; Ctrl+Y
         .addr   Ignore          ; Ctrl+Z
         .addr   EditMode        ; Ctrl+[ Escape
@@ -6100,7 +6100,7 @@ Ignore := L9147                 ; convenient RTS
         .addr   Ignore          ; (
         .addr   Ignore          ; )
         .addr   Ignore          ; *
-        .addr   L9091           ; +
+        .addr   ReadModeFromLibrary ; +
         .addr   L8D01           ; ,
         .addr   Ignore          ; -
         .addr   L8E27           ; .
@@ -6109,8 +6109,8 @@ Ignore := L9147                 ; convenient RTS
         .addr   L8CA4           ; 1
         .addr   L8CCB           ; 2
         .addr   L8CED           ; 3
-        .addr   L90FC           ; 4
-        .addr   L9105           ; 5
+        .addr   SelectRadarView ; 4
+        .addr   Select3DView    ; 5
         .addr   Ignore          ; 6
         .addr   Ignore          ; 7
         .addr   L8CF3           ; 8
@@ -6122,7 +6122,7 @@ Ignore := L9147                 ; convenient RTS
         .addr   Ignore          ; > - must have special handling elsewhere???
         .addr   Ignore          ; ?
         .addr   Ignore          ; @
-        .addr   L8FC3           ; A
+        .addr   ADF             ; A
         .addr   YokeUp          ; B
         .addr   RudderLeft      ; C
         .addr   L91F3           ; D
@@ -6140,7 +6140,7 @@ Ignore := L9147                 ; convenient RTS
         .addr   TogglePause           ; P
         .addr   L909B           ; Q
         .addr   TrimDown        ; R
-        .addr   L9097           ; S
+        .addr   SaveModeToLibrary           ; S
         .addr   YokeDown        ; T
         .addr   Ignore          ; U
         .addr   TrimUp          ; V
@@ -6710,8 +6710,9 @@ L8F73:  lda     #$01
 
         rts
 
-L8F7D:  lda     $0937
-        beq     L8FAB
+Transponder:
+        lda     $0937
+        beq     ReadModeFromDisk
         lda     #$00
         sec
         sbc     $6C
@@ -6733,7 +6734,8 @@ L8F7D:  lda     $0937
         rts
 
 ;;; Ctrl+X
-L8FAB:  lda     $08F1
+ReadModeFromDisk:
+        lda     $08F1
         beq     L8FBE
         lda     $FA
         cmp     #$08
@@ -6746,7 +6748,7 @@ L8FBE:  lda     #$08
 L8FC0:  jmp     L9071
 
 ;;; Ctrl+A / A key
-L8FC3:  nop
+ADF:    nop                     ; self-modified???
         nop
         nop
 
@@ -6824,7 +6826,8 @@ L9040:  rts
 
 
 ;;; Ctrl+C
-L9041:  lda     #$01
+ComRadio:
+        lda     #$01
         lda     $08F1
         beq     L9051
         lda     $FA
@@ -6840,7 +6843,7 @@ L9058:  lda     #$04
         bne     L9071
 
 ;;; Ctrl+V
-L905C:
+VORS:
         lda     #$0C
         sta     $FA
         rts
@@ -6877,12 +6880,14 @@ Brakes: lda     $09E3
 L9090:  rts
 
 ;;; + key
-L9091:  ldx     #$01
+ReadModeFromLibrary:
+        ldx     #$01
 L9093:  stx     $08A7
         rts
 
 ;;; S key
-L9097:  ldx     #$02
+SaveModeToLibrary:
+        ldx     #$02
         bne     L9093           ; always
 
 ;;; Q key
@@ -6949,14 +6954,16 @@ FuelTankSelect:
         rts
 
 ;;; 4 key
-L90FC:  ldx     #$02
+SelectRadarView:
+        ldx     #$02
         stx     $FA
 L9100:  dex
         stx     $0836
         rts
 
 ;;; 5 key
-L9105:  ldx     #$01
+Select3DView:
+        ldx     #$01
         lda     $0836
         bne     L9100
         stx     $FA
