@@ -5631,7 +5631,7 @@ L8653:  .byte   $FF
         brk
         jmp     L8AC4
 
-        jmp     L89D0
+        jmp     TogglePause
 
         jmp     LA524
 
@@ -5899,7 +5899,8 @@ L89B6:  lda     $0834
         jmp     L9093
 
 ;;; Ctrl+P / P key
-L89D0:  lda     $08A6
+TogglePause:
+        lda     $08A6
         pha
         inc     $08BB
         lda     #$01
@@ -6058,37 +6059,37 @@ Ignore := L9147                 ; convenient RTS
 
         .addr   Ignore          ; Ctrl+@
         .addr   L8FC3           ; Ctrl+A
-        .addr   L8FC6           ; Ctrl+B
+        .addr   AltimeterAdjust ; Ctrl+B
         .addr   L9041           ; Ctrl+C
-        .addr   L8FD5           ; Ctrl+D
+        .addr   HeadingAdjust   ; Ctrl+D
         .addr   LA7FA           ; Ctrl+E
-        .addr   L90F7           ; Ctrl+F
+        .addr   FuelTankSelect  ; Ctrl+F
         .addr   Ignore          ; Ctrl+G
-        .addr   L90D3           ; Ctrl+H
+        .addr   LessThrottle    ; Ctrl+H Left Arrow
         .addr   L9001           ; Ctrl+I
-        .addr   Ignore          ; Ctrl+J
-        .addr   Ignore          ; Ctrl+K
-        .addr   L9010           ; Ctrl+L
-        .addr   L9079           ; Ctrl+M
+        .addr   Ignore          ; Ctrl+J Down Arrow
+        .addr   Ignore          ; Ctrl+K Up Arrow
+        .addr   ToggleLights    ; Ctrl+L
+        .addr   MagsAndMixture  ; Ctrl+M Return
         .addr   L9061           ; Ctrl+N
         .addr   Ignore          ; Ctrl+O
-        .addr   L89D0           ; Ctrl+P
+        .addr   TogglePause     ; Ctrl+P
         .addr   Ignore          ; Ctrl+Q
         .addr   Ignore          ; Ctrl+R
         .addr   Ignore          ; Ctrl+S
         .addr   L8F7D           ; Ctrl+T
-        .addr   L90C0           ; Ctrl+U
+        .addr   MoreThrottle    ; Ctrl+U Right Arrow
         .addr   L905C           ; Ctrl+V
         .addr   Ignore          ; Ctrl+W
         .addr   L8FAB           ; Ctrl+X
         .addr   Ignore          ; Ctrl+Y
         .addr   Ignore          ; Ctrl+Z
-        .addr   $8C9E           ; Ctrl+[
+        .addr   EditMode        ; Ctrl+[ Escape
         .addr   Ignore          ; Ctrl+\
         .addr   Ignore          ; Ctrl+]
         .addr   Ignore          ; Ctrl+^
         .addr   Ignore          ; Ctrl+_
-        .addr   L907E           ; Space
+        .addr   Brakes          ; Space
         .addr   Ignore          ; !
         .addr   Ignore          ; "
         .addr   Ignore          ; #
@@ -6103,7 +6104,7 @@ Ignore := L9147                 ; convenient RTS
         .addr   L8D01           ; ,
         .addr   Ignore          ; -
         .addr   L8E27           ; .
-        .addr   L90F1           ; /
+        .addr   ToggleThrottle  ; /
         .addr   Ignore          ; 0
         .addr   L8CA4           ; 1
         .addr   L8CCB           ; 2
@@ -6116,36 +6117,36 @@ Ignore := L9147                 ; convenient RTS
         .addr   L8CF7           ; 9
         .addr   Ignore          ; :
         .addr   Ignore          ; ;
-        .addr   Ignore          ; <
+        .addr   Ignore          ; < - must have special handling elsewhere???
         .addr   Ignore          ; =
-        .addr   Ignore          ; >
+        .addr   Ignore          ; > - must have special handling elsewhere???
         .addr   Ignore          ; ?
         .addr   Ignore          ; @
         .addr   L8FC3           ; A
-        .addr   L92DB           ; B
-        .addr   L92A1           ; C
+        .addr   YokeUp          ; B
+        .addr   RudderLeft      ; C
         .addr   L91F3           ; D
         .addr   Ignore          ; E
-        .addr   L91F7           ; F
-        .addr   L920C           ; G
-        .addr   L924C           ; H
+        .addr   YokeLeft        ; F
+        .addr   YokeCenter      ; G
+        .addr   YokeRight       ; H
         .addr   Ignore          ; I
         .addr   Ignore          ; J
         .addr   L900C           ; K
-        .addr   L9010           ; L
-        .addr   L92AC           ; M
-        .addr   L9197           ; N
+        .addr   ToggleLights    ; L
+        .addr   RudderRight     ; M
+        .addr   FlapsDown       ; N
         .addr   Ignore          ; O
-        .addr   L89D0           ; P
+        .addr   TogglePause           ; P
         .addr   L909B           ; Q
-        .addr   L9122           ; R
+        .addr   TrimDown        ; R
         .addr   L9097           ; S
-        .addr   L91B1           ; T
+        .addr   YokeDown        ; T
         .addr   Ignore          ; U
-        .addr   L910F           ; V
+        .addr   TrimUp          ; V
         .addr   L8F73           ; W
         .addr   L901B           ; X
-        .addr   L9148           ; Y
+        .addr   FlapsUp         ; Y
         .addr   L909E           ; Z
         .addr   Ignore          ; [
         .addr   Ignore          ; \
@@ -6299,8 +6300,8 @@ L8C69:  rts
 L8C6A:  lda     $0A5B
         cmp     #$18
         bcs     L8C74
-        jsr     L92DB
-L8C74:  jsr     L90C0
+        jsr     YokeUp
+L8C74:  jsr     MoreThrottle
         rts
 
 ;;; ============================================================
@@ -6330,6 +6331,7 @@ L8C88:  cmp     #'`'            ; ignore lower-case range
 
 ;;; ============================================================
 
+EditMode:
         lda     #$01
         sta     $08A6
         rts
@@ -6749,7 +6751,8 @@ L8FC3:  nop
         nop
 
 ;;; Ctrl+B
-L8FC6:  lda     #$00
+AltimeterAdjust:
+        lda     #$00
         sta     $099E
         sta     $099F
         sta     $09A0
@@ -6757,7 +6760,8 @@ L8FC6:  lda     #$00
         rts
 
 ;;; Ctrl+D
-L8FD5:  lda     $08B2
+HeadingAdjust:
+        lda     $08B2
         ldx     $08B3
         sec
         sbc     $70
@@ -6795,7 +6799,8 @@ L900C:  lsr     $092C
         rts
 
 ;;; Ctrl+L / L key
-L9010:  lda     $0A61
+ToggleLights:
+        lda     $0A61
         eor     #$FF
         sta     $0A61
         jmp     DrawCarbHeatAndLights
@@ -6856,12 +6861,13 @@ L9071:  sta     $FA
         rts
 
 ;;; Ctrl+M
-L9079:  lda     #$03
+MagsAndMixture:
+        lda     #$03
         sta     $FA
         rts
 
 ;;; Space
-L907E:  lda     $09E3
+Brakes: lda     $09E3
         beq     L90B2
         dec     $0A12
         bpl     L9090
@@ -6902,7 +6908,8 @@ L90B2:  lda     $0A54
 L90BF:  rts
 
 ;;; Ctrl+U
-L90C0:  inc     $0A6D
+MoreThrottle:
+        inc     $0A6D
         lda     #$78
         lsr     $08C5
         bcs     L90E5
@@ -6913,7 +6920,8 @@ L90C0:  inc     $0A6D
 L90D2:  rts
 
 ;;; Ctrl+H
-L90D3:  dec     $0A6D
+LessThrottle:
+        dec     $0A6D
         lda     #$00
         lsr     $08C5
         bcs     L90E5
@@ -6929,12 +6937,14 @@ L90E8:  lda     $0A6F
         jmp     L1A8C
 
 ;;; / key
-L90F1:  lda     #$01
+ToggleThrottle:
+        lda     #$01
         sta     $08C5
         rts
 
 ;;; Ctrl+F
-L90F7:  lda     #$10
+FuelTankSelect:
+        lda     #$10
         sta     $FA
         rts
 
@@ -6953,7 +6963,8 @@ L9105:  ldx     #$01
         rts
 
 ;;; V key
-L910F:  ldx     #$0A
+TrimUp:
+        ldx     #$0A
         jsr     L9303
         inc     $0A69
         lda     $0A5D
@@ -6963,7 +6974,8 @@ L910F:  ldx     #$0A
         jmp     L9135
 
 ;;; R key
-L9122:  ldx     #$0E
+TrimDown:
+        ldx     #$0E
         jsr     L9303
         inc     $08C8
         inc     $0A67
@@ -6985,7 +6997,8 @@ L913A:  lda     #$50
 L9147:  rts                     ; Used as no-op in `KeyTable`
 
 ;;; Y key
-L9148:  ldx     #$02
+FlapsUp:
+        ldx     #$02
         jsr     L9303
         dec     $0A67
         lda     $0A5F
@@ -7020,7 +7033,8 @@ L915D:  lsr     a
         rts
 
 ;;; N key
-L9197:  ldx     #$06
+FlapsDown:
+        ldx     #$06
         jsr     L9303
         dec     $0A69
         lda     $0937
@@ -7034,7 +7048,8 @@ L9197:  ldx     #$06
 L91B0:  rts
 
 ;;; T key
-L91B1:  ldx     #$00
+YokeDown:
+        ldx     #$00
         jsr     L9303
         lda     $0A5B
         sec
@@ -7071,7 +7086,8 @@ L91F3:  inc     $08B4
         rts
 
 ;;; F key
-L91F7:  ldx     #$0C
+YokeLeft:
+        ldx     #$0C
         jsr     L9303
         lda     $0A53
         sec
@@ -7082,7 +7098,8 @@ L91F7:  ldx     #$0C
         jmp     L925C
 
 ;;; G key
-L920C:  ldx     #$FF
+YokeCenter:
+        ldx     #$FF
         jsr     L9303
 L9211:  lda     #$00
         ldx     $0937
@@ -7108,7 +7125,8 @@ L9246:  jsr     L925C
         jmp     L92B7
 
 ;;; H key
-L924C:  ldx     #$04
+YokeRight:
+        ldx     #$04
         jsr     L9303
         lda     $0A53
         clc
@@ -7145,7 +7163,7 @@ L9284:  lda     $0A52
 L92A0:  rts
 
 ;;; C key
-L92A1:  lda     $0A65
+RudderLeft:  lda     $0A65
         sec
         sbc     #$04
         cmp     #$80
@@ -7153,7 +7171,8 @@ L92A1:  lda     $0A65
         rts
 
 ;;; M key
-L92AC:  lda     $0A65
+RudderRight:
+        lda     $0A65
         clc
         adc     #$04
         bvs     L92DA
@@ -7176,7 +7195,8 @@ L92CB:  lda     $0A65
 L92DA:  rts
 
 ;;; B key
-L92DB:  ldx     #$08
+YokeUp:
+        ldx     #$08
         jsr     L9303
         lda     $0A5B
         clc
@@ -7986,7 +8006,7 @@ L9A0D:  stx     $09E3
         sta     $09AE
 L9A2C:  lda     $089E
         beq     L9A37
-        jsr     L907E
+        jsr     Brakes
         jmp     L9A57
 
 L9A37:  ldx     #$04
@@ -10080,7 +10100,7 @@ LAC3A:  jsr     ClearViewportsToBlack
 
         ;; Color/B&W prompt
 
-:       jsr     L89D0
+:       jsr     TogglePause
         cmp     #'a'
         beq     lower
         cmp     #'b'
@@ -10113,7 +10133,7 @@ LAC77:  lda     ($BE),y
 
         jsr     ClearViewportsToBlack
         CALLAX  DrawMultiMessage, msg_select_mode
-:       jsr     L89D0
+:       jsr     TogglePause
         cmp     #'A'
         beq     LAC98
         cmp     #'B'
@@ -10128,7 +10148,7 @@ LAC98:  inc     $092C
         lda     $08C6
         bne     LACB1
         CALLAX  DrawMultiMessage, msg_48k_demo
-LACB1:  jsr     L89D0
+LACB1:  jsr     TogglePause
 LACB4:  lda     #$00
         sta     $08A6
         rts
