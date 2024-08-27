@@ -62,17 +62,17 @@ LF71B:  brk
 LF71C:  jsr     ClearViewportsToBlack
         CALLAX  DrawMultiMessage, msg_courseplotter
         jsr     L89D0
-        cmp     #$41
+        cmp     #'A'
         beq     LF742
-        cmp     #$42
+        cmp     #'B'
         beq     LF748
-        cmp     #$43
+        cmp     #'C'
         beq     LF755
-        cmp     #$44
+        cmp     #'D'
         beq     LF776
-        cmp     #$45
+        cmp     #'E'
         beq     LF76E
-        cmp     #$1B
+        cmp     #$1B            ; Escape
         bne     LF71C
         rts
 

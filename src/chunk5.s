@@ -5766,20 +5766,17 @@ L8863:  jsr     L9C40
         jsr     LA054
         lda     $097A
         beq     L8871
-        jsr     L8C1E
+        jsr     ReadPaddlesIfButtonDown
 L8871:  inc     $2B
         jmp     L8782
 
-L8876:  brk
-L8877:  brk
-L8878:  .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $BF
-        .byte   $FF
-        brk
-        brk
+;;; Keyboard input ring buffer
+
+KeyBufWritePos: .byte   0       ; write position
+KeyBufReadPos:  .byte   0       ; read position
+KeyBuffer:      .byte   $FF, $FF, $00, $00, $BF, $FF, $00, $00
+
+
 L8880:  brk
 L8881:  .byte   $FF
 L8882:  brk
@@ -5944,20 +5941,24 @@ L8A15:  sbc     #$11
         beq     L8A26
         lda     SPKR
 L8A26:  inc     $34
+
         lda     KBD
-        bpl     L8A35
+        bpl     :+
         and     #$7F
-        jsr     L8BEC
+        jsr     WriteKeyBuffer
         sta     KBDSTRB
-L8A35:  lda     L8877
-        cmp     L8876
+:
+        lda     KeyBufReadPos
+        cmp     KeyBufWritePos
         beq     L8A45
+
         lda     $08B0
         bne     L8A45
-        jsr     L8C78
+        jsr     MaybeProcessKey
+
 L8A45:  lda     $097A
         beq     L8A4D
-        jsr     L8BFD
+        jsr     ReadPaddleDeltas
 L8A4D:  inc     $31
         lda     $31
         lsr     a
@@ -6047,6 +6048,10 @@ L8AFD:  rts
 
 L8AFE:  brk
 L8AFF:  brk
+
+
+;;; Indexed by ASCII code, $00 through $5F
+KeyTable:
         .byte   $47
         sta     ($C3),y
         .byte   $8F
@@ -6130,7 +6135,7 @@ L8B7E:  .byte   $47
         .byte   $91
 L8B8A:  .byte   $47
         .byte   $91
-L8B8C:  .byte   $F7
+        .byte   $F7
         sta     ($0C),y
         .byte   $92
         jmp     $4792
@@ -6146,7 +6151,7 @@ L8B94:  .byte   $47
         sta     ($D0),y
         .byte   $89
         .byte   $9B
-        bcc     L8BC7
+        bcc     $8BC7
         sta     ($97),y
         bcc     L8B5A
 L8BA9:  sta     ($47),y
@@ -6154,65 +6159,78 @@ L8BA9:  sta     ($47),y
         sta     ($73),y
         .byte   $8F
         .byte   $1B
-        bcc     L8BFB
+        bcc     $8BFB
         sta     ($9E),y
-        bcc     L8BFE
+        bcc     $8BFE
         sta     ($47),y
         sta     ($47),y
         sta     ($47),y
         sta     ($47),y
         sta     ($48),y
+
         txa
         pha
         lda     KBD
-        .byte   $10
-L8BC7:  php
+        bpl     :+
         and     #$7F
-        jsr     L8BEC
+        jsr     WriteKeyBuffer
         sta     KBDSTRB
+:
         pla
         tax
         pla
         rts
 
-L8BD4:  lda     L8877
-        cmp     L8876
-        bne     L8BDE
+;;; ============================================================
+
+;;; Output: C=0 if buffer empty, otherwise C=1, A=key
+.proc ReadKeyBuffer
+        lda     KeyBufReadPos
+        cmp     KeyBufWritePos
+        bne     :+
         clc
         rts
 
-L8BDE:  inc     L8877
-        lda     L8877
+:       inc     KeyBufReadPos
+        lda     KeyBufReadPos
         and     #$07
         tax
-        lda     L8878,x
+        lda     KeyBuffer,x
         sec
         rts
+.endproc
 
-L8BEC:  pha
-        inc     L8876
-        lda     L8876
+;;; ============================================================
+
+;;; Input: A = key (high bit stripped)
+
+.proc WriteKeyBuffer
+        pha
+        inc     KeyBufWritePos
+        lda     KeyBufWritePos
         and     #$07
         tax
         pla
-        sta     L8878,x
+        sta     KeyBuffer,x
         rts
+.endproc
 
-L8BFB:  rti
+;;; ============================================================
 
-L8BFC:  rti
+Paddle1Reading: .byte   $40
+Paddle0Readng:  .byte   $40
 
-L8BFD:  .byte   $20
-L8BFE:  bmi     L8B8C
+.proc ReadPaddleDeltas
+        jsr     ReadPaddles
         tya
         sec
-        sbc     L8BFB
-        jsr     L8C5B
+        sbc     Paddle1Reading
+        jsr     MapPaddleDelta
         pha
         txa
         sec
-        sbc     L8BFC
-        jsr     L8C5B
+        sbc     Paddle0Readng
+        jsr     MapPaddleDelta
         cmp     #$80
         ror     a
         jsr     L9259
@@ -6220,19 +6238,30 @@ L8BFE:  bmi     L8B8C
         cmp     #$80
         ror     a
         jmp     L91D6
+.endproc
 
-L8C1E:  lda     BUTN0
+;;; ============================================================
+
+;;; If either button is down, read paddles.
+
+.proc ReadPaddlesIfButtonDown
+        lda     BUTN0
         ora     BUTN1
-        bpl     L8C2F
-        jsr     L8C30
-        sty     L8BFB
-        stx     L8BFC
-L8C2F:  rts
+        bpl     :+
+        jsr     ReadPaddles
+        sty     Paddle1Reading
+        stx     Paddle0Readng
+:       rts
+.endproc
 
-L8C30:  ldy     #$00
+;;; ============================================================
+
+.proc ReadPaddles
+        ldy     #$00
         ldx     #$00
         sta     PTRIG
-L8C37:  lda     PADDL0
+loop:
+        lda     PADDL0
         bpl     L8C49
         inx
         bne     L8C41
@@ -6240,23 +6269,30 @@ L8C37:  lda     PADDL0
 L8C41:  lda     PADDL1
         bpl     L8C56
         iny
-        bne     L8C37
+        bne     loop
 L8C49:  nop
         nop
         lda     PADDL1
         bpl     L8C5A
         iny
-        bne     L8C37
+        bne     loop
 L8C53:  pla
         pla
         rts
 
 L8C56:  nop
-        jmp     L8C37
+        jmp     loop
 
 L8C5A:  rts
 
-L8C5B:  sta     $C6
+.endproc
+
+;;; ============================================================
+
+;;; Uses: $C6
+
+.proc MapPaddleDelta
+        sta     $C6
         clc
         adc     $C6
         bvc     L8C69
@@ -6266,6 +6302,9 @@ L8C5B:  sta     $C6
 
 L8C67:  lda     #$81
 L8C69:  rts
+.endproc
+
+;;; ============================================================
 
 L8C6A:  lda     $0A5B
         cmp     #$18
@@ -6274,28 +6313,33 @@ L8C6A:  lda     $0A5B
 L8C74:  jsr     L90C0
         rts
 
-L8C78:  jsr     L8BD4
-        bcc     L8C87
+;;; ============================================================
+
+.proc MaybeProcessKey
+        jsr     ReadKeyBuffer
+        bcc     :+
         ldx     $08A6
         beq     L8C88
         ora     #$80
         sta     $08B1
-L8C87:  rts
+:       rts
 
-L8C88:  cmp     #$60
-        bcc     L8C8D
+L8C88:  cmp     #'`'            ; ignore lower-case range
+        bcc     :+
         rts
 
-L8C8D:  asl     a
+:       asl     a               ; *= 2
         clc
+        adc     #<KeyTable
+        sta     @mod+1
+        lda     #>KeyTable
         adc     #$00
-        sta     L8C9C
-        lda     #$8B
-        adc     #$00
-        sta     L8C9D
-        .byte   $6C
-L8C9C:  brk
-L8C9D:  brk
+        sta     @mod+2
+@mod:   jmp     ($0000)         ; self-modified
+.endproc
+
+;;; ============================================================
+
         lda     #$01
         sta     $08A6
         rts
