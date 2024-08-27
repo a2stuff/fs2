@@ -5898,7 +5898,7 @@ L89B6:  lda     $0834
         ldx     #$01
         jmp     L9093
 
-;;; Ctrl+P
+;;; Ctrl+P / P key
 L89D0:  lda     $08A6
         pha
         inc     $08BB
@@ -6102,17 +6102,17 @@ Ignore := L9147                 ; convenient RTS
         .addr   L9091           ; +
         .addr   L8D01           ; ,
         .addr   Ignore          ; -
-        .addr   $8E27           ; .
+        .addr   L8E27           ; .
         .addr   L90F1           ; /
         .addr   Ignore          ; 0
-        .addr   $8CA4           ; 1
+        .addr   L8CA4           ; 1
         .addr   L8CCB           ; 2
-        .addr   $8CED           ; 3
-        .addr   $90FC           ; 4
-        .addr   $9105           ; 5
+        .addr   L8CED           ; 3
+        .addr   L90FC           ; 4
+        .addr   L9105           ; 5
         .addr   Ignore          ; 6
         .addr   Ignore          ; 7
-        .addr   $8CF3           ; 8
+        .addr   L8CF3           ; 8
         .addr   L8CF7           ; 9
         .addr   Ignore          ; :
         .addr   Ignore          ; ;
@@ -6121,32 +6121,32 @@ Ignore := L9147                 ; convenient RTS
         .addr   Ignore          ; >
         .addr   Ignore          ; ?
         .addr   Ignore          ; @
-        .addr   $8FC3           ; A
-        .addr   $92DB           ; B
-        .addr   $92A1           ; C
-        .addr   $91F3           ; D
+        .addr   L8FC3           ; A
+        .addr   L92DB           ; B
+        .addr   L92A1           ; C
+        .addr   L91F3           ; D
         .addr   Ignore          ; E
-        .addr   $91F7           ; F
-        .addr   $920C           ; G
-        .addr   $924C           ; H
+        .addr   L91F7           ; F
+        .addr   L920C           ; G
+        .addr   L924C           ; H
         .addr   Ignore          ; I
         .addr   Ignore          ; J
-        .addr   $900C           ; K
-        .addr   $9010           ; L
-        .addr   $92AC           ; M
-        .addr   $9197           ; N
+        .addr   L900C           ; K
+        .addr   L9010           ; L
+        .addr   L92AC           ; M
+        .addr   L9197           ; N
         .addr   Ignore          ; O
-        .addr   $89D0           ; P
-        .addr   $909B           ; Q
-        .addr   $9122           ; R
-        .addr   $9097           ; S
-        .addr   $91B1           ; T
+        .addr   L89D0           ; P
+        .addr   L909B           ; Q
+        .addr   L9122           ; R
+        .addr   L9097           ; S
+        .addr   L91B1           ; T
         .addr   Ignore          ; U
-        .addr   $910F           ; V
-        .addr   $8F73           ; W
-        .addr   $901B           ; X
-        .addr   $9148           ; Y
-        .addr   $909E           ; Z
+        .addr   L910F           ; V
+        .addr   L8F73           ; W
+        .addr   L901B           ; X
+        .addr   L9148           ; Y
+        .addr   L909E           ; Z
         .addr   Ignore          ; [
         .addr   Ignore          ; \
         .addr   Ignore          ; ]
@@ -6334,7 +6334,8 @@ L8C88:  cmp     #'`'            ; ignore lower-case range
         sta     $08A6
         rts
 
-        ldx     #$01
+;;; 1 key
+L8CA4:  ldx     #$01
         lda     $FA
         cmp     #$03
         bne     L8CB2
@@ -6357,6 +6358,7 @@ L8CC6:  ldy     #$00
         sty     $FA
         rts
 
+;;; 2 key
 L8CCB:  lda     $FA
         ldx     #$02
         cmp     #$03
@@ -6376,12 +6378,16 @@ L8CE5:  cmp     #$0C
         stx     $0A71
 L8CEC:  rts
 
-        lda     #$01
+;;; 3 key
+L8CED:  lda     #$01
         ldx     #$02
-        bne     L8CC6
-        dec     $0A6B
+        bne     L8CC6           ; always
+
+;;; 8 key
+L8CF3:  dec     $0A6B
         rts
 
+;;; 9 key
 L8CF7:  inc     $0A6B
         rts
 
@@ -6538,7 +6544,8 @@ L8E1D:  dex
         lda     #$30
 L8E26:  rts
 
-        lda     $FA
+;;; . key
+L8E27:  lda     $FA
         nop
         ldx     #$00
         stx     $08F1
@@ -6693,7 +6700,8 @@ L8F68:  inx
         adc     #$01
 L8F72:  rts
 
-        lda     #$01
+;;; W key
+L8F73:  lda     #$01
         ora     $0A72
         sta     $0A72
         rts
@@ -6735,7 +6743,7 @@ L8FAB:  lda     $08F1
 L8FBE:  lda     #$08
 L8FC0:  jmp     L9071
 
-;;; Ctrl+A
+;;; Ctrl+A / A key
 L8FC3:  nop
         nop
         nop
@@ -6782,16 +6790,18 @@ L9001:  lda     $0A58
         sta     $0A58
         jmp     DrawCarbHeatAndLights
 
-        lsr     $092C
+;;; K key
+L900C:  lsr     $092C
         rts
 
-;;; Ctrl+L
+;;; Ctrl+L / L key
 L9010:  lda     $0A61
         eor     #$FF
         sta     $0A61
         jmp     DrawCarbHeatAndLights
 
-        lda     $093A
+;;; X key
+L901B:  lda     $093A
         cmp     #$01
         bne     L9040
         lda     $08D2
@@ -6865,11 +6875,15 @@ L9091:  ldx     #$01
 L9093:  stx     $08A7
         rts
 
-        ldx     #$02
-        bne     L9093
-        jmp     L8AFD
+;;; S key
+L9097:  ldx     #$02
+        bne     L9093           ; always
 
-        lda     $0937
+;;; Q key
+L909B:  jmp     L8AFD
+
+;;; Z key
+L909E:  lda     $0937
         beq     L90B1
         lda     #$00
         sta     $6E
@@ -6914,6 +6928,7 @@ L90E8:  lda     $0A6F
         lsr     a
         jmp     L1A8C
 
+;;; / key
 L90F1:  lda     #$01
         sta     $08C5
         rts
@@ -6923,19 +6938,22 @@ L90F7:  lda     #$10
         sta     $FA
         rts
 
-        ldx     #$02
+;;; 4 key
+L90FC:  ldx     #$02
         stx     $FA
 L9100:  dex
         stx     $0836
         rts
 
-        ldx     #$01
+;;; 5 key
+L9105:  ldx     #$01
         lda     $0836
         bne     L9100
         stx     $FA
         rts
 
-        ldx     #$0A
+;;; V key
+L910F:  ldx     #$0A
         jsr     L9303
         inc     $0A69
         lda     $0A5D
@@ -6944,7 +6962,8 @@ L9100:  dex
         cmp     #$54
         jmp     L9135
 
-        ldx     #$0E
+;;; R key
+L9122:  ldx     #$0E
         jsr     L9303
         inc     $08C8
         inc     $0A67
@@ -6965,7 +6984,8 @@ L913A:  lda     #$50
 
 L9147:  rts                     ; Used as no-op in `KeyTable`
 
-        ldx     #$02
+;;; Y key
+L9148:  ldx     #$02
         jsr     L9303
         dec     $0A67
         lda     $0A5F
@@ -6999,7 +7019,8 @@ L915D:  lsr     a
         stx     $09D9
         rts
 
-        ldx     #$06
+;;; N key
+L9197:  ldx     #$06
         jsr     L9303
         dec     $0A69
         lda     $0937
@@ -7012,7 +7033,8 @@ L915D:  lsr     a
         bpl     L915A
 L91B0:  rts
 
-        ldx     #$00
+;;; T key
+L91B1:  ldx     #$00
         jsr     L9303
         lda     $0A5B
         sec
@@ -7044,10 +7066,12 @@ L91DE:  lda     #$50
         jsr     L1A3D
 L91F2:  rts
 
-        inc     $08B4
+;;; D key
+L91F3:  inc     $08B4
         rts
 
-        ldx     #$0C
+;;; F key
+L91F7:  ldx     #$0C
         jsr     L9303
         lda     $0A53
         sec
@@ -7057,7 +7081,8 @@ L91F2:  rts
         sta     $0A53
         jmp     L925C
 
-        ldx     #$FF
+;;; G key
+L920C:  ldx     #$FF
         jsr     L9303
 L9211:  lda     #$00
         ldx     $0937
@@ -7082,7 +7107,8 @@ L9227:  sta     $0A53
 L9246:  jsr     L925C
         jmp     L92B7
 
-        ldx     #$04
+;;; H key
+L924C:  ldx     #$04
         jsr     L9303
         lda     $0A53
         clc
@@ -7118,14 +7144,16 @@ L9284:  lda     $0A52
         jsr     L9311
 L92A0:  rts
 
-        lda     $0A65
+;;; C key
+L92A1:  lda     $0A65
         sec
         sbc     #$04
         cmp     #$80
         bne     L92B4
         rts
 
-        lda     $0A65
+;;; M key
+L92AC:  lda     $0A65
         clc
         adc     #$04
         bvs     L92DA
@@ -7147,6 +7175,7 @@ L92CB:  lda     $0A65
         jsr     L9311
 L92DA:  rts
 
+;;; B key
 L92DB:  ldx     #$08
         jsr     L9303
         lda     $0A5B
