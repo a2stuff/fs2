@@ -5,6 +5,7 @@
 
         .setcpu "6502"
         .org $200
+        .include "macros.inc"
 
         .refto __APPLE2__
 
@@ -4397,26 +4398,24 @@ L1C03:  sta     ($8E),y
         sta     $B7
         bmi     L1C67
 
-L1C39:  lda     #$10
-        ldx     #$27
+        ;; Prepare 5-digit number for display
+L1C39:  LDAX    #10000
         ldy     #$01
-        jsr     L1C73
-        lda     #$E8
-        ldx     #$03
+        jsr     DivideByAXAndSetDigitY
+        LDAX    #1000
         ldy     #$02
-        jsr     L1C73
-        lda     #$64
-        ldx     #$00
+        jsr     DivideByAXAndSetDigitY
+        LDAX    #100
         ldy     #$03
-        jsr     L1C73
-        lda     #$0A
-        ldx     #$00
+        jsr     DivideByAXAndSetDigitY
+        LDAX    #10
         ldy     #$04
-        jsr     L1C73
+        jsr     DivideByAXAndSetDigitY
         lda     $B6
         ora     #$30
         ldy     #$05
         sta     ($B8),y
+
         bne     L1C70
 L1C67:  lda     #$2D
         ldy     #$05
@@ -4425,12 +4424,24 @@ L1C6B:  sta     ($B8),y
         bne     L1C6B
 L1C70:  jmp     L1CA3
 
-L1C73:  sta     $A5
+;;; ============================================================
+
+;;; Partial uint16-to-string; calculate high digit for $B6-7 / A,X
+;;; Inputs: A,X = divisor (e.g. 100)
+;;;         Y = index of digit to set
+;;;         $B6 = value
+;;;         $B8 = ptr to string
+;;; Output: Character at ($B8),Y set; $B6 has remainder
+;;; Uses: $A5-$A7
+
+.proc DivideByAXAndSetDigitY
+        sta     $A5
         stx     $A6
         sty     $A7
-        ldx     #$30
+
+        ldx     #'0'
         lda     $B6
-L1C7D:  sec
+loop:   sec
         sbc     $A5
         tay
         lda     $B7
@@ -4440,12 +4451,15 @@ L1C7D:  sec
         sta     $B7
         sty     $B6
         tya
-        jmp     L1C7D
+        jmp     loop
 
 L1C90:  ldy     $A7
         txa
         sta     ($B8),y
         rts
+.endproc
+
+;;; ============================================================
 
 ;;; Color mask is white
 DrawMessageWhite:

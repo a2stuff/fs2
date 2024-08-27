@@ -81,7 +81,7 @@ L1B67           := $1B67
 L1B6D           := $1B6D
 L1B80           := $1B80
 L1B9F           := $1B9F
-L1C73           := $1C73
+DivideByAXAndSetDigitY           := $1C73
 DrawMessageWhite    := $1C96
 DrawMessageOrange    := $1C9F
 DrawMultiMessage    := $1D92
@@ -5663,7 +5663,7 @@ L8752:  jmp     L8A15
 
 L8770:  jmp     LA4D2
 
-L8773:  jmp     L9CFC
+L8773:  jmp     Set3DigitString
 
 L8776:  jmp     LA63A
 
@@ -6001,13 +6001,13 @@ L8A9F:  inx
         ;; Update clock seconds display
         jsr     CheckForAbort
         txa
-        ldx     #$2F
+        ldx     #'0'-1
 :       inx
         sec
-        sbc     #$0A
+        sbc     #10
         bcs     :-
         clc
-        adc     #$3A
+        adc     #'0'+10
         stx     str_clock_ss
         sta     str_clock_ss+1
         CALLAX  DrawMessageOrange, msg_clock_ss
@@ -6019,26 +6019,26 @@ L8AC4:  jsr     CheckForAbort
 
         ;; Update clock minutes display
         lda     $0955
-        ldx     #$2F
+        ldx     #'0'-1
 :       inx
         sec
-        sbc     #$0A
+        sbc     #10
         bcs     :-
         clc
-        adc     #$3A
+        adc     #'0'+10
         stx     str_clock_mm
         sta     str_clock_mm+1
         CALLAX  DrawMessageOrange, msg_clock_mm
 
         ;; Update clock hours display
         lda     $0954
-        ldx     #$2F
+        ldx     #'0'-1
 :       inx
         sec
-        sbc     #$0A
+        sbc     #10
         bcs     :-
         clc
-        adc     #$3A
+        adc     #'0'+10
         stx     str_clock_hh
         sta     str_clock_hh+1
         CALLAX  DrawMessageOrange, msg_clock_hh
@@ -8236,8 +8236,7 @@ L9C76:  rts
         sta     L8881
         pha
         stx     $3E
-        LDAX    #str_heading
-        jsr     L9CFC
+        CALLAX  Set3DigitString, str_heading
         CALLAX  DrawMessageOrange, msg_heading
         ldx     $3E
         pla
@@ -8256,8 +8255,7 @@ L9C76:  rts
 L9CD3:  inx
 L9CD4:  sta     $B6
         stx     $B7
-        LDAX    #str_recip
-        jsr     L9CFC
+        CALLAX  Set3DigitString, str_recip
         JUMPAX  DrawMessageOrange, msg_recip
 .endproc
 
@@ -8276,24 +8274,27 @@ L9CE6:  tay
         stx     $B7
         rts
 
-L9CFC:  sta     $B8
-        stx     $B9
-L9D00:  .byte   $A9
-L9D01:  .byte   $64
-        ldx     #$00
-        ldy     #$00
-L9D06:  .byte   $20
-L9D07:  .byte   $73
-        .byte   $1C
-        lda     #$0A
-        ldx     #$00
-        ldy     #$01
-        jsr     L1C73
+;;; Inputs: A,X = output string addr
+;;;         $B6-B7 = value
+;;; Output: string set to 3-digit number
+.proc Set3DigitString
+        ptr := $B8
+
+        sta     ptr
+        stx     ptr+1
+
+        LDAX    #100
+        ldy     #0
+        jsr     DivideByAXAndSetDigitY
+        LDAX    #10
+        ldy     #1
+        jsr     DivideByAXAndSetDigitY
         lda     $B6
-        ora     #$30
-        ldy     #$02
-        sta     ($B8),y
+        ora     #'0'
+        ldy     #2
+        sta     (ptr),y
         rts
+.endproc
 
 .proc DrawMagCompass
         lda     $FC
@@ -8362,8 +8363,7 @@ L9D7A:  clc
         sta     $08B2
         stx     $08B3
         jsr     L9CE6
-        LDAX    #str_magcompass
-        jsr     L9CFC
+        CALLAX  Set3DigitString, str_magcompass
         JUMPAX  DrawMessageWhite, msg_magcompass
 .endproc
 
@@ -8459,23 +8459,25 @@ L9E63:  rts
 
 ;;; A to 3-digit string in A,X,Y
 ;;; Input: A
-;;; Output: "AXY" (A is most significant digit, Y is least)
+;;; Output: "YXA" (Y is most significant digit, A is least)
 .proc ATo3Digits
-        ldy     #$2F
-L9E66:  iny
+        ldy     #'0'-1
+:       iny
         sec
-        sbc     #$32
-        bcs     L9E66
+        sbc     #50             ; not 100 ???
+        bcs     :-
         clc
-        adc     #$32
-        asl     a
-        ldx     #$2F
-L9E72:  inx
+        adc     #50
+
+        asl     a               ; *= 2 (because 50 I guess)
+
+        ldx     #'0'-1
+:       inx
         sec
-        sbc     #$0A
-        bcs     L9E72
+        sbc     #10
+        bcs     :-
         clc
-        adc     #$3A
+        adc     #'0'+10
         rts
 .endproc
 
@@ -9647,9 +9649,9 @@ LA712:  lda     (L00A5),y
 
         tax
         sta     $B5C1
-        lda     L9D06
+        lda     $9D06
         sta     $B5C3
-        lda     L9D07
+        lda     $9D07
         sta     $B5C4
         lda     $40
         sta     LAA4F
@@ -9705,8 +9707,8 @@ LA784:  lda     ($40),y
 LA790:  sec
         rts
 
-        lda     L9D00
-        ldx     L9D01
+        lda     $9D00
+        ldx     $9D01
         bne     LA7A4
 LA79A:  ldy     #$25
         lda     ($40),y
@@ -9744,9 +9746,9 @@ LA7C3:  rts
 LA7D3:  rts
 
         sec
-        lda     L9D00
+        lda     $9D00
         sta     $40
-        lda     L9D01
+        lda     $9D01
         .byte   $DF
         .byte   $A7
         .byte   $41
