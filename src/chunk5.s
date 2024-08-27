@@ -5898,6 +5898,7 @@ L89B6:  lda     $0834
         ldx     #$01
         jmp     L9093
 
+;;; Ctrl+P
 L89D0:  lda     $08A6
         pha
         inc     $08BB
@@ -6052,122 +6053,111 @@ L8AFF:  brk
 
 ;;; Indexed by ASCII code, $00 through $5F
 KeyTable:
-        .byte   $47
-        sta     ($C3),y
-        .byte   $8F
-        dec     $8F
-        eor     ($90,x)
-        cmp     $8F,x
-        .byte   $FA
-        .byte   $A7
-        .byte   $F7
-        bcc     L8B56
-        sta     ($D3),y
-        bcc     L8B14
-        .byte   $90
-L8B14:  .byte   $47
-        sta     ($47),y
-        sta     ($10),y
-        bcc     L8B94
-        bcc     L8B7E
-        bcc     L8B66
-        sta     ($D0),y
-        .byte   $89
-        .byte   $47
-        sta     ($47),y
-        sta     ($47),y
-        sta     ($7D),y
-        .byte   $8F
-        cpy     #$90
-        .byte   $5C
-        bcc     L8B76
-        sta     ($AB),y
-        .byte   $8F
-        .byte   $47
-        sta     ($47),y
-        sta     ($9E),y
-        sty     L9147
-        .byte   $47
-        sta     ($47),y
-        sta     ($47),y
-        sta     ($7E),y
-        bcc     L8B8A
-        sta     ($47),y
-        sta     ($47),y
-L8B47:  sta     ($47),y
-        sta     ($47),y
-        sta     ($47),y
-        sta     ($47),y
-        sta     ($47),y
-        sta     ($47),y
-        sta     ($47),y
-        .byte   $91
-L8B56:  sta     ($90),y
-        ora     ($8D,x)
-L8B5A:  .byte   $47
-        sta     ($27),y
-        stx     L90F1
-        .byte   $47
-        sta     ($A4),y
-        sty     L8CCB
-L8B66:  sbc     $FC8C
-        bcc     L8B70
-        sta     ($47),y
-        sta     ($47),y
-        .byte   $91
-L8B70:  .byte   $F3
-        sty     L8CF7
-        .byte   $47
-        .byte   $91
-L8B76:  .byte   $47
-        sta     ($47),y
-        sta     ($47),y
-        sta     ($47),y
-        .byte   $91
-L8B7E:  .byte   $47
-        sta     ($47),y
-        sta     ($C3),y
-        .byte   $8F
-        .byte   $DB
-        .byte   $92
-        lda     ($92,x)
-        .byte   $F3
-        .byte   $91
-L8B8A:  .byte   $47
-        .byte   $91
-        .byte   $F7
-        sta     ($0C),y
-        .byte   $92
-        jmp     $4792
 
-        .byte   $91
-L8B94:  .byte   $47
-        sta     ($0C),y
-        bcc     L8BA9
-        bcc     L8B47
-        .byte   $92
-        .byte   $97
-        sta     ($47),y
-        sta     ($D0),y
-        .byte   $89
-        .byte   $9B
-        bcc     $8BC7
-        sta     ($97),y
-        bcc     L8B5A
-L8BA9:  sta     ($47),y
-        sta     ($0F),y
-        sta     ($73),y
-        .byte   $8F
-        .byte   $1B
-        bcc     $8BFB
-        sta     ($9E),y
-        bcc     $8BFE
-        sta     ($47),y
-        sta     ($47),y
-        sta     ($47),y
-        sta     ($47),y
-        sta     ($48),y
+Ignore := L9147                 ; convenient RTS
 
+        .addr   Ignore          ; Ctrl+@
+        .addr   L8FC3           ; Ctrl+A
+        .addr   L8FC6           ; Ctrl+B
+        .addr   L9041           ; Ctrl+C
+        .addr   L8FD5           ; Ctrl+D
+        .addr   LA7FA           ; Ctrl+E
+        .addr   L90F7           ; Ctrl+F
+        .addr   Ignore          ; Ctrl+G
+        .addr   L90D3           ; Ctrl+H
+        .addr   L9001           ; Ctrl+I
+        .addr   Ignore          ; Ctrl+J
+        .addr   Ignore          ; Ctrl+K
+        .addr   L9010           ; Ctrl+L
+        .addr   L9079           ; Ctrl+M
+        .addr   L9061           ; Ctrl+N
+        .addr   Ignore          ; Ctrl+O
+        .addr   L89D0           ; Ctrl+P
+        .addr   Ignore          ; Ctrl+Q
+        .addr   Ignore          ; Ctrl+R
+        .addr   Ignore          ; Ctrl+S
+        .addr   L8F7D           ; Ctrl+T
+        .addr   L90C0           ; Ctrl+U
+        .addr   L905C           ; Ctrl+V
+        .addr   Ignore          ; Ctrl+W
+        .addr   L8FAB           ; Ctrl+X
+        .addr   Ignore          ; Ctrl+Y
+        .addr   Ignore          ; Ctrl+Z
+        .addr   $8C9E           ; Ctrl+[
+        .addr   Ignore          ; Ctrl+\
+        .addr   Ignore          ; Ctrl+]
+        .addr   Ignore          ; Ctrl+^
+        .addr   Ignore          ; Ctrl+_
+        .addr   L907E           ; Space
+        .addr   Ignore          ; !
+        .addr   Ignore          ; "
+        .addr   Ignore          ; #
+        .addr   Ignore          ; $
+        .addr   Ignore          ; %
+        .addr   Ignore          ; &
+        .addr   Ignore          ; '
+        .addr   Ignore          ; (
+        .addr   Ignore          ; )
+        .addr   Ignore          ; *
+        .addr   L9091           ; +
+        .addr   L8D01           ; ,
+        .addr   Ignore          ; -
+        .addr   $8E27           ; .
+        .addr   L90F1           ; /
+        .addr   Ignore          ; 0
+        .addr   $8CA4           ; 1
+        .addr   L8CCB           ; 2
+        .addr   $8CED           ; 3
+        .addr   $90FC           ; 4
+        .addr   $9105           ; 5
+        .addr   Ignore          ; 6
+        .addr   Ignore          ; 7
+        .addr   $8CF3           ; 8
+        .addr   L8CF7           ; 9
+        .addr   Ignore          ; :
+        .addr   Ignore          ; ;
+        .addr   Ignore          ; <
+        .addr   Ignore          ; =
+        .addr   Ignore          ; >
+        .addr   Ignore          ; ?
+        .addr   Ignore          ; @
+        .addr   $8FC3           ; A
+        .addr   $92DB           ; B
+        .addr   $92A1           ; C
+        .addr   $91F3           ; D
+        .addr   Ignore          ; E
+        .addr   $91F7           ; F
+        .addr   $920C           ; G
+        .addr   $924C           ; H
+        .addr   Ignore          ; I
+        .addr   Ignore          ; J
+        .addr   $900C           ; K
+        .addr   $9010           ; L
+        .addr   $92AC           ; M
+        .addr   $9197           ; N
+        .addr   Ignore          ; O
+        .addr   $89D0           ; P
+        .addr   $909B           ; Q
+        .addr   $9122           ; R
+        .addr   $9097           ; S
+        .addr   $91B1           ; T
+        .addr   Ignore          ; U
+        .addr   $910F           ; V
+        .addr   $8F73           ; W
+        .addr   $901B           ; X
+        .addr   $9148           ; Y
+        .addr   $909E           ; Z
+        .addr   Ignore          ; [
+        .addr   Ignore          ; \
+        .addr   Ignore          ; ]
+        .addr   Ignore          ; ^
+        .addr   Ignore          ; _
+
+;;; ============================================================
+
+;;; $8BC0
+
+        pha
         txa
         pha
         lda     KBD
@@ -6398,7 +6388,9 @@ L8CF7:  inc     $0A6B
         lda     #$00
         ldx     #$05
         bne     L8CC6
-        lda     $FA
+
+;;; , key
+L8D01:  lda     $FA
         nop
         ldx     #$00
         stx     $08F1
@@ -6708,7 +6700,7 @@ L8F72:  rts
 
         rts
 
-        lda     $0937
+L8F7D:  lda     $0937
         beq     L8FAB
         lda     #$00
         sec
@@ -6730,6 +6722,7 @@ L8F72:  rts
         stx     $09E5
         rts
 
+;;; Ctrl+X
 L8FAB:  lda     $08F1
         beq     L8FBE
         lda     $FA
@@ -6742,17 +6735,21 @@ L8FAB:  lda     $08F1
 L8FBE:  lda     #$08
 L8FC0:  jmp     L9071
 
+;;; Ctrl+A
+L8FC3:  nop
         nop
         nop
-        nop
-        lda     #$00
+
+;;; Ctrl+B
+L8FC6:  lda     #$00
         sta     $099E
         sta     $099F
         sta     $09A0
         sta     $09A1
         rts
 
-        lda     $08B2
+;;; Ctrl+D
+L8FD5:  lda     $08B2
         ldx     $08B3
         sec
         sbc     $70
@@ -6779,7 +6776,8 @@ L8FC0:  jmp     L9071
         stx     $08AC
         rts
 
-        lda     $0A58
+;;; Ctrl+I
+L9001:  lda     $0A58
         eor     #$FF
         sta     $0A58
         jmp     DrawCarbHeatAndLights
@@ -6787,7 +6785,8 @@ L8FC0:  jmp     L9071
         lsr     $092C
         rts
 
-        lda     $0A61
+;;; Ctrl+L
+L9010:  lda     $0A61
         eor     #$FF
         sta     $0A61
         jmp     DrawCarbHeatAndLights
@@ -6808,7 +6807,9 @@ L8FC0:  jmp     L9071
         stx     $0A57
 L9040:  rts
 
-        lda     #$01
+
+;;; Ctrl+C
+L9041:  lda     #$01
         lda     $08F1
         beq     L9051
         lda     $FA
@@ -6822,11 +6823,15 @@ L9051:  cmp     #$05
         inc     $0909
 L9058:  lda     #$04
         bne     L9071
+
+;;; Ctrl+V
+L905C:
         lda     #$0C
         sta     $FA
         rts
 
-        lda     $08F1
+;;; Ctrl+N
+L9061:  lda     $08F1
         beq     L906F
         lda     $FA
         cmp     #$06
@@ -6840,10 +6845,12 @@ L9071:  sta     $FA
         sta     $08F1
         rts
 
-        lda     #$03
+;;; Ctrl+M
+L9079:  lda     #$03
         sta     $FA
         rts
 
+;;; Space
 L907E:  lda     $09E3
         beq     L90B2
         dec     $0A12
@@ -6853,7 +6860,8 @@ L907E:  lda     $09E3
         sta     $0A12
 L9090:  rts
 
-        ldx     #$01
+;;; + key
+L9091:  ldx     #$01
 L9093:  stx     $08A7
         rts
 
@@ -6879,6 +6887,7 @@ L90B2:  lda     $0A54
         sta     $0A60
 L90BF:  rts
 
+;;; Ctrl+U
 L90C0:  inc     $0A6D
         lda     #$78
         lsr     $08C5
@@ -6889,7 +6898,8 @@ L90C0:  inc     $0A6D
         bpl     L90E5
 L90D2:  rts
 
-        dec     $0A6D
+;;; Ctrl+H
+L90D3:  dec     $0A6D
         lda     #$00
         lsr     $08C5
         bcs     L90E5
@@ -6908,7 +6918,8 @@ L90F1:  lda     #$01
         sta     $08C5
         rts
 
-        lda     #$10
+;;; Ctrl+F
+L90F7:  lda     #$10
         sta     $FA
         rts
 
@@ -6951,7 +6962,8 @@ L913A:  lda     #$50
         lsr     a
         lsr     a
         jsr     L1ABF
-L9147:  rts
+
+L9147:  rts                     ; Used as no-op in `KeyTable`
 
         ldx     #$02
         jsr     L9303
@@ -9813,7 +9825,9 @@ LA7F4:  jsr     LA686
         brk
         brk
         brk
-        jsr     LA68F
+
+;;; Ctrl+E
+LA7FA:  jsr     LA68F
         brk
         brk
         brk
@@ -9855,7 +9869,7 @@ LAAB3   := $AAB3
 LAAB4   := $AAB4
 LAAB5   := $AAB5
 
-        .assert * = $A800, error, "location mismatch"
+        .assert * = $A800, error, .sprintf("location mismatch, %04x", *)
 
 msg_intro:
         MESSAGE $0C, $0D, "SUBLOGIC FLIGHT SIMULATOR II"
