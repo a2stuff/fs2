@@ -6062,16 +6062,16 @@ Ignore := L9147                 ; convenient RTS
         .addr   AltimeterAdjust ; Ctrl+B
         .addr   ComRadio        ; Ctrl+C
         .addr   HeadingAdjust   ; Ctrl+D
-        .addr   LA7FA           ; Ctrl+E
+        .addr   LogSceneryDisk  ; Ctrl+E
         .addr   FuelTankSelect  ; Ctrl+F
         .addr   Ignore          ; Ctrl+G
         .addr   LessThrottle    ; Ctrl+H Left Arrow
-        .addr   L9001           ; Ctrl+I
+        .addr   CarbHeat        ; Ctrl+I
         .addr   Ignore          ; Ctrl+J Down Arrow
         .addr   Ignore          ; Ctrl+K Up Arrow
         .addr   ToggleLights    ; Ctrl+L
         .addr   MagsAndMixture  ; Ctrl+M Return
-        .addr   L9061           ; Ctrl+N
+        .addr   NavRadio           ; Ctrl+N
         .addr   Ignore          ; Ctrl+O
         .addr   TogglePause     ; Ctrl+P
         .addr   Ignore          ; Ctrl+Q
@@ -6101,9 +6101,9 @@ Ignore := L9147                 ; convenient RTS
         .addr   Ignore          ; )
         .addr   Ignore          ; *
         .addr   ReadModeFromLibrary ; +
-        .addr   L8D01           ; ,
+        .addr   KeyDecrease     ; , (a.k.a. unshifted <)
         .addr   Ignore          ; -
-        .addr   L8E27           ; .
+        .addr   KeyIncrease     ; . (a.k.a. unshifted >)
         .addr   ToggleThrottle  ; /
         .addr   Ignore          ; 0
         .addr   L8CA4           ; 1
@@ -6117,9 +6117,9 @@ Ignore := L9147                 ; convenient RTS
         .addr   L8CF7           ; 9
         .addr   Ignore          ; :
         .addr   Ignore          ; ;
-        .addr   Ignore          ; < - must have special handling elsewhere???
+        .addr   Ignore          ; <
         .addr   Ignore          ; =
-        .addr   Ignore          ; > - must have special handling elsewhere???
+        .addr   Ignore          ; >
         .addr   Ignore          ; ?
         .addr   Ignore          ; @
         .addr   ADF             ; A
@@ -6137,10 +6137,10 @@ Ignore := L9147                 ; convenient RTS
         .addr   RudderRight     ; M
         .addr   FlapsDown       ; N
         .addr   Ignore          ; O
-        .addr   TogglePause           ; P
+        .addr   TogglePause     ; P
         .addr   L909B           ; Q
         .addr   TrimDown        ; R
-        .addr   SaveModeToLibrary           ; S
+        .addr   SaveModeToLibrary ; S
         .addr   YokeDown        ; T
         .addr   Ignore          ; U
         .addr   TrimUp          ; V
@@ -6398,7 +6398,8 @@ L8CF7:  inc     $0A6B
         bne     L8CC6
 
 ;;; , key
-L8D01:  lda     $FA
+KeyDecrease:
+        lda     $FA
         nop
         ldx     #$00
         stx     $08F1
@@ -6547,7 +6548,8 @@ L8E1D:  dex
 L8E26:  rts
 
 ;;; . key
-L8E27:  lda     $FA
+KeyIncrease:
+        lda     $FA
         nop
         ldx     #$00
         stx     $08F1
@@ -6791,7 +6793,8 @@ HeadingAdjust:
         rts
 
 ;;; Ctrl+I
-L9001:  lda     $0A58
+CarbHeat:
+        lda     $0A58
         eor     #$FF
         sta     $0A58
         jmp     DrawCarbHeatAndLights
@@ -6849,7 +6852,8 @@ VORS:
         rts
 
 ;;; Ctrl+N
-L9061:  lda     $08F1
+NavRadio:
+        lda     $08F1
         beq     L906F
         lda     $FA
         cmp     #$06
@@ -9883,7 +9887,8 @@ LA7F4:  jsr     LA686
         brk
 
 ;;; Ctrl+E
-LA7FA:  jsr     LA68F
+LogSceneryDisk:
+        jsr     LA68F
         brk
         brk
         brk
