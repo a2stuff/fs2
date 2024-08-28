@@ -30,6 +30,21 @@ L000E           := $000E
 L003C           := $003C
 L00A5           := $00A5
 
+;;; Zero Page
+
+InputMode       := $FA
+;;; $00 = Normal Flight
+;;; $01 = 3D View
+;;; $02 = Radar View
+;;; $03 = Magnetos / Fuel Mixture
+;;; $04 = Com Radio (upper digits)
+;;; $05 = Com Radio (lower digits)
+;;; $06 = Nav Radio (upper digits)
+;;; $07 = Nav Radio (lower digits)
+;;; $08 = Transponder
+;;; $0C = VORS
+;;; $10 = Fuel Tank Select
+
 ;;; Possible chunk4 references
 L0300           := $0300
 L08AD           := $08AD
@@ -5773,9 +5788,9 @@ Ignore := L9147                 ; convenient RTS
         .addr   KeyIncrease     ; . (a.k.a. unshifted >)
         .addr   ToggleThrottle  ; /
         .addr   Ignore          ; 0
-        .addr   L8CA4           ; 1
-        .addr   L8CCB           ; 2
-        .addr   L8CED           ; 3
+        .addr   Select1         ; 1
+        .addr   Select2         ; 2
+        .addr   MagnetosLeft    ; 3
         .addr   SelectRadarView ; 4
         .addr   Select3DView    ; 5
         .addr   Ignore          ; 6
@@ -6005,40 +6020,47 @@ L8C88:  cmp     #'`'            ; ignore lower-case range
 .endproc
 
 ;;; 1 key
-L8CA4:  ldx     #$01
-        lda     $FA
-        cmp     #$03
+;;; Magnetos: off
+;;; Nav Radio / VORS: Select 1
+Select1:
+        ldx     #$01
+        lda     InputMode
+        cmp     #$03            ; Magnetos ?
         bne     L8CB2
         lda     #$00
         ldx     #$00
         beq     L8CC6
-L8CB2:  cmp     #$06
+L8CB2:  cmp     #$06            ; Nav Radio (upper) ?
         beq     L8CBA
-        cmp     #$07
+        cmp     #$07            ; Nav Radio (lower) ?
         bne     L8CBE
 L8CBA:  stx     $0A63
         rts
 
-L8CBE:  cmp     #$0C
+L8CBE:  cmp     #$0C            ; VORS ?
         bne     L8CC5
         stx     $0A71
 L8CC5:  rts
 
 L8CC6:  ldy     #$00
-        sty     $FA
+        sty     InputMode
         rts
 
 ;;; 2 key
-L8CCB:  lda     $FA
+;;; Magnetos: Right
+;;; Nav Radio / VORS: Select 2
+Select2:
+        lda     InputMode
         ldx     #$02
-        cmp     #$03
+        cmp     #$03            ; Magnetos
         bne     L8CD9
         lda     #$01
         ldx     #$01
-        bne     L8CC6
-L8CD9:  cmp     #$06
+        bne     L8CC6           ; always
+
+L8CD9:  cmp     #$06            ; Nav Radio (upper digits)
         beq     L8CE1
-        cmp     #$07
+        cmp     #$07            ; Nav Radio (lower digits)
         bne     L8CE5
 L8CE1:  stx     $0A63
         rts
@@ -6049,7 +6071,8 @@ L8CE5:  cmp     #$0C
 L8CEC:  rts
 
 ;;; 3 key
-L8CED:  lda     #$01
+MagnetosLeft:
+        lda     #$01
         ldx     #$02
         bne     L8CC6           ; always
 
@@ -6067,13 +6090,15 @@ L8CF7:  inc     $0A6B
 
 ;;; , key
 KeyDecrease:
-        lda     $FA
+        lda     InputMode
         nop
         ldx     #$00
         stx     $08F1
         sec
         sbc     #$02
-        bne     L8D20
+        bne     L8D20           ; not Radar View
+
+        ;; Radar View - Zoom Out
         sec
         rol     $0A74
         rol     $0A75
@@ -6087,11 +6112,12 @@ L8D20:  ldx     $093A
         beq     L8D28
         jmp     L8DEA
 
-        ;; Com Radio
 L8D28:  sec
         sbc     #$02
         tax
         bne     L8D4F
+
+        ;; Com Radio (upper digits)
         lda     str_com1
         ldx     str_com1+1
         cmp     #'1'
@@ -6111,6 +6137,8 @@ L8D4C:  jmp     L8E73
 
 L8D4F:  dex
         bne     L8D5E
+
+        ;; Com Radio (lower digits)
         lda     str_com1+2
         ldx     str_com1+3
         jsr     DecComOrNavLowerDigits
@@ -6118,6 +6146,8 @@ L8D4F:  dex
 
 L8D5E:  dex
         bne     L8D80
+
+        ;; Nav Radio (upper digits)
         lda     $0A63
         cmp     #$02
         beq     L8D74
@@ -6133,6 +6163,8 @@ L8D74:  lda     str_nav2
 
 L8D80:  dex
         bne     L8DA2
+
+        ;; Nav Radio (lower digits)
         lda     $0A63
         cmp     #$02
         beq     L8D96
@@ -6182,9 +6214,11 @@ L8DD8:  dec     L8883
         sta     L8883
 L8DE7:  jmp     DrawVOR2
 
-L8DEA:  lda     $FA
-        cmp     #$10
+L8DEA:  lda     InputMode
+        cmp     #$10            ; Fuel Tank Select
         bne     L8DFB
+
+
         lda     $0998
         beq     L8DF8
         dec     $0998
@@ -6229,13 +6263,15 @@ L8E0C:  sec
 
 ;;; . key
 KeyIncrease:
-        lda     $FA
+        lda     InputMode
         nop
         ldx     #$00
         stx     $08F1
         sec
         sbc     #$02
-        bne     L8E47
+        bne     L8E47           ; not Radar View
+
+        ;; Radar View - Zoom In
         clc
         ror     $0A76
         ror     $0A75
@@ -6355,7 +6391,7 @@ L8F23:  inc     L8883
         sta     L8883
 L8F32:  jmp     DrawVOR2
 
-L8F35:  lda     $FA
+L8F35:  lda     InputMode
         cmp     #$10
         bne     L8F46
         lda     $0998
@@ -6437,15 +6473,15 @@ Transponder:
 ReadModeFromDisk:
         lda     $08F1
         beq     L8FBE
-        lda     $FA
+        lda     InputMode
         cmp     #$08
         bcc     L8FBE
         cmp     #$0C
         bcs     L8FBE
         adc     #$01
         bne     L8FC0
-L8FBE:  lda     #$08
-L8FC0:  jmp     L9071
+L8FBE:  lda     #$08            ; Transponder
+L8FC0:  jmp     L9071           ; Sets `InputMode`
 
 ;;; Ctrl+A / A key
 ADF:    nop                     ; self-modified???
@@ -6528,47 +6564,48 @@ L9040:  rts
 
 ;;; Ctrl+C
 ComRadio:
-        lda     #$01
+        lda     #$01            ; ???
         lda     $08F1
         beq     L9051
-        lda     $FA
-        cmp     #$04
+        lda     InputMode
+        cmp     #$04            ; Com Radio (upper digits)
         bne     L9051
-        inc     $FA
+        inc     InputMode       ; set to lower digits
         rts
 
-L9051:  cmp     #$05
+L9051:  cmp     #$05            ; lower digits?
         bne     L9058
         inc     $0909
-L9058:  lda     #$04
-        bne     L9071
+L9058:  lda     #$04            ; upper digits
+        bne     L9071           ; Sets `InputMode`
 
 ;;; Ctrl+V
 VORS:
-        lda     #$0C
-        sta     $FA
+        lda     #$0C            ; VORS
+        sta     InputMode
         rts
 
 ;;; Ctrl+N
 NavRadio:
         lda     $08F1
         beq     L906F
-        lda     $FA
-        cmp     #$06
+        lda     InputMode
+        cmp     #$06            ; Nav Radio (upper digits)
         bne     L906F
-        inc     $FA
+        inc     InputMode       ; set to lower digits
         rts
 
-L906F:  lda     #$06
-L9071:  sta     $FA
+L906F:  lda     #$06            ; upper digits
+
+L9071:  sta     InputMode
         lda     #$03
         sta     $08F1
         rts
 
 ;;; Ctrl+M
 MagsAndMixture:
-        lda     #$03
-        sta     $FA
+        lda     #$03            ; Magnetos / Fuel Mixture
+        sta     InputMode
         rts
 
 ;;; Space
@@ -6651,24 +6688,28 @@ ToggleThrottle:
 
 ;;; Ctrl+F
 FuelTankSelect:
-        lda     #$10
-        sta     $FA
+        lda     #$10            ; Fuel Tank Select
+        sta     InputMode
         rts
 
 ;;; 4 key
+;;; Magnetos: Both
+;;; Otherwise: Radar View
 SelectRadarView:
-        ldx     #$02
-        stx     $FA
+        ldx     #$02            ; Radar View
+        stx     InputMode
 L9100:  dex
         stx     $0836
         rts
 
 ;;; 5 key
+;;; Magnetos: Start
+;;; Otherwise: 3D View
 Select3DView:
-        ldx     #$01
+        ldx     #$01            ; 3D View
         lda     $0836
         bne     L9100
-        stx     $FA
+        stx     InputMode
         rts
 
 ;;; V key
@@ -6924,10 +6965,10 @@ L92F3:  sta     $0A5B
         lda     #$50
 L9300:  jmp     L91D6
 
-L9303:  lda     $FA
-        cmp     #$01
+L9303:  lda     InputMode
+        cmp     #$01            ; 3D View?
         bne     L9310
-        dec     $FA
+        dec     InputMode       ; return to Normal Flight mode
         stx     $0A70
         pla
         pla
