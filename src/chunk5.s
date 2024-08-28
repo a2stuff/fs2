@@ -6113,7 +6113,7 @@ L8D4F:  dex
         bne     L8D5E
         lda     str_com1+2
         ldx     str_com1+3
-        jsr     L8DFC
+        jsr     DecComOrNavLowerDigits
         jmp     L8E88
 
 L8D5E:  dex
@@ -6123,12 +6123,12 @@ L8D5E:  dex
         beq     L8D74
         lda     str_nav1
         ldx     str_nav1+1
-        jsr     L8E10
+        jsr     DecNavDigits
         jmp     L8EA4
 
 L8D74:  lda     str_nav2
         ldx     str_nav2+1
-        jsr     L8E10
+        jsr     DecNavDigits
         jmp     L8EB6
 
 L8D80:  dex
@@ -6138,11 +6138,12 @@ L8D80:  dex
         beq     L8D96
         lda     str_nav1+2
         ldx     str_nav1+3
-        jsr     L8DFC
+        jsr     DecComOrNavLowerDigits
         jmp     L8ED2
 
-L8D96:  LDAX    str_nav2+2
-        jsr     L8DFC
+L8D96:  lda     str_nav2+2
+        ldx     str_nav2+3
+        jsr     DecComOrNavLowerDigits
         jmp     L8EE4
 
 L8DA2:  dex
@@ -6191,35 +6192,40 @@ L8DF8:  jmp     L1B9F
 
 L8DFB:  rts
 
-L8DFC:  cpx     #$30
+.proc DecComOrNavLowerDigits
+        cpx     #'0'
         bne     L8E09
-        ldx     #$35
-        cmp     #$30
+        ldx     #'5'
+        cmp     #'0'
         bne     L8E0C
-        lda     #$39
+        lda     #'9'
         rts
 
-L8E09:  ldx     #$30
+L8E09:  ldx     #'0'
         rts
 
 L8E0C:  sec
-        sbc     #$01
+        sbc     #1
         rts
+.endproc
 
-L8E10:  cmp     #$30
-        bne     L8E1D
-        cpx     #$38
-        bne     L8E1D
-        lda     #$31
-        ldx     #$37
+.proc DecNavDigits
+        cmp     #'0'
+        bne     :+
+        cpx     #'8'
+        bne     :+
+        lda     #'1'
+        ldx     #'7'
         rts
-
-L8E1D:  dex
-        cpx     #$2F
-        bne     L8E26
-        ldx     #$39
-        lda     #$30
-L8E26:  rts
+:
+        dex
+        cpx     #'0'-1
+        bne     :+
+        ldx     #'9'
+        lda     #'0'
+:
+        rts
+.endproc
 
 ;;; . key
 KeyIncrease:
@@ -6249,19 +6255,19 @@ L8E4F:  sec
         bne     L8E7C
         lda     str_com1
         ldx     str_com1+1
-        cmp     #$33
+        cmp     #'3'
         bne     L8E69
-        cpx     #$35
+        cpx     #'5'
         bne     L8E69
-        lda     #$31
-        ldx     #$38
+        lda     #'1'
+        ldx     #'8'
         bne     L8E73
 L8E69:  inx
-        cpx     #$3A
+        cpx     #'9'+1
         bne     L8E73
-        ldx     #$30
+        ldx     #'0'
         clc
-        adc     #$01
+        adc     #1
 L8E73:  sta     str_com1
         stx     str_com1+1
         jmp     L8E8E
@@ -6270,7 +6276,7 @@ L8E7C:  dex
         bne     L8E91
         lda     str_com1+2
         ldx     str_com1+3
-        jsr     IncComDigits
+        jsr     IncComOrNavLowerDigits
 L8E88:  sta     str_com1+2
         stx     str_com1+3
 L8E8E:  jmp     DrawCom1
@@ -6301,14 +6307,14 @@ L8EBF:  dex
         beq     L8EDB
         lda     str_nav1+2
         ldx     str_nav1+3
-        jsr     IncComDigits
+        jsr     IncComOrNavLowerDigits
 L8ED2:  sta     str_nav1+2
         stx     str_nav1+3
         jmp     DrawNav1
 
 L8EDB:  lda     str_nav2+2
         ldx     str_nav2+3
-        jsr     IncComDigits
+        jsr     IncComOrNavLowerDigits
 L8EE4:  sta     str_nav2+2
         stx     str_nav2+3
         jmp     DrawNav2
@@ -6359,7 +6365,7 @@ L8F43:  jsr     L1B9F
 L8F46:  rts
 
 ;;; A = 10s digit, X = 1s digit
-.proc IncComDigits
+.proc IncComOrNavLowerDigits
         cpx     #'5'
         bne     L8F53
         ldx     #'0'
