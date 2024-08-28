@@ -5795,8 +5795,8 @@ Ignore := L9147                 ; convenient RTS
         .addr   Select3DView    ; 5
         .addr   Ignore          ; 6
         .addr   Ignore          ; 7
-        .addr   L8CF3           ; 8
-        .addr   L8CF7           ; 9
+        .addr   SlewPitchUp     ; 8
+        .addr   SlewPitchDown   ; 9
         .addr   Ignore          ; :
         .addr   Ignore          ; ;
         .addr   Ignore          ; <
@@ -6077,13 +6077,16 @@ MagnetosLeft:
         bne     L8CC6           ; always
 
 ;;; 8 key
-L8CF3:  dec     $0A6B
+SlewPitchUp:
+        dec     $0A6B
         rts
 
 ;;; 9 key
-L8CF7:  inc     $0A6B
+SlewPitchDown:
+        inc     $0A6B
         rts
 
+;;; ???
         lda     #$00
         ldx     #$05
         bne     L8CC6
@@ -6913,7 +6916,8 @@ L9284:  lda     $0A52
 L92A0:  rts
 
 ;;; C key
-RudderLeft:  lda     $0A65
+RudderLeft:
+        lda     $0A65
         sec
         sbc     #$04
         cmp     #$80
@@ -7933,7 +7937,7 @@ L9B86:  clc
         sta     $60
         sta     $61
 L9B9F:  lda     $60
-        sta     $60
+        sta     $60             ; ???
         lda     $0A6B
         asl     a
         tay
