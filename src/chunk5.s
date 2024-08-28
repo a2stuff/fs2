@@ -1115,7 +1115,7 @@ L66A9:  adc     #$88
         jmp     (L6C67)
 
         .byte   $67
-        jmp     (L8F67)
+        jmp     ($8F67)
 
         pla
         ldx     $68
@@ -6087,29 +6087,32 @@ L8D20:  ldx     $093A
         beq     L8D28
         jmp     L8DEA
 
+        ;; Com Radio
 L8D28:  sec
         sbc     #$02
         tax
         bne     L8D4F
-        LDAX    str_com1
-        cmp     #$31
+        lda     str_com1
+        ldx     str_com1+1
+        cmp     #'1'
         bne     L8D42
-        cpx     #$38
+        cpx     #'8'
         bne     L8D42
-        lda     #$33
-        ldx     #$35
+        lda     #'3'
+        ldx     #'5'
         bne     L8D4C
 L8D42:  dex
-        cpx     #$2F
+        cpx     #'0'-1
         bne     L8D4C
-        ldx     #$39
+        ldx     #'9'
         sec
-        sbc     #$01
+        sbc     #1
 L8D4C:  jmp     L8E73
 
 L8D4F:  dex
         bne     L8D5E
-        LDAX    str_com1+2
+        lda     str_com1+2
+        ldx     str_com1+3
         jsr     L8DFC
         jmp     L8E88
 
@@ -6147,7 +6150,7 @@ L8DA2:  dex
         bne     L8DB0
         lda     #'8'
 L8DB0:  sec
-        sbc     #$01
+        sbc     #1
         sta     str_xpndr,x
         jmp     DrawXPNDR
 
@@ -6241,7 +6244,8 @@ L8E4F:  sec
         sbc     #$02
         tax
         bne     L8E7C
-        LDAX    str_com1
+        lda     str_com1
+        ldx     str_com1+1
         cmp     #$33
         bne     L8E69
         cpx     #$35
@@ -6255,14 +6259,17 @@ L8E69:  inx
         ldx     #$30
         clc
         adc     #$01
-L8E73:  STAX    str_com1
+L8E73:  sta     str_com1
+        stx     str_com1+1
         jmp     L8E8E
 
 L8E7C:  dex
         bne     L8E91
-        LDAX    str_com1+2
-        jsr     L8F47
-L8E88:  STAX    str_com1+2
+        lda     str_com1+2
+        ldx     str_com1+3
+        jsr     IncComDigits
+L8E88:  sta     str_com1+2
+        stx     str_com1+3
 L8E8E:  jmp     DrawCom1
 
 L8E91:  dex
@@ -6270,14 +6277,18 @@ L8E91:  dex
         lda     $0A63
         cmp     #$02
         beq     L8EAD
-        LDAX    str_nav1
-        jsr     L8F5C
-L8EA4:  STAX    str_nav1
+        lda     str_nav1
+        ldx     str_nav1+1
+        jsr     IncNavDigits
+L8EA4:  sta     str_nav1
+        stx     str_nav1+1
         jmp     DrawNav1
 
-L8EAD:  LDAX    str_nav2
-        jsr     L8F5C
-L8EB6:  STAX    str_nav2
+L8EAD:  lda     str_nav2
+        ldx     str_nav2+1
+        jsr     IncNavDigits
+L8EB6:  sta     str_nav2
+        stx     str_nav2+1
         jmp     DrawNav2
 
 L8EBF:  dex
@@ -6285,14 +6296,18 @@ L8EBF:  dex
         lda     $0A63
         cmp     #$02
         beq     L8EDB
-        LDAX    str_nav1+2
-        jsr     L8F47
-L8ED2:  STAX    str_nav1+2
+        lda     str_nav1+2
+        ldx     str_nav1+3
+        jsr     IncComDigits
+L8ED2:  sta     str_nav1+2
+        stx     str_nav1+3
         jmp     DrawNav1
 
-L8EDB:  LDAX    str_nav2+2
-        jsr     L8F47
-L8EE4:  STAX    str_nav2+2
+L8EDB:  lda     str_nav2+2
+        ldx     str_nav2+3
+        jsr     IncComDigits
+L8EE4:  sta     str_nav2+2
+        stx     str_nav2+3
         jmp     DrawNav2
 
 L8EED:  dex
@@ -6340,37 +6355,43 @@ L8F35:  lda     $FA
 L8F43:  jsr     L1B9F
 L8F46:  rts
 
-L8F47:  cpx     #$35
+;;; A = 10s digit, X = 1s digit
+.proc IncComDigits
+        cpx     #'5'
         bne     L8F53
-        ldx     #$30
-        cmp     #$39
+        ldx     #'0'
+        cmp     #'9'
         bne     L8F56
         txa
         rts
 
-L8F53:  ldx     #$35
+L8F53:  ldx     #'5'
         rts
 
-L8F56:  ldx     #$30
+L8F56:  ldx     #'0'
         clc
-        adc     #$01
+        adc     #1
         rts
+.endproc
 
-L8F5C:  cmp     #$31
-        bne     L8F68
-        cpx     #$37
-        bne     L8F68
-        lda     #$30
+;;; A = 10s digit, X = 1s digit
+.proc IncNavDigits
+        cmp     #'1'
+        bne     :+
+        cpx     #'7'
+        bne     :+
+        lda     #'0'
         inx
-L8F67:  rts
-
-L8F68:  inx
-        cpx     #$3A
-        bne     L8F72
-        ldx     #$30
+        rts
+:
+        inx
+        cpx     #'9'+1
+        bne     :+
+        ldx     #'0'
         clc
         adc     #$01
-L8F72:  rts
+:       rts
+.endproc
 
 ;;; W key
 L8F73:  lda     #$01
