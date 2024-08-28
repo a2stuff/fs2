@@ -47,10 +47,20 @@ InputMode       := $FA
 
 ;;; Simulation State
 
+SlewRollRate  := $0A67
+SlewYawRate   := $0A69
+SlewPitchRate := $0A6B
+
 ViewDirection := $0A70
-;;; $00 = forward
-
-
+;;; $00 = front
+;;; $02 = front right
+;;; $04 = right
+;;; $06 = back right
+;;; $08 = back
+;;; $0A = back left
+;;; $0C = left
+;;; $0E = front left
+;;; $FF = down
 
 ;;; Possible chunk4 references
 L0300           := $0300
@@ -6085,12 +6095,12 @@ MagnetosLeft:
 
 ;;; 8 key
 SlewPitchUp:
-        dec     $0A6B
+        dec     SlewPitchRate
         rts
 
 ;;; 9 key
 SlewPitchDown:
-        inc     $0A6B
+        inc     SlewPitchRate
         rts
 
 ;;; ???
@@ -6724,9 +6734,10 @@ Select3DView:
 
 ;;; V key
 TrimUp:
-        ldx     #$0A
+        ldx     #$0A            ; back left
         jsr     MaybeSetViewDirectionAndAbort
-        inc     $0A69
+
+        inc     SlewYawRate
         lda     $0A5D
         clc
         adc     #$04
@@ -6735,10 +6746,11 @@ TrimUp:
 
 ;;; R key
 TrimDown:
-        ldx     #$0E
+        ldx     #$0E            ; front left
         jsr     MaybeSetViewDirectionAndAbort
+
         inc     $08C8
-        inc     $0A67
+        inc     SlewRollRate
         lda     $0A5D
         sec
         sbc     #$04
@@ -6758,9 +6770,10 @@ L9147:  rts                     ; Used as no-op in `KeyTable`
 
 ;;; Y key
 FlapsUp:
-        ldx     #$02
+        ldx     #$02            ; front right
         jsr     MaybeSetViewDirectionAndAbort
-        dec     $0A67
+
+        dec     SlewRollRate
         lda     $0A5F
         sec
         sbc     #$20
@@ -6794,9 +6807,10 @@ L915D:  lsr     a
 
 ;;; N key
 FlapsDown:
-        ldx     #$06
+        ldx     #$06            ; back right
         jsr     MaybeSetViewDirectionAndAbort
-        dec     $0A69
+
+        dec     SlewYawRate
         lda     $0937
         bne     L91B0
         lda     $0A5F
@@ -6809,8 +6823,9 @@ L91B0:  rts
 
 ;;; T key
 YokeDown:
-        ldx     #$00
+        ldx     #$00            ; front
         jsr     MaybeSetViewDirectionAndAbort
+
         lda     $0A5B
         sec
         sbc     #$04
@@ -6847,8 +6862,9 @@ L91F3:  inc     $08B4
 
 ;;; F key
 YokeLeft:
-        ldx     #$0C
+        ldx     #$0C            ; left
         jsr     MaybeSetViewDirectionAndAbort
+
         lda     $0A53
         sec
         sbc     #$04
@@ -6859,15 +6875,16 @@ YokeLeft:
 
 ;;; G key
 YokeCenter:
-        ldx     #$FF
+        ldx     #$FF            ; down
         jsr     MaybeSetViewDirectionAndAbort
+
 L9211:  lda     #$00
         ldx     $0937
         beq     L9227
         sta     $0A5B
-        sta     $0A6B
-        sta     $0A67
-        sta     $0A69
+        sta     SlewPitchRate
+        sta     SlewRollRate
+        sta     SlewYawRate
         sta     $0A6D
 L9227:  sta     $0A53
         sta     $0A65
@@ -6886,8 +6903,9 @@ L9246:  jsr     L925C
 
 ;;; H key
 YokeRight:
-        ldx     #$04
+        ldx     #$04            ; right
         jsr     MaybeSetViewDirectionAndAbort
+
         lda     $0A53
         clc
         adc     #$04
@@ -6957,8 +6975,9 @@ L92DA:  rts
 
 ;;; B key
 YokeUp:
-        ldx     #$08
+        ldx     #$08            ; back
         jsr     MaybeSetViewDirectionAndAbort
+
         lda     $0A5B
         clc
         adc     #$04
@@ -6976,16 +6995,25 @@ L92F3:  sta     $0A5B
         lda     #$50
 L9300:  jmp     L91D6
 
+;;; ============================================================
+
+;;; Inputs: X = view direction
+;;; If `InputMode` is 3D View, this aborts caller steps.
+
 .proc MaybeSetViewDirectionAndAbort
         lda     InputMode
         cmp     #$01            ; 3D View?
-        bne     L9310
+        bne     :+
+
         dec     InputMode       ; return to Normal Flight mode
         stx     ViewDirection
+        pla                     ; abort caller steps
         pla
-        pla
-L9310:  rts
+:
+        rts
 .endproc
+
+;;; ============================================================
 
 L9311:  ldx     $0A65
         jsr     L172C
@@ -7947,7 +7975,7 @@ L9B86:  clc
         sta     $61
 L9B9F:  lda     $60
         sta     $60             ; ???
-        lda     $0A6B
+        lda     SlewPitchRate
         asl     a
         tay
         lda     $6F
@@ -7986,13 +8014,13 @@ L9BC9:  lda     #$00
         lda     $71
         eor     #$80
         sta     $71
-L9BE8:  lda     $0A67
+L9BE8:  lda     SlewRollRate
         clc
         adc     $6F
         sta     $6F
         lda     $71
         sec
-        sbc     $0A69
+        sbc     SlewYawRate
         sta     $71
 L9BF8:  lda     $65
         clc
@@ -8169,7 +8197,7 @@ L9CE6:  tay
         and     #$10
         beq     L9D6A
         lda     ViewDirection
-        bne     L9D6A
+        bne     L9D6A           ; skip unless forward
         lda     $08B2
         ldx     $08B3
         sec
