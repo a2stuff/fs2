@@ -6121,11 +6121,13 @@ L8D5E:  dex
         lda     $0A63
         cmp     #$02
         beq     L8D74
-        LDAX    str_nav1
+        lda     str_nav1
+        ldx     str_nav1+1
         jsr     L8E10
         jmp     L8EA4
 
-L8D74:  LDAX    str_nav2
+L8D74:  lda     str_nav2
+        ldx     str_nav2+1
         jsr     L8E10
         jmp     L8EB6
 
@@ -6134,7 +6136,8 @@ L8D80:  dex
         lda     $0A63
         cmp     #$02
         beq     L8D96
-        LDAX    str_nav1+2
+        lda     str_nav1+2
+        ldx     str_nav1+3
         jsr     L8DFC
         jmp     L8ED2
 
