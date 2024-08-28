@@ -4785,6 +4785,11 @@ L8234:  clc
         inc     $30
 L8255:  rts
 
+
+
+;;; ============================================================
+;;; Draw Artificial Horizon
+
 L8256:  cmp     ($CF,x)
         .byte   $D4
         cmp     $E1DD,y
@@ -4806,7 +4811,10 @@ L8256:  cmp     ($CF,x)
         asl     $2622,x
         .byte   $2B
         and     ($40),y
-L8278:  ldx     #$06
+
+
+.proc L8278
+        ldx     #$06
         lda     $6D
         bpl     L8280
         ldx     #$05
@@ -4815,6 +4823,7 @@ L8280:  jsr     L7BA9
         sta     $E7
         lda     #$1F
         jsr     L8387
+
         lda     $6D
         clc
         adc     #$20
@@ -4980,7 +4989,10 @@ L838B:  lda     HiresTableLo,x
         bpl     L838B
         rts
 
-L83B7:  ldx     #$6E
+;;; Apply AND mask to artificial horizon
+
+L83B7:
+        ldx     #$6E
 L83B9:  lda     HiresTableLo,x
         sta     $8E
         lda     HiresTableHi,x
@@ -5002,6 +5014,7 @@ L83D5:  iny
         cpx     #$8E
         bne     L83B9
         rts
+
 
 L83E2:  lda     #$86
         sta     $2E
@@ -5041,7 +5054,12 @@ L8425:  jsr     L790E
         ldx     $B2
         rts
 
-L842B:  ldx     #$E8
+.endproc
+
+;;; ============================================================
+
+.proc L842B
+        ldx     #$E8
         lda     $EB
         sec
         sbc     $E9
@@ -5112,8 +5130,12 @@ L84A8:  inc     $E7
 L84B0:  dec     $93
         bne     L849A
         rts
+.endproc
 
-L84B5:  lda     $FB
+;;; ============================================================
+
+.proc L84B5
+        lda     $FB
         and     #$02
         beq     L8504
         lda     $09CD
@@ -5132,7 +5154,7 @@ L84B5:  lda     $FB
         bmi     L84DC
         cmp     #$10
         bmi     L84DE
-L84D8:  lda     #$0F
+        lda     #$0F
         bne     L84DE
 L84DC:  lda     #$00
 L84DE:  sta     $AF
@@ -5146,7 +5168,9 @@ L84EA:  cmp     $AF
 
 L84EF:  jsr     L8505
         lda     $AF
-L84F4:  ldx     $8D
+
+::L84F4 := *
+        ldx     $8D
         bpl     L84FE
         sta     $0A41
         jmp     L8501
@@ -5163,11 +5187,9 @@ L8505:  pha
         asl     a
         pha
         tax
-        .byte   $BD
-        .byte   $E0
-L8512:  .byte   $0D
+        lda     $0DE0,x
         clc
-L8514:  adc     #$0C
+        adc     #$0C
         sta     $E9
         lda     $0DE1,x
         clc
@@ -5196,439 +5218,84 @@ L8514:  adc     #$0C
         sta     $EC
         jsr     L7988
         rts
+.endproc
 
-        dey
-        .byte   $80
-        .byte   $83
-        cmp     ($81,x)
-        bcc     L84D8
-L8554:  cpx     #$C0
-        .byte   $83
-        stx     $A0
-        .byte   $86
-L855A:  tya
-        cpx     #$87
-        tya
-        .byte   $E0
-L855F:  .byte   $83
-        stx     $80
-        .byte   $80
-        cpx     #$C0
-        sta     ($81,x)
-        .byte   $80
-L8568:  .byte   $80
-        cpy     #$81
-        cpy     #$80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $82
-        ldy     #$80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        sty     $90
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        dey
-        tya
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        tya
-        dey
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        bcc     L8512
-        .byte   $80
-        cpx     #$87
-        .byte   $80
-        bcc     L8514
-        .byte   $80
-        .byte   $80
-        .byte   $80
-L8593:  .byte   $80
-        ldy     #$84
-L8596:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        ldy     #$84
-        .byte   $80
-        cpx     #$87
-        .byte   $80
-        ldy     #$84
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        ldy     #$84
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        ldy     #$84
-        sed
-        .byte   $9F
-        sbc     LA09F,y
-        sty     $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        ldy     #$84
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        ldy     #$84
-        .byte   $80
-        cpx     #$87
-        .byte   $80
-        ldy     #$84
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        bcc     L8554
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        bcc     L855A
-        .byte   $80
-        cpx     #$87
-        .byte   $80
-        bcc     L8568
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        dey
-        bcc     L855F
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        dey
-        ldy     #$80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        sty     $E0
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        stx     $C0
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $82
-        sta     ($81,x)
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        sta     ($82,x)
-        stx     $E0
-        .byte   $83
-        cpx     #$C0
-        sty     $98
-        tya
-        sty     $E098
-        sty     L87F0
-        beq     L8593
-        bcs     L8596
-        .byte   $80
-        .byte   $FF
-        .byte   $FF
-        sta     ($90,x)
-        sty     $E0
-        .byte   $FF
-        .byte   $FF
-        .byte   $87
-        ldy     #$86
-        sed
-        .byte   $FF
-        .byte   $FF
-        .byte   $9F
-        cpx     #$83
-        inc     $FFFF,x
-        .byte   $FF
-        cpy     #$81
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        sta     ($C0,x)
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $83
-        cpx     #$FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $87
-        .byte   $F0
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $8F
-        sed
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $9F
-        sed
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $9F
-        sed
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $9F
-        .byte   $FC
-        .byte   $FF
-L8651:  .byte   $FF
-        .byte   $FF
-L8653:  .byte   $FF
-        .byte   $BF
-        .byte   $FC
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $BF
-        .byte   $FC
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $BF
-        .byte   $FC
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $BF
-        .byte   $FC
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $BF
-        .byte   $FC
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $BF
-        .byte   $FC
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $BF
-        .byte   $FC
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $BF
-        .byte   $FC
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $BF
-        .byte   $FC
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $9F
-        sed
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $9F
-        sed
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $9F
-        .byte   $F0
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $8F
-        .byte   $F0
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $8F
-        cpx     #$FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $87
-        cpx     #$FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $87
-        cpy     #$FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $83
-        sta     ($FF,x)
-        .byte   $FF
-        .byte   $FF
-        .byte   $FF
-        sta     ($82,x)
-        inc     $FFFF,x
-        .byte   $FF
-        cpy     #$84
-        sed
-        .byte   $9F
-        .byte   $FC
-        .byte   $9F
-        cpx     #$8C
-        beq     L8651
-        beq     L8653
-        .byte   $B0
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
+        ;; Bitmap for artificial horizon???
+
+        ;; $854D
+
+        .byte   $88, $80, $83, $c1, $81, $90, $84, $e0
+        .byte   $c0, $83, $86, $a0, $86, $98, $e0, $87
+        .byte   $98, $e0, $83, $86, $80, $80, $e0, $c0
+        .byte   $81, $81, $80, $80, $c0, $81, $c0, $80
+        .byte   $80, $80, $80, $82, $a0, $80, $80, $80
+        .byte   $80, $84, $90, $80, $80, $80, $80, $88
+        .byte   $98, $80, $80, $80, $80, $98, $88, $80
+        .byte   $80, $80, $80, $90, $88, $80, $e0, $87
+        .byte   $80, $90, $84, $80, $80, $80, $80, $a0
+        .byte   $84, $80, $80, $80, $80, $a0, $84, $80
+        .byte   $e0, $87, $80, $a0, $84, $80, $80, $80
+        .byte   $80, $a0, $84, $80, $80, $80, $80, $a0
+        .byte   $84, $f8, $9f, $f9, $9f, $a0, $84, $80
+        .byte   $80, $80, $80, $a0, $84, $80, $80, $80
+        .byte   $80, $a0, $84, $80, $e0, $87, $80, $a0
+        .byte   $84, $80, $80, $80, $80, $90, $88, $80
+        .byte   $80, $80, $80, $90, $88, $80, $e0, $87
+        .byte   $80, $90, $90, $80, $80, $80, $80, $88
+        .byte   $90, $80, $80, $80, $80, $88, $a0, $80
+        .byte   $80, $80, $80, $84, $e0, $80, $80, $80
+        .byte   $80, $86, $c0, $80, $80, $80, $80, $82
+        .byte   $81, $81, $80, $80, $80, $81, $82, $86
+        .byte   $e0, $83, $e0, $c0, $84, $98, $98, $8c
+        .byte   $98, $e0, $8c, $f0, $87, $f0, $87, $b0
+        .byte   $88, $80, $ff, $ff, $81, $90, $84, $e0
+        .byte   $ff, $ff, $87, $a0, $86, $f8, $ff, $ff
+        .byte   $9f, $e0, $83, $fe, $ff, $ff, $ff, $c0
+        .byte   $81, $ff, $ff, $ff, $ff, $81, $c0, $ff
+        .byte   $ff, $ff, $ff, $83, $e0, $ff, $ff, $ff
+        .byte   $ff, $87, $f0, $ff, $ff, $ff, $ff, $8f
+        .byte   $f8, $ff, $ff, $ff, $ff, $9f, $f8, $ff
+        .byte   $ff, $ff, $ff, $9f, $f8, $ff, $ff, $ff
+        .byte   $ff, $9f, $fc, $ff, $ff, $ff, $ff, $bf
+        .byte   $fc, $ff, $ff, $ff, $ff, $bf, $fc, $ff
+        .byte   $ff, $ff, $ff, $bf, $fc, $ff, $ff, $ff
+        .byte   $ff, $bf, $fc, $ff, $ff, $ff, $ff, $bf
+        .byte   $fc, $ff, $ff, $ff, $ff, $bf, $fc, $ff
+        .byte   $ff, $ff, $ff, $bf, $fc, $ff, $ff, $ff
+        .byte   $ff, $bf, $fc, $ff, $ff, $ff, $ff, $bf
+        .byte   $fc, $ff, $ff, $ff, $ff, $9f, $f8, $ff
+        .byte   $ff, $ff, $ff, $9f, $f8, $ff, $ff, $ff
+        .byte   $ff, $9f, $f0, $ff, $ff, $ff, $ff, $8f
+        .byte   $f0, $ff, $ff, $ff, $ff, $8f, $e0, $ff
+        .byte   $ff, $ff, $ff, $87, $e0, $ff, $ff, $ff
+        .byte   $ff, $87, $c0, $ff, $ff, $ff, $ff, $83
+        .byte   $81, $ff, $ff, $ff, $ff, $81, $82, $fe
+        .byte   $ff, $ff, $ff, $c0, $84, $f8, $9f, $fc
+        .byte   $9f, $e0, $8c, $f0, $87, $f0, $87, $b0
+
+;;; ============================================================
+
+        ;; Uninitialized memory???
+
+        .byte   $FF
+        .byte   $00, $00, $FF, $FF, $00, $00, $FF, $FF
+        .byte   $00, $00, $FF, $FF, $00, $00, $FF, $FF
+        .byte   $00, $00, $FF, $FF, $00, $00, $FF, $FF
+        .byte   $00, $00, $FF, $FF, $00, $00, $FF, $FF
+        .byte   $00, $00, $FF, $FF, $00, $00, $FF, $FF
+        .byte   $00, $00, $FF, $FF, $00, $00, $FF, $FF
+        .byte   $00, $00, $FF, $FF, $00, $00, $FF, $FF
+        .byte   $00, $00, $FF, $FF, $00, $00, $FF, $FF
+        .byte   $00, $00, $FF, $FF, $00, $00, $FF, $FF
+        .byte   $00, $00, $FF, $FF, $00, $00, $FF, $FF
+        .byte   $00, $00, $FF, $FF, $00, $00, $FF, $FF
+        .byte   $00, $00, $FF, $FF, $00, $00, $FF, $FF
+        .byte   $00, $00, $FF, $FF, $00, $00, $FF, $FF
+        .byte   $00, $00, $FF, $FF, $00, $00, $FF, $FF
+        .byte   $00, $00
+
+;;; ============================================================
+
         jmp     L8AC4
 
         jmp     TogglePause
@@ -6071,7 +5738,7 @@ Ignore := L9147                 ; convenient RTS
         .addr   Ignore          ; Ctrl+K Up Arrow
         .addr   ToggleLights    ; Ctrl+L
         .addr   MagsAndMixture  ; Ctrl+M Return
-        .addr   NavRadio           ; Ctrl+N
+        .addr   NavRadio        ; Ctrl+N
         .addr   Ignore          ; Ctrl+O
         .addr   TogglePause     ; Ctrl+P
         .addr   Ignore          ; Ctrl+Q
@@ -6331,10 +5998,11 @@ L8C88:  cmp     #'`'            ; ignore lower-case range
 
 ;;; ============================================================
 
-EditMode:
+.proc EditMode
         lda     #$01
         sta     $08A6
         rts
+.endproc
 
 ;;; 1 key
 L8CA4:  ldx     #$01
@@ -8892,7 +8560,7 @@ LA092:  .byte   $02
         .byte   $0C
         .byte   $9F
         asl     $10CD
-LA09F:  cpx     $12
+        cpx     $12
         .byte   $DF
         .byte   $14
         cmp     ($16,x)
@@ -9930,7 +9598,7 @@ LAAB3   := $AAB3
 LAAB4   := $AAB4
 LAAB5   := $AAB5
 
-        .assert * = $A800, error, .sprintf("location mismatch, %04x", *)
+        .assert * = $A800, error, .sprintf("location mismatch, expected %04x,  was %04x", $A800, *)
 
 msg_intro:
         MESSAGE $0C, $0D, "SUBLOGIC FLIGHT SIMULATOR II"
