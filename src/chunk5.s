@@ -45,6 +45,13 @@ InputMode       := $FA
 ;;; $0C = VORS
 ;;; $10 = Fuel Tank Select
 
+;;; Simulation State
+
+ViewDirection := $0A70
+;;; $00 = forward
+
+
+
 ;;; Possible chunk4 references
 L0300           := $0300
 L08AD           := $08AD
@@ -308,7 +315,7 @@ L610A:  lda     $0836
         sta     $75
         jmp     L61F0
 
-L612D:  lda     $0A70
+L612D:  lda     ViewDirection
         bpl     L6155
         lda     #$00
         sec
@@ -329,7 +336,7 @@ L612D:  lda     $0A70
         sta     $73
         jmp     L61F0
 
-L6155:  lda     $0A70
+L6155:  lda     ViewDirection
         asl     a
         asl     a
         asl     a
@@ -6718,7 +6725,7 @@ Select3DView:
 ;;; V key
 TrimUp:
         ldx     #$0A
-        jsr     L9303
+        jsr     MaybeSetViewDirectionAndAbort
         inc     $0A69
         lda     $0A5D
         clc
@@ -6729,7 +6736,7 @@ TrimUp:
 ;;; R key
 TrimDown:
         ldx     #$0E
-        jsr     L9303
+        jsr     MaybeSetViewDirectionAndAbort
         inc     $08C8
         inc     $0A67
         lda     $0A5D
@@ -6752,7 +6759,7 @@ L9147:  rts                     ; Used as no-op in `KeyTable`
 ;;; Y key
 FlapsUp:
         ldx     #$02
-        jsr     L9303
+        jsr     MaybeSetViewDirectionAndAbort
         dec     $0A67
         lda     $0A5F
         sec
@@ -6788,7 +6795,7 @@ L915D:  lsr     a
 ;;; N key
 FlapsDown:
         ldx     #$06
-        jsr     L9303
+        jsr     MaybeSetViewDirectionAndAbort
         dec     $0A69
         lda     $0937
         bne     L91B0
@@ -6803,7 +6810,7 @@ L91B0:  rts
 ;;; T key
 YokeDown:
         ldx     #$00
-        jsr     L9303
+        jsr     MaybeSetViewDirectionAndAbort
         lda     $0A5B
         sec
         sbc     #$04
@@ -6841,7 +6848,7 @@ L91F3:  inc     $08B4
 ;;; F key
 YokeLeft:
         ldx     #$0C
-        jsr     L9303
+        jsr     MaybeSetViewDirectionAndAbort
         lda     $0A53
         sec
         sbc     #$04
@@ -6853,7 +6860,7 @@ YokeLeft:
 ;;; G key
 YokeCenter:
         ldx     #$FF
-        jsr     L9303
+        jsr     MaybeSetViewDirectionAndAbort
 L9211:  lda     #$00
         ldx     $0937
         beq     L9227
@@ -6880,7 +6887,7 @@ L9246:  jsr     L925C
 ;;; H key
 YokeRight:
         ldx     #$04
-        jsr     L9303
+        jsr     MaybeSetViewDirectionAndAbort
         lda     $0A53
         clc
         adc     #$04
@@ -6951,7 +6958,7 @@ L92DA:  rts
 ;;; B key
 YokeUp:
         ldx     #$08
-        jsr     L9303
+        jsr     MaybeSetViewDirectionAndAbort
         lda     $0A5B
         clc
         adc     #$04
@@ -6969,14 +6976,16 @@ L92F3:  sta     $0A5B
         lda     #$50
 L9300:  jmp     L91D6
 
-L9303:  lda     InputMode
+.proc MaybeSetViewDirectionAndAbort
+        lda     InputMode
         cmp     #$01            ; 3D View?
         bne     L9310
         dec     InputMode       ; return to Normal Flight mode
-        stx     $0A70
+        stx     ViewDirection
         pla
         pla
 L9310:  rts
+.endproc
 
 L9311:  ldx     $0A65
         jsr     L172C
@@ -7705,7 +7714,7 @@ L99A1:  lda     $09AB
         pha
         txa
         sbc     $09AE
-        ldy     $0A70
+        ldy     ViewDirection
         bne     L99C5
         clc
         adc     #$00
@@ -8159,7 +8168,7 @@ L9CE6:  tay
         lda     $FC
         and     #$10
         beq     L9D6A
-        lda     $0A70
+        lda     ViewDirection
         bne     L9D6A
         lda     $08B2
         ldx     $08B3
