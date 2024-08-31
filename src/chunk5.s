@@ -32,6 +32,9 @@ L00A5           := $00A5
 
 ;;; Zero Page
 
+ValueForString  := $B6     ; $B6-$B7
+;;; Used by `Set3DigitString` and `DivideByAXAndSetDigitY`
+
 InputMode       := $FA
 ;;; $00 = Normal Flight
 ;;; $01 = 3D View
@@ -43,7 +46,11 @@ InputMode       := $FA
 ;;; $07 = Nav Radio (lower digits)
 ;;; $08 = Transponder
 ;;; $0C = VORS
+;;; $0D = ???
 ;;; $10 = Fuel Tank Select
+
+InputCounter    := $08F1
+;;; ???
 
 ;;; Simulation State
 
@@ -125,7 +132,7 @@ L1EBC           := $1EBC
 L1EC4           := $1EC4
 L1F89           := $1F89
 
-;;; Possible chunk5 references
+;;; Possible chunk5 references - overlays?
 LB808           := $B808
 LB849           := $B849
 LB9C3           := $B9C3
@@ -166,6 +173,7 @@ L6000:  jmp     L610A
 
 L6003:  jmp     L639D
 
+        ;; Called from chunk2
 L6006:  jmp     L6734
 
         jmp     L7988
@@ -178,10 +186,13 @@ L6012:  jmp     L84B5
 
         jmp     L84F4
 
+        ;; Called by chunk3
         jmp     L67FD
 
+        ;; Called by chunk3
         jmp     L790E
 
+        ;; Called by chunk3
         jmp     L7BA0
 
 L6021:  lda     #$09
@@ -1156,6 +1167,8 @@ L66A9:  adc     #$88
         jmp     (L6C67)
 
         .byte   $67
+
+        ;; Called by chunk3
 L6734:  lda     $08F2
         sta     $08F3
         lda     $0909
@@ -1261,6 +1274,8 @@ L67F1:  clc
 L67FA:  rts
 
         lda     #$02
+
+        ;; Popular jump target???
 L67FD:  jsr     L67F1
         jmp     L6746
 
@@ -1852,6 +1867,7 @@ L6C6E:  ldx     $19
         sty     $6B
         jmp     L6D28
 
+        ;; Called from chunk2
 L6C89:  lda     $19
         asl     a
         rol     $66
@@ -5330,6 +5346,7 @@ L8505:  pha
 
         jmp     L8AC4
 
+        ;; Called from chunk3
         jmp     TogglePause
 
         jmp     LA524
@@ -5362,7 +5379,8 @@ L8752:  jmp     L8A15
 
 L8770:  jmp     LA4D2
 
-L8773:  jmp     Set3DigitString
+Set3DigitStringRelay:
+        jmp     Set3DigitString
 
 L8776:  jmp     LA63A
 
@@ -5668,9 +5686,9 @@ L8A54:  rts
 
 L8A55:  lda     $08BB
         bne     L8A54
-        lda     $08F1
+        lda     InputCounter
         beq     L8A62
-        dec     $08F1
+        dec     InputCounter
 L8A62:  jsr     L93CA
         jsr     L18DD
         jsr     L1915
@@ -6113,7 +6131,7 @@ KeyDecrease:
         lda     InputMode
         nop
         ldx     #$00
-        stx     $08F1
+        stx     InputCounter
         sec
         sbc     #$02
         bne     L8D20           ; not Radar View
@@ -6286,7 +6304,7 @@ KeyIncrease:
         lda     InputMode
         nop
         ldx     #$00
-        stx     $08F1
+        stx     InputCounter
         sec
         sbc     #$02
         bne     L8E47           ; not Radar View
@@ -6491,7 +6509,7 @@ Transponder:
 
 ;;; Ctrl+X
 ReadModeFromDisk:
-        lda     $08F1
+        lda     InputCounter
         beq     L8FBE
         lda     InputMode
         cmp     #$08
@@ -6501,7 +6519,7 @@ ReadModeFromDisk:
         adc     #$01
         bne     L8FC0
 L8FBE:  lda     #$08            ; Transponder
-L8FC0:  jmp     L9071           ; Sets `InputMode`
+L8FC0:  jmp     SetInputModeAndCounter
 
 ;;; Ctrl+A / A key
 ADF:    nop                     ; self-modified???
@@ -6585,7 +6603,7 @@ L9040:  rts
 ;;; Ctrl+C
 ComRadio:
         lda     #$01            ; ???
-        lda     $08F1
+        lda     InputCounter
         beq     L9051
         lda     InputMode
         cmp     #$04            ; Com Radio (upper digits)
@@ -6597,7 +6615,7 @@ L9051:  cmp     #$05            ; lower digits?
         bne     L9058
         inc     $0909
 L9058:  lda     #$04            ; upper digits
-        bne     L9071           ; Sets `InputMode`
+        bne     SetInputModeAndCounter
 
 ;;; Ctrl+V
 VORS:
@@ -6607,7 +6625,7 @@ VORS:
 
 ;;; Ctrl+N
 NavRadio:
-        lda     $08F1
+        lda     InputCounter
         beq     L906F
         lda     InputMode
         cmp     #$06            ; Nav Radio (upper digits)
@@ -6617,9 +6635,10 @@ NavRadio:
 
 L906F:  lda     #$06            ; upper digits
 
-L9071:  sta     InputMode
+SetInputModeAndCounter:
+        sta     InputMode
         lda     #$03
-        sta     $08F1
+        sta     InputCounter
         rts
 
 ;;; Ctrl+M
@@ -6831,7 +6850,7 @@ YokeDown:
         sbc     #$04
         ldx     $0937
         bne     L91C9
-        ldx     $08F1
+        ldx     InputCounter
         beq     L91C9
         sec
         sbc     #$0C
@@ -6843,7 +6862,7 @@ L91C9:  sta     $0A5B
         lda     #$B0
 L91D6:  sta     $0A5B
         lda     #$03
-        sta     $08F1
+        sta     InputCounter
 L91DE:  lda     #$50
         sec
         sbc     $0A5B
@@ -6983,7 +7002,7 @@ YokeUp:
         adc     #$04
         ldx     $0937
         bne     L92F3
-        ldx     $08F1
+        ldx     InputCounter
         beq     L92F3
         clc
         adc     #$0C
@@ -8149,8 +8168,7 @@ L9C76:  rts
         bcc     L9CD3
         inx
 L9CD3:  inx
-L9CD4:  sta     $B6
-        stx     $B7
+L9CD4:  STAX    ValueForString
         CALLAX  Set3DigitString, str_recip
         JUMPAX  DrawMessageOrange, msg_recip
 .endproc
@@ -8166,8 +8184,7 @@ L9CE6:  tay
         lda     #$68
         ldx     #$01
         jsr     L168F
-        sta     $B6
-        stx     $B7
+        STAX    ValueForString
         rts
 
 ;;; Inputs: A,X = output string addr
@@ -8185,7 +8202,7 @@ L9CE6:  tay
         LDAX    #10
         ldy     #1
         jsr     DivideByAXAndSetDigitY
-        lda     $B6
+        lda     ValueForString
         ora     #'0'
         ldy     #2
         sta     (ptr),y
@@ -8888,6 +8905,7 @@ LA22E:  rts
 :       jmp     DrawMessageWhite
 .endproc
 
+        ;; Called from chunk3
 LA23D:  lda     $63
         sec
         sbc     $08FE,x
@@ -9650,6 +9668,8 @@ LA7D3:  rts
         .byte   $41
 LA7E0:  brk
 LA7E1:  .byte   $B0
+
+        ;; $A7E2 - Called from chunk4 - Reset/Interrupt handler
         jmp     LAB91
         jmp     LAB91
 
@@ -9798,6 +9818,7 @@ msg_48k_demo:
         .byte   $FF
         brk
         brk
+
 LAB91:  nop
         ldx     #$3F
         txs
@@ -10472,13 +10493,9 @@ LAFCB:  .byte   $C7
         lda     #$00
         sta     $08C0
         sta     $08C1
-LB013:  lda     $08C0
-        ldx     $08C1
-        sta     $B6
-        stx     $B7
-        lda     #$DF
-        ldx     #$08
-        jsr     L8773
+LB013:  LDAX    $08C0
+        STAX    ValueForString
+        CALLAX  Set3DigitStringRelay, $08DF
         rts
 
 LB025:  lda     $0A54
@@ -10493,13 +10510,9 @@ LB025:  lda     $0A54
         lda     #$00
         sta     $0A54
         sta     $0A55
-LB042:  lda     $0A54
-        ldx     $0A55
-        sta     $B6
-        stx     $B7
-        lda     #$7B
-        ldx     #$A8
-        jsr     L8773
+LB042:  LDAX    $0A54
+        STAX    ValueForString
+        CALLAX  Set3DigitStringRelay, $A87B
         rts
 
         lda     LA802

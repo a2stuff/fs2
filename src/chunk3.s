@@ -16,6 +16,9 @@ L002D           := $002D
 L0045           := $0045
 L00BA           := $00BA
 
+ValueForString := $B6
+;;; Used by `Set3DigitString` and `DivideByAXAndSetDigitY`
+
 ;;; Possible chunk4 references
 L03F0           := $03F0
 HiresTableHi    := $0E9A
@@ -30,9 +33,9 @@ L180C           := $180C
 L1931           := $1931
 L1AD2           := $1AD2
 DrawMessage     := $1C0C
-DrawMessageWhite    := $1C96
-DrawMessageOrange    := $1C9F
-DrawMultiMessage    := $1D92
+DrawMessageWhite        := $1C96
+DrawMessageOrange       := $1C9F
+DrawMultiMessage        := $1D92
 ClearViewportsToBlack   := $1DA8
 L1EC6           := $1EC6
 L1FC4           := $1FC4
@@ -45,15 +48,15 @@ L601E           := $601E
 L6734           := $6734
 L67FD           := $67FD
 L6D4B           := $6D4B
-L8743           := $8743
-L8773           := $8773
+TogglePauseRelay        := $8743
+Set3DigitStringRelay    := $8773
 L8CC6           := $8CC6
-L9071           := $9071
+SetInputModeAndCounter  := $9071
 L9093           := $9093
 L9100           := $9100
 L91DE           := $91DE
-L9CFC           := $9CFC
-L9F10           := $9F10
+Set3DigitString         := $9CFC
+DrawCarbHeatAndLights   := $9F10
 LA23D           := $A23D
 
         .byte   $FF
@@ -509,11 +512,8 @@ LDA53:  lda     $BE
         lda     #$68
         ldx     #$01
         jsr     L168F
-        sta     $B6
-        stx     $B7
-        lda     #$24
-        ldx     #$DB
-        jsr     L9CFC
+        STAX    ValueForString
+        CALLAX  Set3DigitString, $DB24
         JUMPAX  DrawMessageOrange, mDB22
 
 mDA79:  MESSAGE $93, $4B, "      "
@@ -616,9 +616,9 @@ LDB94:  lda     #$09
         cmp     #$10
         bcs     LDBAC
         adc     #$01
-        bne     LDBAE
-LDBAC:  lda     #$0D
-LDBAE:  jmp     L9071
+        bne     LDBAE           ; always
+LDBAC:  lda     #$0D            ; ???
+LDBAE:  jmp     SetInputModeAndCounter
 
         ldx     $097B
         beq     LDBD3
@@ -1502,7 +1502,7 @@ LE2AD:  lda     #$00
         and     #$01
         sta     LE046
 LE2C1:  stx     $0A62
-        jmp     L9F10
+        jmp     DrawCarbHeatAndLights
 
 ;;; Message table
 
@@ -1674,11 +1674,8 @@ LE4C2:  brk
 LE4C3:  brk
 LE4C4:  brk
 LE4C5:  ldx     #$00
-LE4C7:  sta     $B6
-        stx     $B7
-        lda     #$C2
-        ldx     #$E4
-        jsr     L9CFC
+LE4C7:  STAX    $B6
+        CALLAX  Set3DigitString, $E4C2
         ldy     LE4C2
         lda     LE4C3
         ldx     LE4C4
@@ -3444,24 +3441,17 @@ LF13D:  rts
         sta     $B6
         lda     #$00
         sta     $B7
-        lda     #$37
-        ldx     #$F0
-        jsr     L8773
+        CALLAX  Set3DigitStringRelay, $F037
         lda     $A81B
         sta     $B6
         lda     #$00
         sta     $B7
-        lda     #$4C
-        ldx     #$F0
-        jsr     L8773
+        CALLAX  Set3DigitStringRelay, $F04C
         lda     $08A4
         sta     $B6
         lda     #$00
-        .byte   $85
-        .byte   $B7
-        lda     #$70
-        ldx     #$F0
-        jsr     L8773
+        sta     $B7
+        CALLAX  Set3DigitStringRelay, $F070
         lda     $A972
         ora     #$30
         sta     LF0C3
@@ -3491,7 +3481,7 @@ LF13D:  rts
         CALLAX  DrawMessageOrange, msg_wr8
         CALLAX  DrawMessageOrange, msg_wr9
         CALLAX  DrawMessageOrange, msg_wr10
-        jsr     L8743
+        jsr     TogglePauseRelay
         rts
 
         .byte   $FF

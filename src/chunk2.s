@@ -21,19 +21,19 @@ L1768           := $1768
 L180C           := $180C
 L1818           := $1818
 L1A6E           := $1A6E
-DrawMultiMessage    := $1D92
+DrawMultiMessage        := $1D92
 ClearViewportsToBlack   := $1DA8
 
 ;;; Possible chunk5 references
 L6006           := $6006
 L6C89           := $6C89
-L89D0           := $89D0
-L90C0           := $90C0
-L90D3           := $90D3
-L91F7           := $91F7
-L920C           := $920C
-L924C           := $924C
-L92DB           := $92DB
+TogglePause     := $89D0
+MoreThrottle    := $90C0
+LessThrottle    := $90D3
+YokeLeft        := $91F7
+YokeCenter      := $920C
+YokeRight       := $924C
+YokeUp          := $92DB
 LA23D           := $A23D
 LA4D2           := $A4D2
 
@@ -61,7 +61,7 @@ LF71B:  brk
 
 LF71C:  jsr     ClearViewportsToBlack
         CALLAX  DrawMultiMessage, msg_courseplotter
-        jsr     L89D0
+        jsr     TogglePause
         cmp     #'A'
         beq     LF742
         cmp     #'B'
@@ -567,16 +567,16 @@ LFAEB:  .byte   $02
         lda     $0A5B
         cmp     #$18
         bcs     LFAF6
-        jsr     L92DB
+        jsr     YokeUp
 LFAF6:  lda     $60
         cmp     LFAE9
         bcs     LFB03
-        jsr     L90C0
+        jsr     MoreThrottle
         jmp     LFB0B
 
 LFB03:  cmp     LFAEA
         bcc     LFB0B
-        jsr     L90D3
+        jsr     LessThrottle
 LFB0B:  lda     #$24
         sta     $08FF
         lda     #$03
@@ -607,16 +607,16 @@ LFB0B:  lda     #$24
         eor     #$80
         cmp     #$72
         bcc     LFB78
-        jsr     L91F7
-        jsr     L91F7
+        jsr     YokeLeft
+        jsr     YokeLeft
         rts
 
 LFB56:  lda     $09B0
         eor     #$80
         cmp     #$8E
         bcs     LFB78
-        jsr     L924C
-        jsr     L924C
+        jsr     YokeRight
+        jsr     YokeRight
         rts
 
 LFB66:  lda     #$02
@@ -628,7 +628,7 @@ LFB66:  lda     #$02
         inx
 LFB74:  dex
         stx     $09B0
-LFB78:  jsr     L920C
+LFB78:  jsr     YokeCenter
 LFB7B:  rts
 
         .byte   $FF

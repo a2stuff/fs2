@@ -11,11 +11,12 @@
 
 L002D           := $002D
 
-LA7E2           := $A7E2
-LA851           := $A851
-LB7B5           := $B7B5
-LC70D           := $C70D
-LED98           := $ED98
+ValueForString  := $B6          ; $B6-B7
+;;; Used by `DivideByAXAndSetDigitY`
+
+;;; chunk5 references
+LA7E2           := $A7E2        ; reset (etc) handler)
+LA851           := $A851        ; into middle of message???
 
         sty     $C2
         .byte   $D2
@@ -338,6 +339,8 @@ L0331:  ora     ($0A,x)
         php
         .byte   $03
         ora     #$03
+
+        ;; $03D0 - warm start jump vector
         .byte   $0B
         .byte   $03
         .byte   $0C
@@ -366,7 +369,7 @@ L0331:  ora     ($0A,x)
         .byte   $02
         ora     $0F02
         ora     ($FF,x)
-        jmp     LB7B5
+        jmp     $B7B5
 
         lda     $9D0F
         ldy     $9D0E
@@ -380,19 +383,19 @@ L0331:  ora     ($0A,x)
 
         nop
         nop
-        jmp     LED98
 
-        .byte   $E2
-        .byte   $A7
-        .byte   $02
-        jmp     L1F89
+        .byte   $4c             ; JMP ???
+        .addr   $ED98           ; BRK vector
+        .addr   LA7E2           ; Reset vector
+        .byte   $02             ; PWRUP byte
+        jmp     L1F89           ; Applesoft & vector
+        jmp     L1F89           ; Monitor Ctrl-Y vector
+        jmp     LA7E2           ; NMI vector
+        .addr   LA7E2           ; IRQ vector
 
-        jmp     L1F89
 
-        jmp     LA7E2
+        ;; Text page 1 - and screen holes!
 
-        .byte   $E2
-        .byte   $A7
         brk
 L0401:  .byte   $03
         brk
@@ -1140,6 +1143,8 @@ L0606:  ora     ($09,x)
         .byte   $FF
         brk
         brk
+
+        ;; $800
         brk
         brk
         brk
@@ -4411,8 +4416,8 @@ L1C39:  LDAX    #10000
         LDAX    #10
         ldy     #$04
         jsr     DivideByAXAndSetDigitY
-        lda     $B6
-        ora     #$30
+        lda     ValueForString
+        ora     #'0'
         ldy     #$05
         sta     ($B8),y
 
@@ -4429,7 +4434,7 @@ L1C70:  jmp     L1CA3
 ;;; Partial uint16-to-string; calculate high digit for $B6-7 / A,X
 ;;; Inputs: A,X = divisor (e.g. 100)
 ;;;         Y = index of digit to set
-;;;         $B6 = value
+;;;         $B6-B7 = value
 ;;;         $B8 = ptr to string
 ;;; Output: Character at ($B8),Y set; $B6 has remainder
 ;;; Uses: $A5-$A7
@@ -4440,16 +4445,16 @@ L1C70:  jmp     L1CA3
         sty     $A7
 
         ldx     #'0'
-        lda     $B6
+        lda     z:ValueForString
 loop:   sec
         sbc     $A5
         tay
-        lda     $B7
+        lda     z:ValueForString+1
         sbc     $A6
         bmi     L1C90
         inx
-        sta     $B7
-        sty     $B6
+        sta     z:ValueForString+1
+        sty     z:ValueForString
         tya
         jmp     loop
 
@@ -4961,7 +4966,7 @@ L1F67:  ldy     #$01
         sta     L1FB1
         lda     $44
         sta     L1FB0
-        jsr     LC70D
+        jsr     $C70D
 L1F82:  ora     ($AE,x)
         .byte   $1F
 L1F85:  lda     #$04
