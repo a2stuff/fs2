@@ -261,7 +261,7 @@ L0331:  ora     ($0A,x)
         php
         php
         .byte   $07
-        ora     L1105
+        ora     $1105
         .byte   $03
         .byte   $FF
         brk
@@ -2221,7 +2221,7 @@ L0B1F:  .byte   $FF
         ldy     $E9D7
         .byte   $B2
         ldx     $96FA
-L0D0D:  stx     $96,y
+        stx     $96,y
         sta     $9D96,x
         ldx     $AFBA
         ldx     $BFEA,y
@@ -2368,7 +2368,7 @@ L0D0D:  stx     $96,y
         sei
         lsr     L002D
         .byte   $23
-        ora     L1214,y
+        ora     $1214,y
         ora     ($11),y
         asl     $F8
         .byte   $FF
@@ -2402,7 +2402,7 @@ L0E02:  brk
         .byte   $FC
         .byte   $07
         .byte   $03
-L0E0E:  brk
+        brk
         .byte   $FC
         .byte   $07
         .byte   $04
@@ -2557,639 +2557,138 @@ HiresTableLo:
         .byte   $50,$50,$50,$50,$50,$50,$50,$50
         .byte   $d0,$d0,$d0,$d0,$d0,$d0,$d0,$d0
 
-L101A:  brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        ora     ($01,x)
-        ora     ($01,x)
-        ora     ($01,x)
-        ora     ($02,x)
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $03
-        .byte   $03
-        .byte   $03
-        .byte   $03
-        .byte   $03
-        .byte   $03
-        .byte   $03
-        .byte   $04
-        .byte   $04
-        .byte   $04
-        .byte   $04
-        .byte   $04
-        .byte   $04
-        .byte   $04
-        .byte   $05
-        ora     $05
-        ora     $05
-        ora     $05
-        asl     $06
-        asl     $06
-        asl     $06
-        asl     $07
-        .byte   $07
-        .byte   $07
-        .byte   $07
-        .byte   $07
-        .byte   $07
-        .byte   $07
-        php
-        php
-        php
-        php
-        php
-        php
-        php
-        ora     #$09
-        .byte   $09
-        ora     #$09
-        ora     #$09
-        asl     a
-        asl     a
-        asl     a
-        asl     a
-        asl     a
-        asl     a
-        asl     a
-        .byte   $0B
-        .byte   $0B
-        .byte   $0B
-        .byte   $0B
-        .byte   $0B
-        .byte   $0B
-        .byte   $0B
-        .byte   $0C
-        .byte   $0C
-        .byte   $0C
-        .byte   $0C
-        .byte   $0C
-        .byte   $0C
-        .byte   $0C
-        ora     L0D0D
-        ora     L0D0D
-        ora     L0E0E
-        asl     L0E0E
-        asl     $0F0E
-        .byte   $0F
-        .byte   $0F
-        .byte   $0F
-        .byte   $0F
-        .byte   $0F
-        .byte   $0F
-        bpl     L109C
-        bpl     L109E
-        bpl     L10A0
-        bpl     L10A3
-        ora     ($11),y
-        ora     ($11),y
-        ora     ($11),y
-        .byte   $12
-        .byte   $12
-        .byte   $12
-        .byte   $12
-L109C:  .byte   $12
-        .byte   $12
-L109E:  .byte   $12
-        .byte   $13
-L10A0:  .byte   $13
-        .byte   $13
-        .byte   $13
-L10A3:  .byte   $13
-        .byte   $13
-        .byte   $13
-        .byte   $14
-        .byte   $14
-        .byte   $14
-        .byte   $14
-        .byte   $14
-        .byte   $14
-        .byte   $14
-        ora     $15,x
-        ora     $15,x
-        ora     $15,x
-        ora     $16,x
-        asl     $16,x
-        asl     $16,x
-        asl     $16,x
-        .byte   $17
-        .byte   $17
-        .byte   $17
-        .byte   $17
-        .byte   $17
-        .byte   $17
-        .byte   $17
-        clc
-        clc
-        clc
-        clc
-        clc
-        clc
-        clc
-        ora     L1919,y
-        ora     L1919,y
-        ora     L1A1A,y
-        .byte   $1A
-        .byte   $1A
-        .byte   $1A
-        .byte   $1A
-        .byte   $1A
-        .byte   $1B
-        .byte   $1B
-        .byte   $1B
-        .byte   $1B
-        .byte   $1B
-        .byte   $1B
-        .byte   $1B
-        .byte   $1C
-        .byte   $1C
-        .byte   $1C
-        .byte   $1C
-        .byte   $1C
-        .byte   $1C
-        .byte   $1C
-        ora     $1D1D,x
-        ora     $1D1D,x
-        ora     $1E1E,x
-        asl     $1E1E,x
-        asl     $1F1E,x
-        .byte   $1F
-        .byte   $1F
-        .byte   $1F
-        .byte   $1F
-        .byte   $1F
-        .byte   $1F
-        jsr     $2020
-        jsr     $2020
-        jsr     $2121
-        and     ($21,x)
-L1105:  and     ($21,x)
-        and     ($22,x)
-        .byte   $22
-        .byte   $22
-        .byte   $22
-        .byte   $22
-        .byte   $22
-        .byte   $22
-        .byte   $23
-        .byte   $23
-        .byte   $23
-        .byte   $23
-        .byte   $23
-        .byte   $23
-        .byte   $23
-        bit     $24
-        bit     $24
-L111A:  bit     $24
-        bit     $25
-        and     $25
-        and     $25
-        and     $25
-        rol     $26
-        rol     $26
-        rol     $26
-        rol     $27
-        .byte   $27
-        .byte   $27
-        .byte   $27
-        .byte   $27
-        .byte   $27
-        .byte   $27
-L1132:  ora     ($02,x)
-        .byte   $04
-        php
-        bpl     L1158
-        rti
+L101A:
+        .byte   $00, $00, $00, $00, $00, $00, $00
+        .byte   $01, $01, $01, $01, $01, $01, $01
+        .byte   $02, $02, $02, $02, $02, $02, $02
+        .byte   $03, $03, $03, $03, $03, $03, $03
+        .byte   $04, $04, $04, $04, $04, $04, $04
+        .byte   $05, $05, $05, $05, $05, $05, $05
+        .byte   $06, $06, $06, $06, $06, $06, $06
+        .byte   $07, $07, $07, $07, $07, $07, $07
+        .byte   $08, $08, $08, $08, $08, $08, $08
+        .byte   $09, $09, $09, $09, $09, $09, $09
+        .byte   $0A, $0A, $0A, $0A, $0A, $0A, $0A
+        .byte   $0B, $0B, $0B, $0B, $0B, $0B, $0B
+        .byte   $0C, $0C, $0C, $0C, $0C, $0C, $0C
+        .byte   $0D, $0D, $0D, $0D, $0D, $0D, $0D
+        .byte   $0E, $0E, $0E, $0E, $0E, $0E, $0E
+        .byte   $0F, $0F, $0F, $0F, $0F, $0F, $0F
+        .byte   $10, $10, $10, $10, $10, $10, $10
+        .byte   $11, $11, $11, $11, $11, $11, $11
+        .byte   $12, $12, $12, $12, $12, $12, $12
+        .byte   $13, $13, $13, $13, $13, $13, $13
+        .byte   $14, $14, $14, $14, $14, $14, $14
+        .byte   $15, $15, $15, $15, $15, $15, $15
+        .byte   $16, $16, $16, $16, $16, $16, $16
+        .byte   $17, $17, $17, $17, $17, $17, $17
+        .byte   $18, $18, $18, $18, $18, $18, $18
+        .byte   $19, $19, $19, $19, $19, $19, $19
+        .byte   $1A, $1A, $1A, $1A, $1A, $1A, $1A
+        .byte   $1B, $1B, $1B, $1B, $1B, $1B, $1B
+        .byte   $1C, $1C, $1C, $1C, $1C, $1C, $1C
+        .byte   $1D, $1D, $1D, $1D, $1D, $1D, $1D
+        .byte   $1E, $1E, $1E, $1E, $1E, $1E, $1E
+        .byte   $1F, $1F, $1F, $1F, $1F, $1F, $1F
+        .byte   $20, $20, $20, $20, $20, $20, $20
+        .byte   $21, $21, $21, $21, $21, $21, $21
+        .byte   $22, $22, $22, $22, $22, $22, $22
+        .byte   $23, $23, $23, $23, $23, $23, $23
+        .byte   $24, $24, $24, $24, $24, $24, $24
+        .byte   $25, $25, $25, $25, $25, $25, $25
+        .byte   $26, $26, $26, $26, $26, $26, $26
+        .byte   $27, $27, $27, $27, $27, $27, $27
 
-        ora     ($02,x)
-        .byte   $04
-        php
-        bpl     L115F
-        rti
+L111A := $111A
 
-        ora     ($02,x)
-        .byte   $04
-        php
-        bpl     L1166
-        rti
+L1132:
+        .repeat 38
+        .byte   $01, $02, $04, $08, $10, $20, $40
+        .endrepeat
+L1224 := $1224
 
-        ora     ($02,x)
-        .byte   $04
-        php
-        bpl     L116D
-        rti
+L123C:
+        .byte   $00, $00, $00, $00
+        .byte   $01, $01, $01
+        .byte   $02, $02, $02, $02
+        .byte   $03, $03, $03
+        .byte   $04, $04, $04, $04
+        .byte   $05, $05, $05
+        .byte   $06, $06, $06, $06
+        .byte   $07, $07, $07
+        .byte   $08, $08, $08, $08
+        .byte   $09, $09, $09
+        .byte   $0A, $0A, $0A, $0A
+        .byte   $0B, $0B, $0B
+        .byte   $0C, $0C, $0C, $0C
+        .byte   $0D, $0D, $0D
+        .byte   $0E, $0E, $0E, $0E
+        .byte   $0F, $0F, $0F
+        .byte   $10, $10, $10, $10
+        .byte   $11, $11, $11
+        .byte   $12, $12, $12, $12
+        .byte   $13, $13, $13
+        .byte   $14, $14, $14, $14
+        .byte   $15, $15, $15
+        .byte   $16, $16, $16, $16
+        .byte   $17, $17, $17
+        .byte   $18, $18, $18, $18
+        .byte   $19, $19, $19
+        .byte   $1A, $1A, $1A, $1A
+        .byte   $1B, $1B, $1B
+        .byte   $1C, $1C, $1C, $1C
+        .byte   $1D, $1D, $1D
+        .byte   $1E, $1E, $1E, $1E
+        .byte   $1F, $1F, $1F
+        .byte   $20, $20, $20, $20
+        .byte   $21, $21, $21
+        .byte   $22, $22, $22, $22
+        .byte   $23, $23, $23
+        .byte   $24, $24, $24, $24
+        .byte   $25, $25, $25
+        .byte   $26, $26, $26, $26
+        .byte   $27, $27, $27
 
-        ora     ($02,x)
-        .byte   $04
-        php
-        bpl     L1174
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L1158:  php
-        bpl     L117B
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L115F:  php
-        bpl     L1182
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L1166:  php
-        bpl     L1189
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L116D:  php
-        bpl     L1190
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L1174:  php
-        bpl     L1197
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L117B:  php
-        bpl     L119E
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L1182:  php
-        bpl     L11A5
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L1189:  php
-        bpl     L11AC
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L1190:  php
-        bpl     L11B3
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L1197:  php
-        bpl     L11BA
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L119E:  php
-        bpl     L11C1
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L11A5:  php
-        bpl     L11C8
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L11AC:  php
-        bpl     L11CF
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L11B3:  php
-        bpl     L11D6
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L11BA:  php
-        bpl     L11DD
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L11C1:  php
-        bpl     L11E4
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L11C8:  php
-        bpl     L11EB
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L11CF:  php
-        bpl     L11F2
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L11D6:  php
-        bpl     L11F9
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L11DD:  php
-        bpl     L1200
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L11E4:  php
-        bpl     L1207
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L11EB:  php
-        bpl     L120E
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L11F2:  php
-        bpl     L1215
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L11F9:  php
-        bpl     L121C
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L1200:  php
-        bpl     L1223
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L1207:  php
-        bpl     L122A
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L120E:  php
-        bpl     L1231
-        rti
-
-        ora     ($02,x)
-L1214:  .byte   $04
-L1215:  php
-        bpl     L1238
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L121C:  php
-        bpl     L123F
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L1223:  php
-L1224:  bpl     L1246
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L122A:  php
-        bpl     L124D
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L1231:  php
-        bpl     L1254
-        rti
-
-        ora     ($02,x)
-        .byte   $04
-L1238:  php
-        bpl     L125B
-        rti
-
-L123C:  brk
-        brk
-        brk
-L123F:  brk
-        ora     ($01,x)
-        ora     ($02,x)
-        .byte   $02
-        .byte   $02
-L1246:  .byte   $02
-        .byte   $03
-        .byte   $03
-        .byte   $03
-        .byte   $04
-        .byte   $04
-        .byte   $04
-L124D:  .byte   $04
-        ora     $05
-        ora     $06
-        asl     $06
-L1254:  asl     $07
-        .byte   $07
-        .byte   $07
-        php
-        php
-        php
-L125B:  php
-        ora     #$09
-        ora     #$0A
-        asl     a
-        asl     a
-        asl     a
-        .byte   $0B
-        .byte   $0B
-        .byte   $0B
-        .byte   $0C
-        .byte   $0C
-        .byte   $0C
-        .byte   $0C
-        ora     L0D0D
-        asl     L0E0E
-        asl     $0F0F
-        .byte   $0F
-        bpl     L1286
-        bpl     L1288
-        ora     ($11),y
-        ora     ($12),y
-        .byte   $12
-        .byte   $12
-        .byte   $12
-        .byte   $13
-        .byte   $13
-        .byte   $13
-        .byte   $14
-        .byte   $14
-        .byte   $14
-        .byte   $14
-L1286:  ora     $15,x
-L1288:  ora     $16,x
-        asl     $16,x
-        asl     $17,x
-        .byte   $17
-        .byte   $17
-        clc
-        clc
-        clc
-        clc
-        ora     L1919,y
-        .byte   $1A
-        .byte   $1A
-        .byte   $1A
-        .byte   $1A
-        .byte   $1B
-        .byte   $1B
-        .byte   $1B
-        .byte   $1C
-        .byte   $1C
-        .byte   $1C
-        .byte   $1C
-        ora     $1D1D,x
-        asl     $1E1E,x
-        asl     $1F1F,x
-        .byte   $1F
-        jsr     $2020
-        jsr     $2121
-        and     ($22,x)
-        .byte   $22
-        .byte   $22
-        .byte   $22
-        .byte   $23
-        .byte   $23
-        .byte   $23
-        bit     $24
-        bit     $24
-        and     $25
-        and     $26
-        rol     $26
-        rol     $27
-        .byte   $27
-        .byte   $27
-        brk
-        brk
-        brk
-        ora     ($01,x)
-        ora     ($01,x)
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $03
-        .byte   $03
-        .byte   $03
-        .byte   $03
-        .byte   $04
-        .byte   $04
-        .byte   $04
-        ora     $05
-        ora     $05
-        asl     $06
-        asl     $07
-        .byte   $07
-        .byte   $07
-        .byte   $07
-        php
-        php
-        php
-        ora     #$09
-        ora     #$09
-        asl     a
-        asl     a
-        asl     a
-        .byte   $0B
-        .byte   $0B
-        .byte   $0B
-        .byte   $0B
-        .byte   $0C
-        .byte   $0C
-        .byte   $0C
-        ora     L0D0D
-        ora     L0E0E
-        asl     $0F0F
-        .byte   $0F
-        .byte   $0F
-        bpl     L1312
-        bpl     L1315
-        ora     ($11),y
-        ora     ($12),y
-        .byte   $12
-        .byte   $12
-        .byte   $13
-        .byte   $13
-        .byte   $13
-        .byte   $13
-        .byte   $14
-        .byte   $14
-        .byte   $14
-        .byte   $15
-L1312:  ora     $15,x
-        .byte   $15
-L1315:  asl     $16,x
-        asl     $17,x
-        .byte   $17
-        .byte   $17
-        .byte   $17
-        clc
-        clc
-        clc
-        ora     $1919,y
-        ora     $1A1A,y
-        .byte   $1A
-        .byte   $1B
-        .byte   $1B
-        .byte   $1B
-        .byte   $1B
-        .byte   $1C
-        .byte   $1C
-        .byte   $1C
-        ora     $1D1D,x
-        ora     $1E1E,x
-        asl     $1F1F,x
-        .byte   $1F
-        .byte   $1F
-        jsr     $2020
-        and     ($21,x)
-        and     ($21,x)
-        .byte   $22
-        .byte   $22
-        .byte   $22
-        .byte   $23
-        .byte   $23
-        .byte   $23
-        .byte   $23
-        bit     $24
-        bit     $25
-        and     $25
-        and     $26
-        rol     $26
-        .byte   $27
-        .byte   $27
-        .byte   $27
-        .byte   $27
+        .byte   $00, $00, $00
+        .byte   $01, $01, $01, $01
+        .byte   $02, $02, $02
+        .byte   $03, $03, $03, $03
+        .byte   $04, $04, $04
+        .byte   $05, $05, $05, $05
+        .byte   $06, $06, $06
+        .byte   $07, $07, $07, $07
+        .byte   $08, $08, $08
+        .byte   $09, $09, $09, $09
+        .byte   $0A, $0A, $0A
+        .byte   $0B, $0B, $0B, $0B
+        .byte   $0C, $0C, $0C
+        .byte   $0D, $0D, $0D, $0D
+        .byte   $0E, $0E, $0E
+        .byte   $0F, $0F, $0F, $0F
+        .byte   $10, $10, $10
+        .byte   $11, $11, $11, $11
+        .byte   $12, $12, $12
+        .byte   $13, $13, $13, $13
+        .byte   $14, $14, $14
+        .byte   $15, $15, $15, $15
+        .byte   $16, $16, $16
+        .byte   $17, $17, $17, $17
+        .byte   $18, $18, $18
+        .byte   $19, $19, $19, $19
+        .byte   $1A, $1A, $1A
+        .byte   $1B, $1B, $1B, $1B
+        .byte   $1C, $1C, $1C
+        .byte   $1D, $1D, $1D, $1D
+        .byte   $1E, $1E, $1E
+        .byte   $1F, $1F, $1F, $1F
+        .byte   $20, $20, $20
+        .byte   $21, $21, $21, $21
+        .byte   $22, $22, $22
+        .byte   $23, $23, $23, $23
+        .byte   $24, $24, $24
+        .byte   $25, $25, $25, $25
+        .byte   $26, $26, $26
+        .byte   $27, $27, $27, $27
 
 ;;; Pre-shift tables for drawing text???
 
@@ -3339,7 +2838,7 @@ L148D:  ora     $C7,x
         brk
         ora     ($00,x)
         brk
-L14B2:  ora     ($01,x)
+        ora     ($01,x)
         ora     ($04,x)
         brk
         brk
@@ -3361,15 +2860,23 @@ CharBitsToPixelsTable:
         .byte   %111100
         .byte   %111111
 
-L14C6:  .byte   $80
-        sta     ($83,x)
-        .byte   $87
-        .byte   $8F
-        .byte   $9F
-        .byte   $BF
-L14CD:  inc     $F8FC,x
-        beq     L14B2
-        cpy     #$80
+LeftMaskTable:
+        .byte   %10000000
+        .byte   %10000001
+        .byte   %10000011
+        .byte   %10000111
+        .byte   %10001111
+        .byte   %10011111
+        .byte   %10111111
+
+RightMaskTable:
+        .byte   %11111110
+        .byte   %11111100
+        .byte   %11111000
+        .byte   %11110000
+        .byte   %11100000
+        .byte   %11000000
+        .byte   %10000000
 
 ;;; Character Bitmaps
 ;;; 16 bits encode 5x3 pixels; the bits are shifted out to the right
@@ -3967,7 +3474,7 @@ L1912:  jmp     L1931
         ldx     #$03
         .byte   $BD
         .byte   $A2
-L1919:  .byte   $02
+        .byte   $02
         .byte   $C5
 L191B:  rol     a
         beq     L18DC
@@ -4101,7 +3608,7 @@ L1A04:  adc     ($96),y
         lda     HiresTableLo,x
         sta     $9A
         sta     $BA
-L1A1A:  lda     HiresTableHi,x
+        lda     HiresTableHi,x
         sta     $9B
         clc
         adc     $8D
@@ -4536,9 +4043,9 @@ DrawCharacter:
         ldy     L1354,x         ; pre-shift ???
         ldx     L13EE,y
         stx     $A9
-        lda     L14C6,x
+        lda     LeftMaskTable,x
         sta     $AD
-        lda     L14CD,x
+        lda     RightMaskTable,x
         sta     $AE
         ldy     msg_col
         lda     L123C,y

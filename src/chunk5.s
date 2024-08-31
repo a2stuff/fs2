@@ -1175,14 +1175,15 @@ L6734:  lda     $08F2
         sta     $090A
         lda     $08A8
         sta     $08A9
+
 L6746:  lda     #$00
         sta     $08C4
         sta     $8A
 L674D:  lda     $33
         cmp     #$20
-        bcc     L6756
+        bcc     :+
         jsr     L8752
-L6756:  ldy     #$00
+:       ldy     #$00
         lda     ($8B),y
         bmi     L6760
         cmp     #$46
@@ -1253,7 +1254,7 @@ L67CE:  lda     $07,x
         dex
         bne     L67CE
         lda     #$01
-        jsr     L67F1
+        jsr     AddTo8B
         jmp     L6AE3
 
 L67DD:  lda     $D3
@@ -1266,18 +1267,27 @@ L67E8:  lda     #$00
         lda     #$01
         jmp     L67FD
 
-L67F1:  clc
+;;; ============================================================
+
+.proc AddTo8B
+        clc
         adc     $8B
         sta     $8B
-        bcc     L67FA
+        bcc     :+
         inc     $8C
-L67FA:  rts
+:       rts
+.endproc
+
+;;; ============================================================
 
         lda     #$02
 
         ;; Popular jump target???
-L67FD:  jsr     L67F1
+L67FD:  jsr     AddTo8B
         jmp     L6746
+
+;;; ============================================================
+
 
 L6803:  ldy     #$D4
         .byte   $20
@@ -1395,7 +1405,7 @@ L68E4:  lda     #$01
         beq     L68FB
         jsr     L6919
         lda     #$01
-        jsr     L67F1
+        jsr     AddTo8B
         jmp     L674D
 
 L68FB:  lda     #$00
@@ -1410,7 +1420,7 @@ L6901:  lda     ($2D),y
         lda     $DA
         sta     $D3
 L6911:  lda     #$01
-        jsr     L67F1
+        jsr     AddTo8B
         jmp     L6AE3
 
 L6919:  ldy     #$00
@@ -1485,12 +1495,12 @@ L698A:  ldx     #$00
         adc     #$01
         sta     $2E
         lda     #$01
-        jsr     L67F1
+        jsr     AddTo8B
         rts
 
         jsr     L6987
         lda     #$01
-        jsr     L67F1
+        jsr     AddTo8B
         ldy     #$07
         lda     #$00
         sta     $CA
@@ -2039,7 +2049,7 @@ L6D56:  iny
 
         jsr     L6D56
         lda     #$02
-        jsr     L67F1
+        jsr     AddTo8B
         lda     #$F8
 L6DB9:  sta     $DC
 L6DBB:  ldy     #$00
@@ -2059,7 +2069,7 @@ L6DCF:  dey
         jmp     L6DBB
 
 L6DD9:  lda     #$02
-        jsr     L67F1
+        jsr     AddTo8B
         lda     $DC
         beq     L6DF0
         lda     L00A5
@@ -2107,7 +2117,7 @@ L6E17:  jsr     L6D56
         sta     L6E50
         jsr     L6E44
         lda     #$09
-        jsr     L67F1
+        jsr     AddTo8B
         rts
 
 L6E44:  iny
@@ -4598,7 +4608,7 @@ L8091:  ldx     $E5
         lda     $1F
         sta     $05,x
         lda     #$05
-        jmp     L67F1
+        jmp     AddTo8B
 
 L80B0:  lsr     $1A
         ror     $19
@@ -4684,7 +4694,7 @@ L813A:  lda     #$00
         sta     $2F
         sta     $30
         lda     #$07
-        jsr     L67F1
+        jsr     AddTo8B
         ldx     #$9E
         ldy     #$78
         lda     #$A9
