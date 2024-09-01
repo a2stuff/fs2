@@ -9,6 +9,15 @@
 
         .refto __APPLE2__
 
+OPC_ADC_izy = $71
+OPC_SBC_izy = $F1
+OPC_CLC     = $18
+OPC_SEC     = $38
+OPC_DEX     = $CA
+OPC_INX     = $E8
+OPC_DEC_zp  = $C6
+OPC_INC_zp  = $E6
+
 L002D           := $002D
 
 ValueForString  := $B6          ; $B6-B7
@@ -1334,14 +1343,14 @@ L0810:  brk
         brk
         ora     ($00,x)
         brk
-        .byte   $9B
-        pla
-        .byte   "BOMBS: 5 ", 0
+
+        ;; $8C9
+        MESSAGE $9B, $68, "BOMBS: 5 " ; modified in chunk5
         brk
         brk
-        .byte   $9B
-        pla
-        .byte   "SCORE:000", 0
+
+        ;; $8D7
+        MESSAGE $9B, $68, "SCORE:000" ; modified in chunk5
 
         brk
         brk
@@ -2795,7 +2804,7 @@ L1441:  .byte   $72
         .byte   $47
         .byte   $7A
         .byte   $44
-        cmp     L1641
+        cmp     $1641
         .byte   $3F
         lsr     $3C,x
         sty     $B939
@@ -2892,8 +2901,16 @@ CharBitmapTable:
         .word $49ef, $1f6f, $5def, $73e7, $2497, $7b6d, $256d, $5f6d ; PQRSTUVW
         .word $5aad, $24ad, $788f                                    ; XYZ
 
-        ;; ???
-        ;; Probably not real code, but not bitmaps for "[\]^_" either
+
+;;; Input: ZP locations specified by X, Y
+;;; Output: ZP location specified by A
+;;; Uses $C2-C6, $A5, $A7
+.scope ZPMultiply
+        ;; $154A
+
+        ;; $C2-C3 = $00,X
+        ;; $C4-C5 = $00,Y
+        ;; $00,A = (result of jsr $1569)
         sta     $A5
         lda     $00,x
         sta     $C2
@@ -2909,13 +2926,13 @@ CharBitmapTable:
         stx     $01,y
         rts
 
-L1569:  lda     $C2
+L1569:  lda     $C2             ; If $C2-C3 is zero...
         ora     $C3
         beq     L1575
-        lda     $C4
+        lda     $C4             ; Or $C4-C5 is zero...
         ora     $C5
         bne     L1577
-L1575:  tax
+L1575:  tax                     ; just return 0 in X
         rts
 
 L1577:  lda     $C3
@@ -2938,7 +2955,7 @@ L158E:  lda     $C2
         bmi     L159C
 L159A:  dec     $C2
 L159C:  lda     $C5
-        bpl     L15B3
+        bpl     :+
         lda     #$00
         sec
         sbc     $C4
@@ -2946,127 +2963,143 @@ L159C:  lda     $C5
         lda     #$00
         sbc     $C5
         sta     $C5
-        bpl     L15B3
+        bpl     :+
         dec     $C4
         dec     $C5
-L15B3:  lsr     $C2
-        bcc     L15B9
+:
+        lsr     $C2
+        bcc     :+
         lda     #$00
-L15B9:  lsr     a
+:
+        lsr     a
         ror     $C2
-        bcs     L15C0
+        bcs     :+
         adc     $C5
-L15C0:  lsr     a
+:
+        lsr     a
         ror     $C2
-        bcs     L15C7
+        bcs     :+
         adc     $C5
-L15C7:  lsr     a
+:
+        lsr     a
         ror     $C2
-        bcs     L15CE
+        bcs     :+
         adc     $C5
-L15CE:  lsr     a
+:
+        lsr     a
         ror     $C2
-        bcs     L15D5
+        bcs     :+
         adc     $C5
-L15D5:  lsr     a
+:
+        lsr     a
         ror     $C2
-        bcs     L15DC
+        bcs     :+
         adc     $C5
-L15DC:  lsr     a
+:
+        lsr     a
         ldx     #$00
         stx     $A7
         lsr     $C2
-        bcs     L15EF
+        bcs     :+
         tax
         lda     $A7
         adc     $C4
         sta     $A7
         txa
         adc     $C5
-L15EF:  lsr     a
+:
+        lsr     a
         ror     $A7
         lsr     $C2
-        bcs     L1600
+        bcs     :+
         tax
         lda     $A7
         adc     $C4
         sta     $A7
         txa
         adc     $C5
-L1600:  lsr     a
+:
+        lsr     a
         ror     $A7
         lsr     $C3
-        bcs     L1611
+        bcs     :+
         tax
         lda     $A7
         adc     $C4
         sta     $A7
         txa
         adc     $C5
-L1611:  lsr     a
+:
+        lsr     a
         ror     $A7
         lsr     $C3
-        bcs     L1622
+        bcs     :+
         tax
         lda     $A7
         adc     $C4
         sta     $A7
         txa
         adc     $C5
-L1622:  lsr     a
+:
+        lsr     a
         ror     $A7
         lsr     $C3
-        bcs     L1633
+        bcs     :+
         tax
         lda     $A7
         adc     $C4
         sta     $A7
         txa
         adc     $C5
-L1633:  lsr     a
+:
+        lsr     a
         ror     $A7
         lsr     $C3
-        bcs     L1644
-        tax
-        lda     $A7
-        adc     $C4
-        sta     $A7
-L1641:  txa
-        adc     $C5
-L1644:  lsr     a
-        ror     $A7
-        lsr     $C3
-        bcs     L1655
+        bcs     :+
         tax
         lda     $A7
         adc     $C4
         sta     $A7
         txa
         adc     $C5
-L1655:  lsr     a
+:
+        lsr     a
         ror     $A7
         lsr     $C3
-        bcs     L1666
+        bcs     :+
         tax
         lda     $A7
         adc     $C4
         sta     $A7
         txa
         adc     $C5
-L1666:  lsr     a
+:
+        lsr     a
         ror     $A7
         lsr     $C3
-        bcs     L1677
+        bcs     :+
         tax
         lda     $A7
         adc     $C4
         sta     $A7
         txa
         adc     $C5
-L1677:  lsr     a
+:
+        lsr     a
+        ror     $A7
+        lsr     $C3
+        bcs     :+
+        tax
+        lda     $A7
+        adc     $C4
+        sta     $A7
+        txa
+        adc     $C5
+:
+        lsr     a
         ror     $A7
         cpy     #$00
-        bpl     L168B
+        bpl     :+
         sta     $A8
         lda     #$00
         sec
@@ -3074,64 +3107,81 @@ L1677:  lsr     a
         sta     $A7
         lda     #$00
         sbc     $A8
-L168B:  tax
+:
+        tax
         lda     $A7
         rts
+.endscope
+
+;;; ============================================================
 
 L168F:  sta     $C4
         stx     $C5
-        jmp     L1569
+        jmp     ZPMultiply::L1569
 
         sta     $C4
         stx     $C5
-        jsr     L1569
+        jsr     ZPMultiply::L1569
         sta     $C2
         stx     $C3
         rts
 
-        stx     $C2
-        sta     $C3
-        eor     $C5
-        pha
-        lda     $C3
-        bpl     L16BA
+;;; ============================================================
+
+        ;; 16-bit signed division val1 / val2 ???
+.scope
+        val1 := $C2
+        val2 := $C4
+
+        stx     val1
+        sta     val1+1
+        eor     val2+1
+        pha                     ; stash sign-mismatch for later
+
+        ;; If `val1` is negative, invert it
+        lda     val1+1
+        bpl     :+
         lda     #$00
         sec
-        sbc     $C2
-        sta     $C2
+        sbc     val1
+        sta     val1
         lda     #$00
-        sbc     $C3
-        sta     $C3
-L16BA:  lda     $C5
-        bpl     L16CB
+        sbc     val1+1
+        sta     val1+1
+:
+        ;; If `val2` is negative, invert it
+        lda     val2+1
+        bpl     :+
         lda     #$00
         sec
-        sbc     $C4
-        sta     $C4
+        sbc     val2
+        sta     val2
         lda     #$00
-        sbc     $C5
-        sta     $C5
-L16CB:  ldx     $C2
+        sbc     val2+1
+        sta     val2+1
+:
+        ;; Now both `val1` and `val2` are positive...
+        ldx     val1
         stx     $A7
-        lda     $C3
-        ldy     #$0F
+        lda     val1+1
+        ldy     #$0F            ; number of bits
 L16D3:  tax
         lda     $A7
         sec
-        sbc     $C4
+        sbc     val2
         sta     $A7
         txa
-        sbc     $C5
+        sbc     val2+1
         bmi     L16EC
-L16E0:  rol     $C2
-        rol     $C3
+L16E0:  rol     val1
+        rol     val1+1
         asl     $A7
         rol     a
         dey
         bne     L16D3
         beq     L1706
-L16EC:  asl     $C2
-        rol     $C3
+L16EC:  asl     val1
+        rol     val1+1
         asl     $A7
         rol     a
         dey
@@ -3139,34 +3189,40 @@ L16EC:  asl     $C2
         tax
         lda     $A7
         clc
-        adc     $C4
+        adc     val2
         sta     $A7
         txa
-        adc     $C5
+        adc     val2+1
         bmi     L16EC
         sec
         bcs     L16E0
-L1706:  asl     $C2
-        rol     $C3
+L1706:  asl     val1
+        rol     val1+1
         bpl     L1710
-        dec     $C2
-        dec     $C3
-L1710:  pla
-        bpl     L1720
+        dec     val1
+        dec     val1+1
+L1710:
+        ;; Invert `val1` if signs mismatched
+        pla
+        bpl     :+
         lda     #$00
         sec
-        sbc     $C2
-        sta     $C2
+        sbc     val1
+        sta     val1
         lda     #$00
-        sbc     $C3
-        sta     $C3
-L1720:  lda     $32
+        sbc     val1+1
+        sta     val1+1
+:
+        ;; Add 35 to $32-$33 ???
+        lda     $32
         clc
         adc     #$23
         sta     $32
-        bcc     L172B
+        bcc     :+
         inc     $33
-L172B:  rts
+:
+        rts
+.endscope
 
         tay
         txa
@@ -3546,33 +3602,33 @@ L199B:  asl     a
         sta     $97
         jmp     L19F6
 
-L19A9:  lda     #$E8
+L19A9:  lda     #OPC_INX
         sta     L1A32
         lda     $A5
         clc
         adc     #$FE
         sta     $E6
-        lda     #$18
+        lda     #OPC_CLC
         sta     L1A01
-        lda     #$71
+        lda     #OPC_ADC_izy
         sta     L1A04
         dec     $A5
         rts
 
-L19C2:  lda     #$CA
+L19C2:  lda     #OPC_DEX
         sta     L1A32
         lda     $A5
         clc
         adc     #$EC
         sta     $E6
-        lda     #$38
+        lda     #OPC_SEC
         sta     L1A01
-        lda     #$F1
+        lda     #OPC_SBC_izy
         sta     L1A04
         inc     $A5
         rts
 
-L19DB:  lda     #$C6
+L19DB:  lda     #OPC_DEC_zp
         sta     L1A38
         lda     $A7
         clc
@@ -3581,7 +3637,7 @@ L19DB:  lda     #$C6
         inc     $A7
         rts
 
-L19EA:  lda     #$E6
+L19EA:  lda     #OPC_INC_zp
         sta     L1A38
         dec     $A7
         lda     $A7
@@ -3595,9 +3651,9 @@ L19FA:  ldy     $E7
         bpl     L1A01
         rts
 
-L1A01:  clc
+L1A01:  clc                     ; self-modified
         lda     $A5
-L1A04:  adc     ($96),y
+L1A04:  adc     ($96),y         ; self-modified
         sta     $E6
         iny
         lda     ($96),y
@@ -3619,10 +3675,10 @@ L1A26:  ldy     L101A,x
         eor     ($9A),y
         sta     ($9A),y
         sta     ($BA),y
-L1A32:  inx
+L1A32:  inx                     ; self-modified
         dec     L0A3D
         bne     L1A26
-L1A38:  inc     $A7
+L1A38:  inc     $A7             ; self-modified
         jmp     L19FA
 
         pha
@@ -4069,12 +4125,12 @@ L1D0A:
         ldx     msg_col
         lda     HiresTableHi,y
         sta     hires_ptr1+1
-        clc
+        clc                     ; TODO: Just EOR with %01100000
         adc     #$20
         cmp     #$60
-        bcc     L1D1C
+        bcc     :+
         sbc     #$40
-L1D1C:  sta     hires_ptr2+1
+:       sta     hires_ptr2+1
         lda     HiresTableLo,y
         sta     hires_ptr1
         sta     hires_ptr2
@@ -4176,7 +4232,7 @@ L1DA7:  rts
         ;; set ptr1 to current and ptr2 to alt regardless
 loop:   lda     HiresTableHi,x
         sta     ptr1+1
-        clc
+        clc                     ; TODO: Just EOR with %01100000
         adc     #$20
         cmp     #$60
         bcc     :+

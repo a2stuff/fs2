@@ -72,9 +72,14 @@ ViewDirection := $0A70
 ;;; Possible chunk4 references
 L0300           := $0300
 L08AD           := $08AD
+
+WW1AceScore     := $08C0
+WW1AceBombsStr  := $08D2
+WW1AceScoreStr  := $08DF
+
 HiresTableHi    := $0E9A
 HiresTableLo    := $0F5A
-L154A           := $154A
+ZPMultiply      := $154A
 L1569           := $1569
 L168F           := $168F
 L1696           := $1696
@@ -120,15 +125,18 @@ L1B67           := $1B67
 L1B6D           := $1B6D
 L1B80           := $1B80
 L1B9F           := $1B9F
-DivideByAXAndSetDigitY           := $1C73
-DrawMessageWhite    := $1C96
-DrawMessageOrange    := $1C9F
-DrawMultiMessage    := $1D92
+DivideByAXAndSetDigitY  := $1C73
+DrawMessageWhite        := $1C96
+DrawMessageOrange       := $1C9F
+DrawMultiMessage        := $1D92
 ClearViewportsToBlack   := $1DA8
+
+;;; Jump-table, which is patched at runtime
 L1EAD           := $1EAD
 L1EB0           := $1EB0
 L1EB3           := $1EB3
 L1EBC           := $1EBC
+
 L1EC4           := $1EC4
 L1F89           := $1F89
 
@@ -304,13 +312,9 @@ L60DD:  lda     ($8B),y
         lda     $08E9
         bmi     L60FD
         pha
-        clc
-        lda     $08E7
-        adc     $8B
-        sta     $08E7
-        lda     $08E8
-        adc     $8C
-        sta     $08E8
+
+        ADD16   $08E7, $8B, $08E7
+
         pla
 L60FD:  and     #$03
         sta     $08E9
@@ -408,36 +412,31 @@ L6199:  lda     $3D
         jsr     L1768
         sta     $BE
         stx     $BF
+
         ldx     #$C0
         ldy     #$BA
         lda     #$98
-        jsr     L154A
+        jsr     ZPMultiply
+
         ldx     #$B6
         ldy     #$BE
         lda     #$AD
-        jsr     L154A
-        sec
-        lda     $98
-        sbc     $AD
-        sta     $72
-        lda     $99
-        sbc     $AE
-        sta     $73
+        jsr     ZPMultiply
+
+        SUB16   $98, $AD, $72
+
         ldx     #$B6
         ldy     #$BA
         lda     #$98
-        jsr     L154A
+        jsr     ZPMultiply
+
         ldx     #$C0
         ldy     #$BE
         lda     #$AD
-        jsr     L154A
-        clc
-        lda     $AD
-        adc     $98
-        sta     $74
-        lda     $AE
-        adc     $99
-        sta     $75
+        jsr     ZPMultiply
+
+        ADD16   $AD, $98, $74
+
 L61F0:  lda     $73
         clc
         adc     #$40
@@ -485,64 +484,65 @@ L6210:  ldx     $72
         jsr     L177B
         sta     $D6
         stx     $D7
+
         ldx     #$D6
         ldy     #$D4
         lda     #$D8
-        jsr     L154A
+        jsr     ZPMultiply
+
         ldx     #$CF
         ldy     #$CD
         lda     #$1B
-        jsr     L154A
+        jsr     ZPMultiply
+
         ldx     #$D6
         ldy     #$CD
         lda     #$DD
-        jsr     L154A
+        jsr     ZPMultiply
+
         ldx     #$CF
         ldy     #$D4
         lda     #$DF
-        jsr     L154A
+        jsr     ZPMultiply
+
         ldx     #$CB
         ldy     #$1B
         lda     #$E1
-        jsr     L154A
+        jsr     ZPMultiply
+
         ldx     #$CB
         ldy     #$DF
         lda     #$1E
-        jsr     L154A
+        jsr     ZPMultiply
+
         ldx     #$DD
         ldy     #$CB
         lda     #$4A
-        jsr     L154A
+        jsr     ZPMultiply
+
         ldx     #$CB
         ldy     #$D8
         lda     #$4D
-        jsr     L154A
-        clc
-        lda     $D8
-        adc     $E1
-        sta     $78
-        lda     $D9
-        adc     $E2
-        sta     $79
-        sec
-        lda     $1E
-        sbc     $DD
-        sta     $7A
-        lda     $1F
-        sbc     $DE
-        sta     $7B
+        jsr     ZPMultiply
+
+        ADD16   $D8, $E1, $78
+        SUB16   $1E, $DD, $7A
+
         ldx     #$CF
         ldy     #$18
         lda     #$7C
-        jsr     L154A
+        jsr     ZPMultiply
+
         ldx     #$CD
         ldy     #$18
         lda     #$7E
-        jsr     L154A
+        jsr     ZPMultiply
+
         ldx     #$18
         ldy     #$D4
         lda     #$80
-        jsr     L154A
+        jsr     ZPMultiply
+
         lda     #$00
         sec
         sbc     $CB
@@ -550,24 +550,15 @@ L6210:  ldx     $72
         lda     #$00
         sbc     $CC
         sta     $83
-        sec
-        lda     $4A
-        sbc     $DF
-        sta     $84
-        lda     $4B
-        sbc     $E0
-        sta     $85
-        clc
-        lda     $1B
-        adc     $4D
-        sta     $86
-        lda     $1C
-        adc     $4E
-        sta     $87
+
+        SUB16   $4A, $DF, $84
+        ADD16   $1B, $4D, $86
+
         ldx     #$D6
         ldy     #$18
         lda     #$88
-        jsr     L154A
+        jsr     ZPMultiply
+
         ldx     #$0C
 L6301:  lda     $79,x
         rol     a
@@ -1558,27 +1549,9 @@ L6A20:  ldx     #$D4
         dec     $2F
         jmp     L6A0C
 
-L6A2A:  sec
-        lda     $D4
-        sbc     $CB
-        sta     $9E
-        lda     $D5
-        sbc     $CC
-        sta     $9F
-        sec
-        lda     $D6
-        sbc     $CD
-        sta     $A0
-        lda     $D7
-        sbc     $CE
-        sta     $A1
-        sec
-        lda     $D8
-        sbc     $CF
-        sta     $A2
-        lda     $D9
-        sbc     $D0
-        sta     $A3
+L6A2A:  SUB16   $D4, $CB, $9E
+        SUB16   $D6, $CD, $A0
+        SUB16   $D8, $CF, $A2
         ldx     #$9E
         jsr     L6ACD
         jsr     L6ACD
@@ -1589,50 +1562,15 @@ L6A2A:  sec
         lda     #$08
         sta     $0A51
 L6A69:  jsr     L6874
-        clc
-        lda     $CB
-        adc     $9E
-        sta     $D4
-        lda     $CC
-        adc     $9F
-        sta     $D5
-        clc
-        lda     $CD
-        adc     $A0
-        sta     $D6
-        lda     $CE
-        adc     $A1
-        sta     $D7
-        clc
-        lda     $CF
-        adc     $A2
-        sta     $D8
-        lda     $D0
-        adc     $A3
-        sta     $D9
+
+        ADD16   $CB, $9E, $D4
+        ADD16   $CD, $A0, $D6
+        ADD16   $CF, $A2, $D8
         jsr     L6839
         jsr     L6AE3
-        clc
-        lda     $CB
-        adc     $9E
-        sta     $CB
-        lda     $CC
-        adc     $9F
-        sta     $CC
-        clc
-        lda     $CD
-        adc     $A0
-        sta     $CD
-        lda     $CE
-        adc     $A1
-        sta     $CE
-        clc
-        lda     $CF
-        adc     $A2
-        sta     $CF
-        lda     $D0
-        adc     $A3
-        sta     $D0
+        ADD16   $CB, $9E, $CB
+        ADD16   $CD, $A0, $CD
+        ADD16   $CF, $A2, $CF
         dec     $0A51
         bne     L6A69
         lda     #$4C
@@ -2864,13 +2802,7 @@ L7461:  lda     $D3
         jmp     L73CB
 
 L746D:  jsr     L7679
-L7470:  sec
-        lda     $CF
-        sbc     $D8
-        sta     $C4
-        lda     $D0
-        sbc     $D9
-        sta     $C5
+L7470:  SUB16   $CF, $D8, $C4
         lda     $CD
         sec
         sbc     $D6
@@ -2893,13 +2825,7 @@ L7470:  sec
         lda     $D9
         sbc     $D7
         jsr     L16A2
-        sec
-        lda     $CB
-        sbc     $D4
-        sta     $C4
-        lda     $CC
-        sbc     $D5
-        sta     $C5
+        SUB16   $CB, $D4, $C4
         lda     $C2
         ldx     $C3
         sta     $A9
@@ -2911,13 +2837,7 @@ L7470:  sec
         txa
         adc     $D5
         sta     $D5
-        sec
-        lda     $CF
-        sbc     $D8
-        sta     $C4
-        lda     $D0
-        sbc     $D9
-        sta     $C5
+        SUB16   $CF, $D8, $C4
         lda     $A9
         ldx     $AA
         sta     $C2
@@ -2934,13 +2854,7 @@ L7470:  sec
         rts
 
 L74EB:  jsr     L7679
-L74EE:  sec
-        lda     $CF
-        sbc     $D8
-        sta     $C4
-        lda     $D0
-        sbc     $D9
-        sta     $C5
+L74EE:  SUB16   $CF, $D8, $C4
         lda     $D6
         sec
         sbc     $CD
@@ -2963,13 +2877,7 @@ L74EE:  sec
         lda     $D9
         adc     $D7
         jsr     L16A2
-        sec
-        lda     $CB
-        sbc     $D4
-        sta     $C4
-        lda     $CC
-        sbc     $D5
-        sta     $C5
+        SUB16   $CB, $D4, $C4
         lda     $C2
         ldx     $C3
         sta     $A9
@@ -2981,13 +2889,7 @@ L74EE:  sec
         txa
         adc     $D5
         sta     $D5
-        sec
-        lda     $CF
-        sbc     $D8
-        sta     $C4
-        lda     $D0
-        sbc     $D9
-        sta     $C5
+        SUB16   $CF, $D8, $C4
         lda     $A9
         ldx     $AA
         sta     $C2
@@ -3009,13 +2911,7 @@ L74EE:  sec
 L7572:  rts
 
 L7573:  jsr     L7679
-L7576:  sec
-        lda     $CF
-        sbc     $D8
-        sta     $C4
-        lda     $D0
-        sbc     $D9
-        sta     $C5
+L7576:  SUB16   $CF, $D8, $C4
         lda     $CB
         sec
         sbc     $D4
@@ -3038,13 +2934,7 @@ L7576:  sec
         lda     $D9
         sbc     $D5
         jsr     L16A2
-        sec
-        lda     $CF
-        sbc     $D8
-        sta     $C4
-        lda     $D0
-        sbc     $D9
-        sta     $C5
+        SUB16   $CF, $D8, $C4
         lda     $C2
         ldx     $C3
         sta     $A9
@@ -3058,13 +2948,7 @@ L7576:  sec
         adc     $D9
         sta     $D9
         sta     $D5
-        sec
-        lda     $CD
-        sbc     $D6
-        sta     $C4
-        lda     $CE
-        sbc     $D7
-        sta     $C5
+        SUB16   $CD, $D6, $C4
         lda     $A9
         ldx     $AA
         sta     $C2
@@ -3079,13 +2963,7 @@ L7576:  sec
         rts
 
 L75F1:  jsr     L7679
-L75F4:  sec
-        lda     $CF
-        sbc     $D8
-        sta     $C4
-        lda     $D0
-        sbc     $D9
-        sta     $C5
+L75F4:  SUB16   $CF, $D8, $C4
         lda     $D4
         sec
         sbc     $CB
@@ -3108,13 +2986,7 @@ L75F4:  sec
         lda     $D9
         adc     $D5
         jsr     L16A2
-        sec
-        lda     $CD
-        sbc     $D6
-        sta     $C4
-        lda     $CE
-        sbc     $D7
-        sta     $C5
+        SUB16   $CD, $D6, $C4
         lda     $C2
         ldx     $C3
         sta     $A9
@@ -3126,13 +2998,7 @@ L75F4:  sec
         txa
         adc     $D7
         sta     $D7
-        sec
-        lda     $CF
-        sbc     $D8
-        sta     $C4
-        lda     $D0
-        sbc     $D9
-        sta     $C5
+        SUB16   $CF, $D8, $C4
         lda     $A9
         ldx     $AA
         sta     $C2
@@ -4698,11 +4564,11 @@ L813A:  lda     #$00
         ldx     #$9E
         ldy     #$78
         lda     #$A9
-        jsr     L154A
+        jsr     ZPMultiply
         ldx     #$A0
         ldy     #$7E
         lda     #$AB
-        jsr     L154A
+        jsr     ZPMultiply
         lda     $A2
         ldx     $A3
         sta     $C2
@@ -4716,11 +4582,11 @@ L813A:  lda     #$00
         ldx     #$9E
         ldy     #$7A
         lda     #$A9
-        jsr     L154A
+        jsr     ZPMultiply
         ldx     #$A0
         ldy     #$80
         lda     #$AB
-        jsr     L154A
+        jsr     ZPMultiply
         lda     $A2
         ldx     $A3
         sta     $C2
@@ -4734,11 +4600,11 @@ L813A:  lda     #$00
         ldx     #$9E
         ldy     #$7C
         lda     #$A9
-        jsr     L154A
+        jsr     ZPMultiply
         ldx     #$A0
         ldy     #$82
         lda     #$AB
-        jsr     L154A
+        jsr     ZPMultiply
         lda     $A2
         ldx     $A3
         sta     $C2
@@ -5660,7 +5526,7 @@ L8A06:  rts
         bcs     L8A05
         lda     RdROMWrRAM1
         lda     RdROMWrRAM1
-        jmp     (L08AD)
+        jmp     (L08AD)         ; middle of a message???
 
 L8A15:  sbc     #$11
         sta     $33
@@ -5872,7 +5738,7 @@ Ignore := L9147                 ; convenient RTS
         .addr   Ignore          ; U
         .addr   TrimUp          ; V
         .addr   L8F73           ; W
-        .addr   L901B           ; X
+        .addr   DropBomb           ; X
         .addr   FlapsUp         ; Y
         .addr   L909E           ; Z
         .addr   Ignore          ; [
@@ -6593,16 +6459,17 @@ ToggleLights:
         jmp     DrawCarbHeatAndLights
 
 ;;; X key
-L901B:  lda     $093A
+DropBomb:
+        lda     $093A
         cmp     #$01
         bne     L9040
-        lda     $08D2
-        cmp     #$30
+        lda     WW1AceBombsStr
+        cmp     #'0'
         beq     L9040
         lda     $0A56
         ora     $0A57
         bne     L9040
-        dec     $08D2
+        dec     WW1AceBombsStr
         lda     $0A39
         ldx     $0A3A
         sta     $0A56
@@ -7935,7 +7802,7 @@ L9AFB:  lda     $0838
         lda     #$64
         sta     $0A54
         lda     #$35
-        sta     $08D2
+        sta     WW1AceBombsStr
 L9B19:  lda     #$00
         sta     $0838
 L9B1E:  rts
@@ -8538,13 +8405,7 @@ L9F6B:  lda     $FB
         sta     $0A3A
         adc     $0A37
         sta     $0831
-        clc
-        lda     $0830
-        adc     $099E
-        sta     $C2
-        lda     $0831
-        adc     $099F
-        sta     $C3
+        ADD16   $0830, $099E, $C2
         lda     #$F4
         ldx     #$24
         jsr     L168F
@@ -10497,15 +10358,17 @@ LAFCB:  .byte   $C7
         brk
         adc     $C908,y
         inx
-        lda     $08C1
-        sbc     #$03
-        bcc     LB013
+
+
+        lda     WW1AceScore+1
+        sbc     #3
+        bcc     :+
         lda     #$00
-        sta     $08C0
-        sta     $08C1
-LB013:  LDAX    $08C0
+        sta     WW1AceScore
+        sta     WW1AceScore+1
+:       LDAX    WW1AceScore
         STAX    ValueForString
-        CALLAX  Set3DigitStringRelay, $08DF
+        CALLAX  Set3DigitStringRelay, WW1AceScoreStr
         rts
 
 LB025:  lda     $0A54
@@ -10935,13 +10798,7 @@ LB3B3:  lda     ($3E),y
         jmp     LB39B
 
         jsr     L874C
-        clc
-        lda     $5F
-        adc     $0A36
-        sta     $C2
-        lda     $60
-        adc     $0A37
-        sta     $C3
+        ADD16   $5F, $0A36, $C2
         lda     #$EB
         ldx     #$D1
         jsr     L1735

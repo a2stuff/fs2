@@ -68,3 +68,23 @@ label:                          ; optional label
         sta     arg
         stx     arg+1
 .endmacro
+
+.macro ADD16 arg1, arg2, result
+        clc
+        _op_lo  lda, {arg1}
+        _op_lo  adc, {arg2}
+        sta     result
+        _op_hi  lda, {arg1}
+        _op_hi  adc, {arg2}
+        sta     result+1
+.endmacro
+
+.macro SUB16 arg1, arg2, result
+        sec
+        _op_lo  lda, {arg1}
+        _op_lo  sbc, {arg2}
+        sta     result
+        _op_hi  lda, {arg1}
+        _op_hi  sbc, {arg2}
+        sta     result+1
+.endmacro
