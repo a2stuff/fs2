@@ -3115,16 +3115,21 @@ L159C:  lda     $C5
 
 ;;; ============================================================
 
-L168F:  sta     $C4
+.proc MultiplyC2ByAX
+        sta     $C4
         stx     $C5
         jmp     ZPMultiply::L1569
+.endproc
 
+.proc MultiplyC2ByAXIntoC2
+        .refto MultiplyC2ByAXIntoC2
         sta     $C4
         stx     $C5
         jsr     ZPMultiply::L1569
         sta     $C2
         stx     $C3
         rts
+.endproc
 
 ;;; ============================================================
 
@@ -3352,7 +3357,7 @@ L17E1:  lda     L141A,y
         lsr     a
         tax
         lda     #$00
-        jsr     L168F
+        jsr     MultiplyC2ByAX
         clc
         adc     $BC
         tay

@@ -24,8 +24,8 @@ L03F0           := $03F0
 HiresTableHi    := $0E9A
 HiresTableLo    := $0F5A
 L1569           := $1569
-L168F           := $168F
-L1696           := $1696
+MultiplyC2ByAX          := $168F
+MultiplyC2ByAXIntoC2    := $1696
 L1735           := $1735
 L1763           := $1763
 L1768           := $1768
@@ -482,9 +482,8 @@ LD9FE:  lda     LD9E6
         sta     $BF
         ror     $C2
         ror     $BE
-        lda     #$58
-        ldx     #$00
-        jsr     L168F
+        LDAX    #$58
+        jsr     MultiplyC2ByAX
         eor     #$FF
         clc
         adc     #$58
@@ -509,9 +508,8 @@ LDA53:  lda     $BE
         adc     #$20
         and     #$7F
         sta     $C3
-        lda     #$68
-        ldx     #$01
-        jsr     L168F
+        LDAX    #$168
+        jsr     MultiplyC2ByAX
         STAX    ValueForString
         CALLAX  Set3DigitString, $DB24
         JUMPAX  DrawMessageOrange, mDB22
@@ -1362,12 +1360,10 @@ LE179:  sta     $0990
 LE182:  sta     $C3
         lda     #$00
         sta     $C2
-        lda     #$D0
-        ldx     #$07
-        jsr     L1696
-        lda     $09A9
-        ldx     $09AA
-        jsr     L168F
+        LDAX    #$7D0
+        jsr     MultiplyC2ByAXIntoC2
+        LDAX    $09A9
+        jsr     MultiplyC2ByAX
         sta     $0A0D
         stx     $0A0E
         lda     L00BA

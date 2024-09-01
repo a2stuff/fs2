@@ -81,8 +81,8 @@ HiresTableHi    := $0E9A
 HiresTableLo    := $0F5A
 ZPMultiply      := $154A
 L1569           := $1569
-L168F           := $168F
-L1696           := $1696
+MultiplyC2ByAX          := $168F
+MultiplyC2ByAXIntoC2    := $1696
 L16A2           := $16A2
 L172C           := $172C
 L1735           := $1735
@@ -6681,23 +6681,16 @@ L915D:  lsr     a
         lsr     a
         lsr     a
         jsr     L1AAC
-        lda     $0A5E
-        ldx     $0A5F
-        sta     $C2
-        stx     $C3
-        lda     $0A31
-        ldx     $0A32
-        jsr     L168F
-        sta     $09F0
-        stx     $09F1
+        LDAX    $0A5E
+        STAX    $C2
+        LDAX    $0A31
+        jsr     MultiplyC2ByAX
+        STAX    $09F0
         jsr     L9386
-        lda     $0A5E
-        ldx     $0A5F
-        sta     $C2
-        stx     $C3
-        lda     $09DA
-        ldx     $09DB
-        jsr     L168F
+        LDAX    $0A5E
+        STAX    $C2
+        LDAX    $09DA
+        jsr     MultiplyC2ByAX
         stx     $09D9
         rts
 
@@ -6824,15 +6817,11 @@ L9270:  lda     $0A53
         sta     L8AFF
         beq     L9284
         jsr     L1A57
-L9284:  lda     $0A52
-        ldx     $0A53
-        sta     $C2
-        stx     $C3
-        lda     $0A2F
-        ldx     $0A30
-        jsr     L168F
-        sta     $09E8
-        stx     $09E9
+L9284:  LDAX    $0A52
+        STAX    $C2
+        LDAX    $0A2F
+        jsr     MultiplyC2ByAX
+        STAX    $09E8
         jsr     L9311
 L92A0:  rts
 
@@ -6923,38 +6912,24 @@ L9311:  ldx     $0A65
         sta     $C3
         lda     #$00
         sta     $C2
-        lda     $0A29
-        ldx     $0A2A
-        jsr     L168F
-        sta     $09E6
-        stx     $09E7
-        lda     $09C1
-        ldx     $09C2
-        sta     $C2
-        stx     $C3
-        lda     $0A25
-        ldx     $0A26
-        jsr     L168F
-        sta     $09C3
-        stx     $09C4
-        lda     $09C1
-        ldx     $09C2
-        sta     $C2
-        stx     $C3
-        lda     $0A27
-        ldx     $0A28
-        jsr     L168F
-        sta     $0A0B
-        stx     $0A0C
-        lda     $09C1
-        ldx     $09C2
-        sta     $C2
-        stx     $C3
-        lda     $0A23
-        ldx     $0A24
-        jsr     L168F
-        sta     $09C5
-        stx     $09C6
+        LDAX    $0A29
+        jsr     MultiplyC2ByAX
+        STAX    $09E6
+        LDAX    $09C1
+        STAX    $C2
+        LDAX    $0A25
+        jsr     MultiplyC2ByAX
+        STAX    $09C3
+        LDAX    $09C1
+        STAX    $C2
+        LDAX    $0A27
+        jsr     MultiplyC2ByAX
+        STAX    $0A0B
+        LDAX    $09C1
+        STAX    $C2
+        LDAX    $0A23
+        jsr     MultiplyC2ByAX
+        STAX    $09C5
 L9386:  lda     $09F0
         clc
         adc     $09B1
@@ -7032,9 +7007,8 @@ L93CA:  lda     $0937
         lda     #$0D
         sta     $B9
         jsr     L188D
-        lda     $0A5A
-        ldx     $0A5B
-        jsr     L168F
+        LDAX    $0A5A
+        jsr     MultiplyC2ByAX
         sta     $09AB
         sta     $C2
         txa
@@ -7042,27 +7016,22 @@ L93CA:  lda     $0937
         adc     #$07
         sta     $09AC
         sta     $C3
-        lda     $0A2D
-        ldx     $0A2E
-        jsr     L168F
-        sta     $09EA
-        stx     $09EB
+        LDAX    $0A2D
+        jsr     MultiplyC2ByAX
+        STAX    $09EA
         lda     #$BF
         sta     $B8
         lda     #$93
         sta     $B9
         jsr     L188D
-        lda     $C2
-        ldx     $C3
+        LDAX    $C2
         sta     L00A5
         stx     $A6
         lda     L00A5
         ldx     $A6
-        sta     $C2
-        stx     $C3
-        lda     $09EC
-        ldx     $09ED
-        jsr     L168F
+        STAX    $C2
+        LDAX    $09EC
+        jsr     MultiplyC2ByAX
         clc
         adc     $09EA
         sta     $0A19
@@ -7076,11 +7045,9 @@ L93CA:  lda     $0937
         sta     $0A1A
 L9493:  lda     L00A5
         ldx     $A6
-        sta     $C2
-        stx     $C3
-        lda     $09EE
-        ldx     $09EF
-        jsr     L168F
+        STAX    $C2
+        LDAX    $09EE
+        jsr     MultiplyC2ByAX
         clc
         adc     $09EA
         sta     $0A1B
@@ -7109,31 +7076,23 @@ L94D5:  ldx     #$0F
 L94E1:  cmp     #$D1
         bcc     L94D5
 L94E5:  ldx     #$00
-L94E7:  lda     $0A11
-        ldx     $0A12
-        sta     $C2
-        stx     $C3
-        jsr     L168F
-        sta     $0A13
-        stx     $0A14
-        sta     $C2
-        stx     $C3
-        lda     $0A19
-        ldx     $0A1A
-        jsr     L168F
+L94E7:  LDAX    $0A11
+        STAX    $C2
+        jsr     MultiplyC2ByAX
+        STAX    $0A13
+        STAX    $C2
+        LDAX    $0A19
+        jsr     MultiplyC2ByAX
         stx     $09F7
         asl     a
         rol     $09F7
         asl     a
         rol     $09F7
         sta     $09F6
-        lda     $0A13
-        ldx     $0A14
-        sta     $C2
-        stx     $C3
-        lda     $0A1B
-        ldx     $0A1C
-        jsr     L168F
+        LDAX    $0A13
+        STAX    $C2
+        LDAX    $0A1B
+        jsr     MultiplyC2ByAX
         stx     $09F9
         asl     a
         rol     $09F9
@@ -7156,68 +7115,49 @@ L9544:  txa
         lda     $09F9
         adc     $09F7
         sta     $C3
-        lda     $09A9
-        ldx     $09AA
-        jsr     L1696
+        LDAX    $09A9
+        jsr     MultiplyC2ByAXIntoC2
         pla
         clc
         adc     $09F3
         tax
         lda     $09F2
-        jsr     L168F
-        sta     $09F4
-        stx     $09F5
+        jsr     MultiplyC2ByAX
+        STAX    $09F4
         lda     $08B6
         beq     L9582
         dec     $08B6
         lda     #$00
         sta     $09F4
         sta     $09F5
-L9582:  lda     $0A03
-        ldx     $0A04
-        sta     $C2
-        stx     $C3
-        lda     $0A17
-        ldx     $0A18
-        jsr     L168F
-        sta     $0A09
-        stx     $0A0A
-        lda     $09B7
-        ldx     $09B8
-        sta     $C2
-        stx     $C3
-        lda     $0A17
-        ldx     $0A18
-        jsr     L168F
-        sta     $09BF
-        stx     $09C0
-        lda     $09F4
-        ldx     $09F5
-        sta     $C2
-        stx     $C3
-        lda     $09C7
-        ldx     $09C8
-        jsr     L168F
+L9582:  LDAX    $0A03
+        STAX    $C2
+        LDAX    $0A17
+        jsr     MultiplyC2ByAX
+        STAX    $0A09
+        LDAX    $09B7
+        STAX    $C2
+        LDAX    $0A17
+        jsr     MultiplyC2ByAX
+        STAX    $09BF
+        LDAX    $09F4
+        STAX    $C2
+        LDAX    $09C7
+        jsr     MultiplyC2ByAX
         sec
         sbc     $09BF
         sta     $0A0F
         txa
         sbc     $09C0
         sta     $0A10
-        lda     $0A19
-        ldx     $0A1A
-        sta     $C2
-        stx     $C3
-        jsr     L168F
-        sta     $0A1D
-        stx     $0A1E
-        lda     $0A1B
-        ldx     $0A1C
-        sta     $C2
-        stx     $C3
-        jsr     L168F
-        sta     $0A1F
-        stx     $0A20
+        LDAX    $0A19
+        STAX    $C2
+        jsr     MultiplyC2ByAX
+        STAX    $0A1D
+        LDAX    $0A1B
+        STAX    $C2
+        jsr     MultiplyC2ByAX
+        STAX    $0A1F
         clc
         adc     $0A1D
         bcc     L9603
@@ -7232,21 +7172,18 @@ L9603:  adc     $09E6
         clc
         adc     $09D9
         sta     $C3
-        lda     $09B5
-        ldx     $09B6
-        jsr     L168F
+        LDAX    $09B5
+        jsr     MultiplyC2ByAX
         clc
         adc     $09B3
         sta     $C2
         txa
         adc     $09B4
         sta     $C3
-        lda     $0A13
-        ldx     $0A14
-        jsr     L1696
-        lda     $09A9
-        ldx     $09AA
-        jsr     L168F
+        LDAX    $0A13
+        jsr     MultiplyC2ByAXIntoC2
+        LDAX    $09A9
+        jsr     MultiplyC2ByAX
         clc
         adc     $0A09
         sta     $09CF
@@ -7271,21 +7208,17 @@ L9662:  lda     $0A0D
         sbc     $09D0
         sta     $09D8
         sta     $C3
-        lda     $09FB
-        ldx     $09FC
-        jsr     L168F
-        sta     $09D1
-        stx     $09D2
+        LDAX    $09FB
+        jsr     MultiplyC2ByAX
+        STAX    $09D1
         lda     #$CC
         sta     $B8
         lda     #$0D
         sta     $B9
         jsr     L188D
-        lda     $0A05
-        ldx     $0A06
-        jsr     L1696
-        lda     $09F4
-        ldx     $09F5
+        LDAX    $0A05
+        jsr     MultiplyC2ByAXIntoC2
+        LDAX    $09F4
         jsr     L97B0
         ldy     $09E3
         beq     L96AF
@@ -7329,7 +7262,7 @@ L96F9:  lda     $0A10
         tax
         lda     $0A0F
         ror     a
-L9704:  jsr     L168F
+L9704:  jsr     MultiplyC2ByAX
         sta     $09C9
         txa
         sta     $09CA
@@ -7344,9 +7277,8 @@ L971E:  lda     #$76
         sta     $C2
         lda     #$FD
         sta     $C3
-        lda     $09C9
-        ldx     $09CA
-        jsr     L168F
+        LDAX    $09C9
+        jsr     MultiplyC2ByAX
         clc
         adc     $09D1
         tay
@@ -7405,7 +7337,7 @@ L978B:  tax
         sta     $09E5
 L97AF:  rts
 
-L97B0:  jsr     L168F
+L97B0:  jsr     MultiplyC2ByAX
         asl     a
         tay
         txa
@@ -7441,26 +7373,20 @@ L97E5:  inc     $34
         sta     $C3
         lda     #$00
         sta     $C2
-        lda     $09CD
-        ldx     $09CE
-        jsr     L168F
+        LDAX    $09CD
+        jsr     MultiplyC2ByAX
         clc
         adc     $09E4
         sta     $09E4
         txa
         adc     $09E5
         sta     $09E5
-        lda     $09DE
-        ldx     $09DF
-        sta     $C2
-        stx     $C3
-        lda     $0A11
-        ldx     $0A12
-        jsr     L168F
-        sta     $09E0
-        stx     $09E1
-        lda     $0A0B
-        ldx     $0A0C
+        LDAX    $09DE
+        STAX    $C2
+        LDAX    $0A11
+        jsr     MultiplyC2ByAX
+        STAX    $09E0
+        LDAX    $0A0B
         ldy     $09E3
         beq     L982F
         lda     #$00
@@ -7475,31 +7401,20 @@ L982F:  clc
         stx     $0A08
         lda     $B7
         jsr     L1763
-        sta     $09BD
-        stx     $09BE
-        lda     $09B7
-        ldx     $09B8
-        sta     $C2
-        stx     $C3
-        lda     $09E0
-        ldx     $09E1
-        jsr     L168F
-        sta     $09B9
-        stx     $09BA
-        sta     $C2
-        stx     $C3
-        lda     $0A07
-        ldx     $0A08
-        jsr     L168F
-        sta     $09D5
-        stx     $09D6
-        lda     $0A03
-        ldx     $0A04
-        sta     $C2
-        stx     $C3
-        lda     $09E0
-        ldx     $09E1
-        jsr     L168F
+        STAX    $09BD
+        LDAX    $09B7
+        STAX    $C2
+        LDAX    $09E0
+        jsr     MultiplyC2ByAX
+        STAX    $09B9
+        STAX    $C2
+        LDAX    $0A07
+        jsr     MultiplyC2ByAX
+        STAX    $09D5
+        LDAX    $0A03
+        STAX    $C2
+        LDAX    $09E0
+        jsr     MultiplyC2ByAX
         clc
         adc     $08A1
         tay
@@ -7507,17 +7422,12 @@ L982F:  clc
         adc     $08A2
         tax
         tya
-        sta     $09A7
-        stx     $09A8
-        lda     $09BD
-        ldx     $09BE
-        sta     $C2
-        stx     $C3
-        lda     $09B9
-        ldx     $09BA
-        jsr     L168F
-        sta     $0A01
-        stx     $0A02
+        STAX    $09A7
+        LDAX    $09BD
+        STAX    $C2
+        LDAX    $09B9
+        jsr     MultiplyC2ByAX
+        STAX    $0A01
         lda     $09F6
         sec
         sbc     $09F8
@@ -7532,11 +7442,9 @@ L982F:  clc
         sta     $C3
         lda     $09FF
         sta     $C2
-        lda     $09FD
-        ldx     $09FE
-        jsr     L168F
-        sta     $09CB
-        stx     $09CC
+        LDAX    $09FD
+        jsr     MultiplyC2ByAX
+        STAX    $09CB
         lda     $09CB
         sec
         sbc     $08B9
@@ -7552,13 +7460,10 @@ L982F:  clc
         stx     $08BA
         inx
         stx     $089A
-L990E:  lda     $09E0
-        ldx     $09E1
-        sta     $C2
-        stx     $C3
-        lda     $09CB
-        ldx     $09CC
-        jsr     L168F
+L990E:  LDAX    $09E0
+        STAX    $C2
+        LDAX    $09CB
+        jsr     MultiplyC2ByAX
         asl     a
         tay
         txa
@@ -7626,13 +7531,10 @@ L9996:  lda     $089E
         beq     L99A1
         jsr     LA524
         dec     $089E
-L99A1:  lda     $09AB
-        ldx     $09AC
-        sta     $C2
-        stx     $C3
-        lda     $0A21
-        ldx     $0A22
-        jsr     L168F
+L99A1:  LDAX    $09AB
+        STAX    $C2
+        LDAX    $0A21
+        jsr     MultiplyC2ByAX
         sec
         sbc     $09AD
         pha
@@ -8058,9 +7960,8 @@ L9CE6:  tay
         ror     a
         sta     $C2
         stx     $C3
-        lda     #$68
-        ldx     #$01
-        jsr     L168F
+        LDAX    #$168
+        jsr     MultiplyC2ByAX
         STAX    ValueForString
         rts
 
@@ -8406,9 +8307,8 @@ L9F6B:  lda     $FB
         adc     $0A37
         sta     $0831
         ADD16   $0830, $099E, $C2
-        lda     #$F4
-        ldx     #$24
-        jsr     L168F
+        LDAX    #$24F4
+        jsr     MultiplyC2ByAX
 L9FA1:  sta     L00A5
         stx     $A6
         sec
@@ -8423,11 +8323,9 @@ L9FA1:  sta     L00A5
 
 L9FB3:  lda     L00A5
         ldx     $A6
-        sta     $C2
-        stx     $C3
-        lda     #$CC
-        ldx     #$0C
-        jsr     L168F
+        STAX    $C2
+        LDAX    #$CCC
+        jsr     MultiplyC2ByAX
         eor     #$FF
         clc
         adc     #$16
@@ -8596,13 +8494,10 @@ LA0D0:  lda     #$01
         ldx     $0905
         beq     LA0EE
         pha
-        lda     $0852
-        ldx     $0853
-        sta     $C2
-        stx     $C3
-        lda     #$55
-        ldx     #$15
-        jsr     L168F
+        LDAX    $0852
+        STAX    $C2
+        LDAX    #$1555
+        jsr     MultiplyC2ByAX
         tay
         pla
 LA0EE:  ldx     #$08
@@ -8636,11 +8531,9 @@ LA109:  sty     $3F
         tya
         sbc     $B7
         sta     $C3
-        lda     #$1C
-        ldx     #$02
-        jsr     L168F
-        sta     $B6
-        stx     $B7
+        LDAX    #$21C
+        jsr     MultiplyC2ByAX
+        STAX    $B6
         jmp     LA2D9
 
 LA139:  lda     #$02
@@ -9099,7 +8992,7 @@ LA448:  lda     $BA
         sbc     LA092,y
         tax
         pla
-        jsr     L168F
+        jsr     MultiplyC2ByAX
         sec
         sbc     $BE
         eor     #$FF
@@ -9173,9 +9066,8 @@ LA500:  sta     $C0
         ldx     $BE
         lda     $BF
         jsr     L16A2
-        lda     $BE
-        ldx     $BF
-        jsr     L168F
+        LDAX    $BE
+        jsr     MultiplyC2ByAX
         clc
         adc     $C0
         sta     $BE
@@ -9228,14 +9120,11 @@ LA56F:  sty     $0990
         sta     $C3
         lda     #$00
         sta     $C2
-        lda     #$20
-        ldx     #$03
-        jsr     L1696
-        lda     $09A9
-        ldx     $09AA
-        jsr     L168F
-        sta     $0A0D
-        stx     $0A0E
+        LDAX    #$320
+        jsr     MultiplyC2ByAXIntoC2
+        LDAX    $09A9
+        jsr     MultiplyC2ByAX
+        STAX    $0A0D
         lda     $0938
         bne     LA59E
         lda     $0990
