@@ -2902,15 +2902,16 @@ CharBitmapTable:
         .word $5aad, $24ad, $788f                                    ; XYZ
 
 
+;;; Inputs are 16-bit signed numbers; scales X by (Y / $7FFF)
 ;;; Input: ZP locations specified by X, Y
 ;;; Output: ZP location specified by A
 ;;; Uses $C2-C6, $A5, $A7
-.scope ZPMultiply
+.scope ZPScale
         ;; $154A
 
         ;; $C2-C3 = $00,X
         ;; $C4-C5 = $00,Y
-        ;; $00,A = (result of jsr MultiplyC2byC4)
+        ;; $00,A = (result of jsr ScaleC2byC4)
         sta     $A5
         lda     $00,x
         sta     $C2
@@ -2920,13 +2921,14 @@ CharBitmapTable:
         sta     $C4
         lda     $01,y
         sta     $C5
-        jsr     MultiplyC2byC4
+        jsr     ScaleC2byC4
         ldy     $A5
         sta     $00,y
         stx     $01,y
         rts
 
-MultiplyC2byC4:  lda     $C2             ; If $C2-C3 is zero...
+ScaleC2byC4:
+        lda     $C2             ; If $C2-C3 is zero...
         ora     $C3
         beq     L1575
         lda     $C4             ; Or $C4-C5 is zero...
@@ -3115,17 +3117,17 @@ L159C:  lda     $C5
 
 ;;; ============================================================
 
-.proc MultiplyC2ByAX
+.proc ScaleC2ByAX
         sta     $C4
         stx     $C5
-        jmp     ZPMultiply::MultiplyC2byC4
+        jmp     ZPScale::ScaleC2byC4
 .endproc
 
-.proc MultiplyC2ByAXIntoC2
-        .refto MultiplyC2ByAXIntoC2
+.proc ScaleC2ByAXIntoC2
+        .refto ScaleC2ByAXIntoC2
         sta     $C4
         stx     $C5
-        jsr     ZPMultiply::MultiplyC2byC4
+        jsr     ZPScale::ScaleC2byC4
         sta     $C2
         stx     $C3
         rts
@@ -3229,6 +3231,10 @@ L1710:
         rts
 .endscope
 
+;;; Divide A,X by 2, signed
+;;; Trashes Y
+.proc AXDiv2
+        .refto AXDiv2
         tay
         txa
         cmp     #$80
@@ -3237,13 +3243,20 @@ L1710:
         tya
         ror     a
         rts
+.endproc
 
+;;; 16-bit unsigned multiply, A,X by $C2-C3
+;;; Inputs: A,X, $C2-C3
+;;; Output: A,X
+;;; Uses $C4-C9
+.proc MultiplyAXByC2
+        .refto MultiplyAXByC2
         sta     $C4
         stx     $C5
         lda     #$00
         sta     $C8
         sta     $C9
-        ldx     #$10
+        ldx     #$10            ; bits
 L1741:  lsr     $C3
         ror     $C2
         bcc     L1752
@@ -3263,6 +3276,7 @@ L1752:  ror     a
         lda     $C7
         ldx     $C8
         rts
+.endproc
 
         ldx     #$00
         jmp     L177B
@@ -3357,7 +3371,7 @@ L17E1:  lda     L141A,y
         lsr     a
         tax
         lda     #$00
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         clc
         adc     $BC
         tay

@@ -79,13 +79,13 @@ WW1AceScoreStr  := $08DF
 
 HiresTableHi    := $0E9A
 HiresTableLo    := $0F5A
-ZPMultiply      := $154A
-MultiplyC2ByC4          := $1569
-MultiplyC2ByAX          := $168F
-MultiplyC2ByAXIntoC2    := $1696
+ZPScale      := $154A
+ScaleC2ByC4          := $1569
+ScaleC2ByAX          := $168F
+ScaleC2ByAXIntoC2    := $1696
 L16A2           := $16A2
-L172C           := $172C
-L1735           := $1735
+AXDiv2          := $172C
+MultiplyAXByC2           := $1735
 L1763           := $1763
 L1768           := $1768
 L1778           := $1778
@@ -409,24 +409,24 @@ L6199:  lda     $3D
         ldx     #$C0
         ldy     #$BA
         lda     #$98
-        jsr     ZPMultiply
+        jsr     ZPScale
 
         ldx     #$B6
         ldy     #$BE
         lda     #$AD
-        jsr     ZPMultiply
+        jsr     ZPScale
 
         SUB16   $98, $AD, $72
 
         ldx     #$B6
         ldy     #$BA
         lda     #$98
-        jsr     ZPMultiply
+        jsr     ZPScale
 
         ldx     #$C0
         ldy     #$BE
         lda     #$AD
-        jsr     ZPMultiply
+        jsr     ZPScale
 
         ADD16   $AD, $98, $74
 
@@ -478,42 +478,42 @@ L6210:  ldx     $72
         ldx     #$D6
         ldy     #$D4
         lda     #$D8
-        jsr     ZPMultiply
+        jsr     ZPScale
 
         ldx     #$CF
         ldy     #$CD
         lda     #$1B
-        jsr     ZPMultiply
+        jsr     ZPScale
 
         ldx     #$D6
         ldy     #$CD
         lda     #$DD
-        jsr     ZPMultiply
+        jsr     ZPScale
 
         ldx     #$CF
         ldy     #$D4
         lda     #$DF
-        jsr     ZPMultiply
+        jsr     ZPScale
 
         ldx     #$CB
         ldy     #$1B
         lda     #$E1
-        jsr     ZPMultiply
+        jsr     ZPScale
 
         ldx     #$CB
         ldy     #$DF
         lda     #$1E
-        jsr     ZPMultiply
+        jsr     ZPScale
 
         ldx     #$DD
         ldy     #$CB
         lda     #$4A
-        jsr     ZPMultiply
+        jsr     ZPScale
 
         ldx     #$CB
         ldy     #$D8
         lda     #$4D
-        jsr     ZPMultiply
+        jsr     ZPScale
 
         ADD16   $D8, $E1, $78
         SUB16   $1E, $DD, $7A
@@ -521,17 +521,17 @@ L6210:  ldx     $72
         ldx     #$CF
         ldy     #$18
         lda     #$7C
-        jsr     ZPMultiply
+        jsr     ZPScale
 
         ldx     #$CD
         ldy     #$18
         lda     #$7E
-        jsr     ZPMultiply
+        jsr     ZPScale
 
         ldx     #$18
         ldy     #$D4
         lda     #$80
-        jsr     ZPMultiply
+        jsr     ZPScale
 
         lda     #$00
         sec
@@ -547,7 +547,7 @@ L6210:  ldx     $72
         ldx     #$D6
         ldy     #$18
         lda     #$88
-        jsr     ZPMultiply
+        jsr     ZPScale
 
         ldx     #$0C
 L6301:  lda     $79,x
@@ -605,7 +605,7 @@ L6363:  lda     $C3
         sbc     $C3
         sta     $C3
 L6379:  LDAX    $68
-        jsr     L1735
+        jsr     MultiplyAXByC2
         asl     $C7
         rol     $C8
         rol     $C9
@@ -2766,7 +2766,7 @@ L7470:  SUB16   $CF, $D8, $C4
         LDAX    $C2
         sta     $A9
         stx     $AA
-        jsr     MultiplyC2ByC4
+        jsr     ScaleC2ByC4
         clc
         adc     $D4
         sta     $D4
@@ -2776,7 +2776,7 @@ L7470:  SUB16   $CF, $D8, $C4
         SUB16   $CF, $D8, $C4
         LDAX    $A9
         STAX    $C2
-        jsr     MultiplyC2ByC4
+        jsr     ScaleC2ByC4
         clc
         adc     $D8
         sta     $D8
@@ -2814,7 +2814,7 @@ L74EE:  SUB16   $CF, $D8, $C4
         SUB16   $CB, $D4, $C4
         LDAX    $C2
         STAX    $A9
-        jsr     MultiplyC2ByC4
+        jsr     ScaleC2ByC4
         clc
         adc     $D4
         sta     $D4
@@ -2824,7 +2824,7 @@ L74EE:  SUB16   $CF, $D8, $C4
         SUB16   $CF, $D8, $C4
         LDAX    $A9
         STAX    $C2
-        jsr     MultiplyC2ByC4
+        jsr     ScaleC2ByC4
         clc
         adc     $D8
         sta     $D8
@@ -2867,7 +2867,7 @@ L7576:  SUB16   $CF, $D8, $C4
         SUB16   $CF, $D8, $C4
         LDAX    $C2
         STAX    $A9
-        jsr     MultiplyC2ByC4
+        jsr     ScaleC2ByC4
         clc
         adc     $D8
         sta     $D8
@@ -2879,7 +2879,7 @@ L7576:  SUB16   $CF, $D8, $C4
         SUB16   $CD, $D6, $C4
         LDAX    $A9
         STAX    $C2
-        jsr     MultiplyC2ByC4
+        jsr     ScaleC2ByC4
         clc
         adc     $D6
         sta     $D6
@@ -2915,7 +2915,7 @@ L75F4:  SUB16   $CF, $D8, $C4
         SUB16   $CD, $D6, $C4
         LDAX    $C2
         STAX    $A9
-        jsr     MultiplyC2ByC4
+        jsr     ScaleC2ByC4
         clc
         adc     $D6
         sta     $D6
@@ -2925,7 +2925,7 @@ L75F4:  SUB16   $CF, $D8, $C4
         SUB16   $CF, $D8, $C4
         LDAX    $A9
         STAX    $C2
-        jsr     MultiplyC2ByC4
+        jsr     ScaleC2ByC4
         clc
         adc     $D8
         sta     $D8
@@ -4480,44 +4480,44 @@ L813A:  lda     #$00
         ldx     #$9E
         ldy     #$78
         lda     #$A9
-        jsr     ZPMultiply
+        jsr     ZPScale
         ldx     #$A0
         ldy     #$7E
         lda     #$AB
-        jsr     ZPMultiply
+        jsr     ZPScale
         LDAX    $A2
         STAX    $C2
         LDAX    $84
         STAX    $C4
-        jsr     MultiplyC2ByC4
+        jsr     ScaleC2ByC4
         jsr     L8234
         ldx     #$9E
         ldy     #$7A
         lda     #$A9
-        jsr     ZPMultiply
+        jsr     ZPScale
         ldx     #$A0
         ldy     #$80
         lda     #$AB
-        jsr     ZPMultiply
+        jsr     ZPScale
         LDAX    $A2
         STAX    $C2
         LDAX    $86
         STAX    $C4
-        jsr     MultiplyC2ByC4
+        jsr     ScaleC2ByC4
         jsr     L8234
         ldx     #$9E
         ldy     #$7C
         lda     #$A9
-        jsr     ZPMultiply
+        jsr     ZPScale
         ldx     #$A0
         ldy     #$82
         lda     #$AB
-        jsr     ZPMultiply
+        jsr     ZPScale
         LDAX    $A2
         STAX    $C2
         LDAX    $88
         STAX    $C4
-        jsr     MultiplyC2ByC4
+        jsr     ScaleC2ByC4
         jsr     L8234
         ldx     $E5
         lda     $30
@@ -6581,13 +6581,13 @@ L915D:  lsr     a
         LDAX    $0A5E
         STAX    $C2
         LDAX    $0A31
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $09F0
         jsr     L9386
         LDAX    $0A5E
         STAX    $C2
         LDAX    $09DA
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         stx     $09D9
         rts
 
@@ -6713,7 +6713,7 @@ L9270:  lda     $0A53
 L9284:  LDAX    $0A52
         STAX    $C2
         LDAX    $0A2F
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $09E8
         jsr     L9311
 L92A0:  rts
@@ -6792,10 +6792,10 @@ L9300:  jmp     L91D6
 ;;; ============================================================
 
 L9311:  ldx     $0A65
-        jsr     L172C
+        jsr     AXDiv2
         stx     $B7
         ldx     $0A53
-        jsr     L172C
+        jsr     AXDiv2
         txa
         sec
         sbc     $B7
@@ -6804,22 +6804,22 @@ L9311:  ldx     $0A65
         lda     #$00
         sta     $C2
         LDAX    $0A29
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $09E6
         LDAX    $09C1
         STAX    $C2
         LDAX    $0A25
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $09C3
         LDAX    $09C1
         STAX    $C2
         LDAX    $0A27
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $0A0B
         LDAX    $09C1
         STAX    $C2
         LDAX    $0A23
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $09C5
 L9386:  lda     $09F0
         clc
@@ -6899,7 +6899,7 @@ L93CA:  lda     $0937
         sta     $B9
         jsr     L188D
         LDAX    $0A5A
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         sta     $09AB
         sta     $C2
         txa
@@ -6908,7 +6908,7 @@ L93CA:  lda     $0937
         sta     $09AC
         sta     $C3
         LDAX    $0A2D
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $09EA
         lda     #$BF
         sta     $B8
@@ -6921,7 +6921,7 @@ L93CA:  lda     $0937
         LDAX    L00A5
         STAX    $C2
         LDAX    $09EC
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         clc
         adc     $09EA
         sta     $0A19
@@ -6936,7 +6936,7 @@ L93CA:  lda     $0937
 L9493:  LDAX    L00A5
         STAX    $C2
         LDAX    $09EE
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         clc
         adc     $09EA
         sta     $0A1B
@@ -6967,11 +6967,11 @@ L94E1:  cmp     #$D1
 L94E5:  ldx     #$00
 L94E7:  LDAX    $0A11
         STAX    $C2
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $0A13
         STAX    $C2
         LDAX    $0A19
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         stx     $09F7
         asl     a
         rol     $09F7
@@ -6981,7 +6981,7 @@ L94E7:  LDAX    $0A11
         LDAX    $0A13
         STAX    $C2
         LDAX    $0A1B
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         stx     $09F9
         asl     a
         rol     $09F9
@@ -7005,13 +7005,13 @@ L9544:  txa
         adc     $09F7
         sta     $C3
         LDAX    $09A9
-        jsr     MultiplyC2ByAXIntoC2
+        jsr     ScaleC2ByAXIntoC2
         pla
         clc
         adc     $09F3
         tax
         lda     $09F2
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $09F4
         lda     $08B6
         beq     L9582
@@ -7022,17 +7022,17 @@ L9544:  txa
 L9582:  LDAX    $0A03
         STAX    $C2
         LDAX    $0A17
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $0A09
         LDAX    $09B7
         STAX    $C2
         LDAX    $0A17
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $09BF
         LDAX    $09F4
         STAX    $C2
         LDAX    $09C7
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         sec
         sbc     $09BF
         sta     $0A0F
@@ -7041,11 +7041,11 @@ L9582:  LDAX    $0A03
         sta     $0A10
         LDAX    $0A19
         STAX    $C2
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $0A1D
         LDAX    $0A1B
         STAX    $C2
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $0A1F
         clc
         adc     $0A1D
@@ -7062,7 +7062,7 @@ L9603:  adc     $09E6
         adc     $09D9
         sta     $C3
         LDAX    $09B5
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         clc
         adc     $09B3
         sta     $C2
@@ -7070,9 +7070,9 @@ L9603:  adc     $09E6
         adc     $09B4
         sta     $C3
         LDAX    $0A13
-        jsr     MultiplyC2ByAXIntoC2
+        jsr     ScaleC2ByAXIntoC2
         LDAX    $09A9
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         clc
         adc     $0A09
         sta     $09CF
@@ -7098,7 +7098,7 @@ L9662:  lda     $0A0D
         sta     $09D8
         sta     $C3
         LDAX    $09FB
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $09D1
         lda     #$CC
         sta     $B8
@@ -7106,7 +7106,7 @@ L9662:  lda     $0A0D
         sta     $B9
         jsr     L188D
         LDAX    $0A05
-        jsr     MultiplyC2ByAXIntoC2
+        jsr     ScaleC2ByAXIntoC2
         LDAX    $09F4
         jsr     L97B0
         ldy     $09E3
@@ -7128,9 +7128,9 @@ L96B8:  sty     $09CD
         ora     $0A12
         beq     L96E0
         LDAX    $0A64
-        jsr     L172C
-        jsr     L172C
-        jsr     L172C
+        jsr     AXDiv2
+        jsr     AXDiv2
+        jsr     AXDiv2
         sta     $09CD
         stx     $09CE
 L96E0:  lda     #$C2
@@ -7149,7 +7149,7 @@ L96F9:  lda     $0A10
         tax
         lda     $0A0F
         ror     a
-L9704:  jsr     MultiplyC2ByAX
+L9704:  jsr     ScaleC2ByAX
         sta     $09C9
         txa
         sta     $09CA
@@ -7165,7 +7165,7 @@ L971E:  lda     #$76
         lda     #$FD
         sta     $C3
         LDAX    $09C9
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         clc
         adc     $09D1
         tay
@@ -7223,7 +7223,7 @@ L978B:  tax
         sta     $09E5
 L97AF:  rts
 
-L97B0:  jsr     MultiplyC2ByAX
+L97B0:  jsr     ScaleC2ByAX
         asl     a
         tay
         txa
@@ -7260,7 +7260,7 @@ L97E5:  inc     $34
         lda     #$00
         sta     $C2
         LDAX    $09CD
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         clc
         adc     $09E4
         sta     $09E4
@@ -7270,7 +7270,7 @@ L97E5:  inc     $34
         LDAX    $09DE
         STAX    $C2
         LDAX    $0A11
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $09E0
         LDAX    $0A0B
         ldy     $09E3
@@ -7291,16 +7291,16 @@ L982F:  clc
         LDAX    $09B7
         STAX    $C2
         LDAX    $09E0
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $09B9
         STAX    $C2
         LDAX    $0A07
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $09D5
         LDAX    $0A03
         STAX    $C2
         LDAX    $09E0
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         clc
         adc     $08A1
         tay
@@ -7312,7 +7312,7 @@ L982F:  clc
         LDAX    $09BD
         STAX    $C2
         LDAX    $09B9
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $0A01
         lda     $09F6
         sec
@@ -7329,7 +7329,7 @@ L982F:  clc
         lda     $09FF
         sta     $C2
         LDAX    $09FD
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $09CB
         lda     $09CB
         sec
@@ -7349,7 +7349,7 @@ L982F:  clc
 L990E:  LDAX    $09E0
         STAX    $C2
         LDAX    $09CB
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         asl     a
         tay
         txa
@@ -7420,7 +7420,7 @@ L9996:  lda     $089E
 L99A1:  LDAX    $09AB
         STAX    $C2
         LDAX    $0A21
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         sec
         sbc     $09AD
         pha
@@ -7839,7 +7839,7 @@ L9CE6:  tay
         sta     $C2
         stx     $C3
         LDAX    #$168
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    ValueForString
         rts
 
@@ -8185,7 +8185,7 @@ L9F6B:  lda     $FB
         sta     $0831
         ADD16   $0830, $099E, $C2
         LDAX    #$24F4
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
 L9FA1:  sta     L00A5
         stx     $A6
         sec
@@ -8201,7 +8201,7 @@ L9FA1:  sta     L00A5
 L9FB3:  LDAX    L00A5
         STAX    $C2
         LDAX    #$CCC
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         eor     #$FF
         clc
         adc     #$16
@@ -8372,7 +8372,7 @@ LA0D0:  lda     #$01
         LDAX    $0852
         STAX    $C2
         LDAX    #$1555
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         tay
         pla
 LA0EE:  ldx     #$08
@@ -8396,7 +8396,7 @@ LA109:  sty     $3F
         sta     $C3
         lda     #$6C
         ldx     #$01
-        jsr     L1735
+        jsr     MultiplyAXByC2
         ldx     $C6
         tay
         txa
@@ -8407,7 +8407,7 @@ LA109:  sty     $3F
         sbc     $B7
         sta     $C3
         LDAX    #$21C
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $B6
         jmp     LA2D9
 
@@ -8761,7 +8761,7 @@ LA3BA:  lda     #$00
         STAX    $C2
         lda     #$1B
         ldx     #$01
-        jsr     L1735
+        jsr     MultiplyAXByC2
         asl     a
         tay
         txa
@@ -8862,7 +8862,7 @@ LA448:  LDAX    $BA
         sbc     LA092,y
         tax
         pla
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         sec
         sbc     $BE
         eor     #$FF
@@ -8935,7 +8935,7 @@ LA500:  sta     $C0
         lda     $BF
         jsr     L16A2
         LDAX    $BE
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         clc
         adc     $C0
         sta     $BE
@@ -8953,7 +8953,7 @@ LA524:  lda     $0940
         sta     $C3
         lda     #$0C
         ldx     #$4E
-        jsr     L1735
+        jsr     MultiplyAXByC2
         txa
         sec
         sbc     $0A36
@@ -8989,9 +8989,9 @@ LA56F:  sty     $0990
         lda     #$00
         sta     $C2
         LDAX    #$320
-        jsr     MultiplyC2ByAXIntoC2
+        jsr     ScaleC2ByAXIntoC2
         LDAX    $09A9
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    $0A0D
         lda     $0938
         bne     LA59E
@@ -10530,6 +10530,6 @@ LB3B3:  lda     ($3E),y
         ADD16   $5F, $0A36, $C2
         lda     #$EB
         ldx     #$D1
-        jsr     L1735
+        jsr     MultiplyAXByC2
         asl     a
         rol     $C8
