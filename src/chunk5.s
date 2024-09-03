@@ -1871,10 +1871,8 @@ L6D43:  lda     $69
         rts
 
         jsr     L6D56
-        lda     L00A5
-        ldx     $A6
-        sta     $8B
-        stx     $8C
+        LDAX    L00A5
+        STAX    $8B
         jmp     L674D
 
 L6D56:  iny
@@ -6281,10 +6279,8 @@ Transponder:
         lda     #$00
         sbc     $6F
         sta     $09B0
-        lda     $70
-        ldx     $71
-        sta     $09E4
-        stx     $09E5
+        LDAX    $70
+        STAX    $09E4
         rts
 
 ;;; Ctrl+X
@@ -6317,8 +6313,7 @@ AltimeterAdjust:
 
 ;;; Ctrl+D
 HeadingAdjust:
-        lda     $08B2
-        ldx     $08B3
+        LDAX    $08B2
         sec
         sbc     $70
         tay
@@ -6374,10 +6369,8 @@ DropBomb:
         ora     $0A57
         bne     L9040
         dec     WW1AceBombsStr
-        lda     $0A39
-        ldx     $0A3A
-        sta     $0A56
-        stx     $0A57
+        LDAX    $0A39
+        STAX    $0A56
 L9040:  rts
 
 
@@ -6687,10 +6680,8 @@ L9227:  sta     $0A53
         adc     $09CC
         cmp     $097C
         bcc     L9246
-        lda     $09CB
-        ldx     $09CC
-        sta     $08B9
-        stx     $08BA
+        LDAX    $09CB
+        STAX    $08B9
 L9246:  jsr     L925C
         jmp     L92B7
 
@@ -6706,10 +6697,8 @@ YokeRight:
 L9259:  sta     $0A53
 L925C:  lda     $0936
         beq     L9270
-        lda     $0A52
-        ldx     $0A53
-        sta     $0A64
-        stx     $0A65
+        LDAX    $0A52
+        STAX    $0A64
         jsr     L92CB
 L9270:  lda     $0A53
         clc
@@ -6747,10 +6736,8 @@ RudderRight:
 L92B4:  sta     $0A65
 L92B7:  lda     $0936
         beq     L92CB
-        lda     $0A64
-        ldx     $0A65
-        sta     $0A52
-        stx     $0A53
+        LDAX    $0A64
+        STAX    $0A52
         jsr     L9270
 L92CB:  lda     $0A65
         clc
@@ -6931,8 +6918,7 @@ L93CA:  lda     $0937
         LDAX    $C2
         sta     L00A5
         stx     $A6
-        lda     L00A5
-        ldx     $A6
+        LDAX    L00A5
         STAX    $C2
         LDAX    $09EC
         jsr     MultiplyC2ByAX
@@ -6947,8 +6933,7 @@ L93CA:  lda     $0937
         lda     #$00
         sta     $0A19
         sta     $0A1A
-L9493:  lda     L00A5
-        ldx     $A6
+L9493:  LDAX    L00A5
         STAX    $C2
         LDAX    $09EE
         jsr     MultiplyC2ByAX
@@ -7142,8 +7127,7 @@ L96B8:  sty     $09CD
         lda     $0A11
         ora     $0A12
         beq     L96E0
-        lda     $0A64
-        ldx     $0A65
+        LDAX    $0A64
         jsr     L172C
         jsr     L172C
         jsr     L172C
@@ -7156,8 +7140,7 @@ L96E0:  lda     #$C2
         jsr     L188D
         lda     $0899
         beq     L96F9
-        lda     $0A0F
-        ldx     $0A10
+        LDAX    $0A0F
         jmp     L9704
 
 L96F9:  lda     $0A10
@@ -7192,8 +7175,7 @@ L971E:  lda     #$76
         tya
         ldy     $0899
         beq     L9745
-        lda     $09D1
-        ldx     $09D2
+        LDAX    $09D1
 L9745:  clc
         adc     $0A11
         sta     $0A11
@@ -7472,10 +7454,8 @@ L99D7:  sta     $6C
         lda     #$00
         sbc     $09B0
         sta     $6F
-        lda     $09E4
-        ldx     $09E5
-        sta     $70
-        stx     $71
+        LDAX    $09E4
+        STAX    $70
         ldx     #$00
         lda     $5E
         cmp     #$01
@@ -7537,17 +7517,13 @@ L9A6A:  cmp     $09E2
         dex
 L9A7F:  sta     $09A0
         stx     $09A1
-L9A85:  lda     $09DE
-        ldx     $09DF
-        sta     $C4
-        stx     $C5
+L9A85:  LDAX    $09DE
+        STAX    $C4
         lda     $09A8
         ldx     $09A7
         jsr     L16A2
-        lda     $C2
-        ldx     $C3
-        sta     $0A15
-        stx     $0A16
+        LDAX    $C2
+        STAX    $0A15
 L9AA2:  rts
 
 L9AA3:  lda     $0937
@@ -7577,8 +7553,7 @@ L9AA3:  lda     $0937
         sta     $09AA
         lda     $0A65
         bne     L9AFB
-        lda     $09AF
-        ldx     $09B0
+        LDAX    $09AF
         bmi     L9AE9
         sec
         sbc     #$05
@@ -7805,8 +7780,7 @@ L9C76:  rts
         lda     $FB
         and     #$04
         beq     L9C76
-        lda     $70
-        ldx     $71
+        LDAX    $70
         clc
         adc     $08AB
         tay
@@ -7897,8 +7871,7 @@ L9CE6:  tay
         beq     L9D6A
         lda     ViewDirection
         bne     L9D6A           ; skip unless forward
-        lda     $08B2
-        ldx     $08B3
+        LDAX    $08B2
         sec
         sbc     $70
         tay
@@ -8225,8 +8198,7 @@ L9FA1:  sta     L00A5
         tya
         jmp     L9FA1
 
-L9FB3:  lda     L00A5
-        ldx     $A6
+L9FB3:  LDAX    L00A5
         STAX    $C2
         LDAX    #$CCC
         jsr     MultiplyC2ByAX
@@ -8237,8 +8209,7 @@ L9FB3:  lda     L00A5
         clc
         adc     #$58
 L9FCC:  sta     $29
-        lda     L00A5
-        ldx     $A6
+        LDAX    L00A5
 L9FD2:  sec
         sbc     #$58
         bcs     L9FD2
@@ -8674,7 +8645,8 @@ LA2EA:  inc     $0E90,x
         bcs     LA30F
 LA2F5:  lda     #$1C
         ldx     #$02
-        bne     LA2FF
+        bne     LA2FF           ; always
+
 LA2FB:  lda     #$E4
         ldx     #$FD
 LA2FF:  sec
@@ -8709,8 +8681,7 @@ LA31C:  tax
 
 LA32C:  rts
 
-LA32D:  lda     $B6
-        ldx     $B7
+LA32D:  LDAX    $B6
         bmi     LA33D
         bne     LA339
         cmp     #$1E
@@ -8786,10 +8757,8 @@ LA3A5:  ldy     #$00
 LA3BA:  lda     #$00
         sta     $097D
         jsr     LA4D2
-        lda     $BE
-        ldx     $BF
-        sta     $C2
-        stx     $C3
+        LDAX    $BE
+        STAX    $C2
         lda     #$1B
         ldx     #$01
         jsr     L1735
@@ -8831,8 +8800,7 @@ LA3FE:  lda     $BB
         tya
         rts
 
-LA414:  lda     $B8
-        ldx     $B9
+LA414:  LDAX    $B8
         cpx     $BB
         bcc     LA448
         bne     LA42A
@@ -8860,10 +8828,8 @@ LA42A:  lda     $B8
         tya
         rts
 
-LA448:  lda     $BA
-        ldx     $BB
-        sta     $C4
-        stx     $C5
+LA448:  LDAX    $BA
+        STAX    $C4
         lda     $B9
         ldx     $B8
         jsr     L16A2
@@ -8939,14 +8905,12 @@ LA4C8:  stx     str_omi+1
         JUMPAX  DrawMessageWhite, msg_omi
 .endproc
 
-LA4D2:  lda     $098C
-        ldx     $098D
+LA4D2:  LDAX    $098C
         bpl     LA4DD
         jsr     L1880
 LA4DD:  sta     $BE
         stx     $BF
-        lda     $098E
-        ldx     $098F
+        LDAX    $098E
         bpl     LA4EC
         jsr     L1880
 LA4EC:  cpx     $BF
@@ -9092,21 +9056,19 @@ LA60C:  nop
         rts
 
 LA60F:  .byte   $22
-LA610:  .byte   $03
+        .byte   $03
 LA611:  .byte   $25
-LA612:  .byte   $06
+        .byte   $06
 LA613:  .byte   $2D
-LA614:  .byte   $03
+        .byte   $03
 LA615:  .byte   $2B
-LA616:  .byte   $01
+        .byte   $01
 LA617:  .byte   $42
-LA618:  .byte   $01
+        .byte   $01
 LA619:  .byte   $2C
-LA61A:  .byte   $01
-LA61B:  lda     LA7E0
-        ldx     LA7E1
-        sta     $8B
-        stx     $8C
+        .byte   $01
+LA61B:  LDAX    LA7E0
+        STAX    $8B
         lda     $1E0E
         beq     LA639
         lda     $5F
@@ -9133,35 +9095,27 @@ LA64C:  inx
         bcc     LA64C
 LA656:  lda     $08E6
         sta     $9F
-        lda     $08E7
-        ldx     $08E8
-        sta     $1E03
-        stx     $1E04
+        LDAX    $08E7
+        STAX    $1E03
         jsr     LA6CD
 LA66A:  rts
 
-LA66B:  lda     LA60F
-        ldx     LA610
+LA66B:  LDAX    LA60F
         jmp     LA698
 
-LA674:  lda     LA611
-        ldx     LA612
+LA674:  LDAX    LA611
         jmp     LA698
 
-LA67D:  lda     LA613
-        ldx     LA614
+LA67D:  LDAX    LA613
         jmp     LA698
 
-LA686:  lda     LA615
-        ldx     LA616
+LA686:  LDAX    LA615
         jmp     LA698
 
-LA68F:  lda     LA617
-        ldx     LA618
+LA68F:  LDAX    LA617
         jmp     LA698
 
-LA698:  sta     $9E
-        stx     $9F
+LA698:  STAX    $9E
         lda     #$E0
         sta     $1E03
         lda     #$A7
@@ -9172,14 +9126,10 @@ LA698:  sta     $9E
         sta     $08EB
         sta     $08EC
         sta     $08ED
-        lda     LA619
-        ldx     LA61A
-        sta     $9E
-        stx     $9F
-        lda     LA7E0
-        ldx     LA7E1
-        sta     $1E03
-        stx     $1E04
+        LDAX    LA619
+        STAX    $9E
+        LDAX    LA7E0
+        STAX    $1E03
 LA6CD:  lda     HISCR
 LA6D0:  lda     $9E
         sta     $1E01
@@ -9330,8 +9280,8 @@ LA7D3:  rts
         .byte   $DF
         .byte   $A7
         .byte   $41
-LA7E0:  brk
-LA7E1:  .byte   $B0
+
+LA7E0:  .word   $B000
 
         ;; $A7E2 - Called from chunk4 - Reset/Interrupt handler
         jmp     LAB91
@@ -9369,7 +9319,6 @@ LA808   := $A808
 LA809   := $A809
 LA80A   := $A80A
 LA80B   := $A80B
-LA80C   := $A80C
 LA80D   := $A80D
 
         ;; Also this, but less certain
@@ -9534,6 +9483,7 @@ LABCC:  brk
         brk
         brk
         brk
+
 LABEC:  ldx     #$1F
 LABEE:  lda     LA7E0,x
         sta     LABCC,x
@@ -9881,10 +9831,8 @@ LAEA1:  lda     LAF00,x
         bne     LAEA1
         rts
 
-LAEAA:  lda     $0932
-        ldx     $0933
-        sta     $B8
-        stx     $B9
+LAEAA:  LDAX    $0932
+        STAX    $B8
         lda     #$0A
 LAEB6:  ldy     #$40
 LAEB8:  sta     ($B8),y
@@ -10181,23 +10129,15 @@ LB042:  LDAX    $0A54
         CALLAX  Set3DigitStringRelay, $A87B
         rts
 
-        lda     LA802
-        ldx     LA803
-        sta     $098C
-        stx     $098D
-        lda     LA805
-        ldx     LA806
-        sta     $098E
-        stx     $098F
+        LDAX    LA802
+        STAX    $098C
+        LDAX    LA805
+        STAX    $098E
         jsr     L8770
-        lda     $BE
-        ldx     $BF
-        sta     $098C
-        stx     $098D
-        lda     LA808
-        ldx     LA809
-        sta     $098E
-        stx     $098F
+        LDAX    $BE
+        STAX    $098C
+        LDAX    LA808
+        STAX    $098E
         jsr     L8770
         lda     LA804
         eor     LA807
@@ -10209,10 +10149,8 @@ LB042:  LDAX    $0A54
         beq     LB09A
         lda     #$7F
 LB09A:  sta     LA80D
-        lda     $BE
-        ldx     $BF
-        sta     LA80B
-        stx     LA80C
+        LDAX    $BE
+        STAX    LA80B
         ldx     LA800
         rts
 
@@ -10409,10 +10347,8 @@ LB219:  lda     $0924,x
         sty     $092A
         jmp     LB1F4
 
-LB238:  lda     $0932
-        ldx     $0933
-        sta     $1E03
-        stx     $1E04
+LB238:  LDAX    $0932
+        STAX    $1E03
         lda     #$40
         sta     $1E01
         rts
