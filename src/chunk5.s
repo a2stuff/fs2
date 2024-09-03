@@ -80,7 +80,7 @@ WW1AceScoreStr  := $08DF
 HiresTableHi    := $0E9A
 HiresTableLo    := $0F5A
 ZPMultiply      := $154A
-L1569           := $1569
+MultiplyC2ByC4          := $1569
 MultiplyC2ByAX          := $168F
 MultiplyC2ByAXIntoC2    := $1696
 L16A2           := $16A2
@@ -217,12 +217,10 @@ L6026:  rts
         lda     #$00
         sta     $08F2
         ldy     #$08
-        lda     $08F7
-        ldx     $08F8
+        LDAX    $08F7
         jsr     L604E
         ldy     #$00
-        lda     $08F5
-        ldx     $08F6
+        LDAX    $08F5
         jsr     L604E
 L6049:  lda     #$0B
         jmp     L67FD
@@ -367,14 +365,10 @@ L6155:  lda     ViewDirection
         asl     a
         asl     a
         sta     $3E
-        lda     $6E
-        ldx     $6F
-        sta     $B6
-        stx     $B7
-        lda     $6C
-        ldx     $6D
-        sta     $C0
-        stx     $C1
+        LDAX    $6E
+        STAX    $B6
+        LDAX    $6C
+        STAX    $C0
         lda     $71
         sta     $3D
         lda     $B7
@@ -392,8 +386,7 @@ L617C:  lda     #$00
         sbc     $C1
         tax
         tya
-        sta     $C0
-        stx     $C1
+        STAX    $C0
         lda     $B7
         eor     #$80
         sta     $B7
@@ -457,18 +450,15 @@ L61F0:  lda     $73
 L6210:  ldx     $72
         lda     $73
         jsr     L1778
-        sta     $CB
-        stx     $CC
+        STAX    $CB
         ldx     $74
         lda     $75
         jsr     L1778
-        sta     $CD
-        stx     $CE
+        STAX    $CD
         ldx     $76
         lda     $77
         jsr     L1778
-        sta     $CF
-        stx     $D0
+        STAX    $CF
         ldx     $72
         lda     $73
         jsr     L177B
@@ -579,39 +569,27 @@ L6301:  lda     $79,x
         bpl     L6301
         rts
 
-L631D:  lda     $7E
-        ldx     $7F
-        sta     $C2
-        stx     $C3
+L631D:  LDAX    $7E
+        STAX    $C2
         jsr     L6363
         lda     $C7
         sta     $4C
-        lda     $C8
-        ldx     $C9
-        sta     $4A
-        stx     $4B
-        lda     $80
-        ldx     $81
-        sta     $C2
-        stx     $C3
+        LDAX    $C8
+        STAX    $4A
+        LDAX    $80
+        STAX    $C2
         jsr     L6363
         lda     $C7
         sta     $4F
-        lda     $C8
-        ldx     $C9
-        sta     $4D
-        stx     $4E
-        lda     $82
-        ldx     $83
-        sta     $C2
-        stx     $C3
+        LDAX    $C8
+        STAX    $4D
+        LDAX    $82
+        STAX    $C2
         jsr     L6363
         lda     $C7
         sta     $52
-        lda     $C8
-        ldx     $C9
-        sta     $50
-        stx     $51
+        LDAX    $C8
+        STAX    $50
         rts
 
 L6363:  lda     $C3
@@ -626,8 +604,7 @@ L6363:  lda     $C3
         lda     #$00
         sbc     $C3
         sta     $C3
-L6379:  lda     $68
-        ldx     $69
+L6379:  LDAX    $68
         jsr     L1735
         asl     $C7
         rol     $C8
@@ -662,10 +639,8 @@ L63A2:  lda     $0E99,x
         sta     LOWSCR
         bmi     L63BE
 L63BB:  sta     HISCR
-L63BE:  lda     $8B
-        ldx     $8C
-        sta     $35
-        stx     $36
+L63BE:  LDAX    $8B
+        STAX    $35
         lda     #$0D
         sta     L6B2C
         lda     #$FF
@@ -682,14 +657,10 @@ L63BE:  lda     $8B
         lda     #$0A
         adc     #$00
         sta     $8C
-        lda     $66
-        ldx     $67
-        sta     $02
-        stx     $03
-        lda     $6A
-        ldx     $6B
-        sta     $04
-        stx     $05
+        LDAX    $66
+        STAX    $02
+        LDAX    $6A
+        STAX    $04
         lda     #$00
         sta     $66
         sta     $67
@@ -705,28 +676,18 @@ L63BE:  lda     $8B
         sta     $51
         sta     $52
         jsr     L6746
-        lda     $02
-        ldx     $03
-        sta     $66
-        stx     $67
-        lda     $04
-        ldx     $05
-        sta     $6A
-        stx     $6B
+        LDAX    $02
+        STAX    $66
+        LDAX    $04
+        STAX    $6A
         lda     #$20
         sta     L6B2C
-        lda     $35
-        ldx     $36
-        sta     $8B
-        stx     $8C
-        lda     $E9
-        ldx     $EA
-        sta     $D1
-        stx     $D2
-        lda     $EB
-        ldx     $EC
-        sta     $DA
-        stx     $DB
+        LDAX    $35
+        STAX    $8B
+        LDAX    $E9
+        STAX    $D1
+        LDAX    $EB
+        STAX    $DA
         lda     $0882
         beq     L644A
         cmp     #$FF
@@ -1617,14 +1578,10 @@ L6B0D:  lda     $08C4
 L6B15:  lda     $8A
         beq     L6B1C
         jsr     L7C0F
-L6B1C:  lda     $D1
-        ldx     $D2
-        sta     $E9
-        stx     $EA
-        lda     $DA
-        ldx     $DB
-        sta     $EB
-        stx     $EC
+L6B1C:  LDAX    $D1
+        STAX    $E9
+        LDAX    $DA
+        STAX    $EB
 L6B2C:  jsr     L7988
 L6B2F:  lda     $8A
         beq     L6B3F
@@ -1657,26 +1614,18 @@ L6B52:  iny
         iny
         lda     ($8B),y
         pha
-        lda     $5A
-        ldx     $5B
-        sta     $18
-        stx     $19
-        lda     $62
-        ldx     $63
-        sta     $1E
-        stx     $1F
+        LDAX    $5A
+        STAX    $18
+        LDAX    $62
+        STAX    $1E
         lda     $0836
         beq     L6B8A
-        lda     $0A73
-        ldx     $0A74
-        sta     $1B
-        stx     $1C
+        LDAX    $0A73
+        STAX    $1B
         jmp     L6B92
 
-L6B8A:  lda     $5E
-        ldx     $5F
-        sta     $1B
-        stx     $1C
+L6B8A:  LDAX    $5E
+        STAX    $1B
 L6B92:  lda     #$FF
         sta     $AD
         pla
@@ -1785,17 +1734,13 @@ L6C48:  cpx     #$02
         beq     L6C89
         jmp     L6D28
 
-L6C53:  lda     $18
-        ldx     $19
-        sta     $66
-        stx     $67
-        lda     $1B
-        ldx     $1C
+L6C53:  LDAX    $18
+        STAX    $66
+        LDAX    $1B
         .byte   $85
 L6C60:  pla
         stx     $69
-        lda     $1E
-        ldx     $1F
+        LDAX    $1E
 L6C67:  sta     $6A
 L6C69:  stx     $6B
         .byte   $4C
@@ -2010,10 +1955,8 @@ L6DD9:  lda     #$02
         jsr     AddTo8B
         lda     $DC
         beq     L6DF0
-        lda     L00A5
-        ldx     $A6
-        sta     $8B
-        stx     $8C
+        LDAX    L00A5
+        STAX    $8B
         jmp     L674D
 
         jsr     L6E17
@@ -2089,10 +2032,8 @@ L6E6F:  pla
         pla
         pla
         pla
-        lda     L00A5
-        ldx     $A6
-        sta     $8B
-        stx     $8C
+        LDAX    L00A5
+        STAX    $8B
         jmp     L674D
 
         jsr     L6D56
@@ -2151,10 +2092,8 @@ L6EE3:  rts
 
 L6EE4:  pla
         pla
-L6EE6:  lda     L00A5
-        ldx     $A6
-        sta     $8B
-        stx     $8C
+L6EE6:  LDAX    L00A5
+        STAX    $8B
         jmp     L674D
 
         jsr     L6D56
@@ -2826,11 +2765,10 @@ L7470:  SUB16   $CF, $D8, $C4
         sbc     $D7
         jsr     L16A2
         SUB16   $CB, $D4, $C4
-        lda     $C2
-        ldx     $C3
+        LDAX    $C2
         sta     $A9
         stx     $AA
-        jsr     L1569
+        jsr     MultiplyC2ByC4
         clc
         adc     $D4
         sta     $D4
@@ -2838,11 +2776,9 @@ L7470:  SUB16   $CF, $D8, $C4
         adc     $D5
         sta     $D5
         SUB16   $CF, $D8, $C4
-        lda     $A9
-        ldx     $AA
-        sta     $C2
-        stx     $C3
-        jsr     L1569
+        LDAX    $A9
+        STAX    $C2
+        jsr     MultiplyC2ByC4
         clc
         adc     $D8
         sta     $D8
@@ -2878,11 +2814,9 @@ L74EE:  SUB16   $CF, $D8, $C4
         adc     $D7
         jsr     L16A2
         SUB16   $CB, $D4, $C4
-        lda     $C2
-        ldx     $C3
-        sta     $A9
-        stx     $AA
-        jsr     L1569
+        LDAX    $C2
+        STAX    $A9
+        jsr     MultiplyC2ByC4
         clc
         adc     $D4
         sta     $D4
@@ -2890,11 +2824,9 @@ L74EE:  SUB16   $CF, $D8, $C4
         adc     $D5
         sta     $D5
         SUB16   $CF, $D8, $C4
-        lda     $A9
-        ldx     $AA
-        sta     $C2
-        stx     $C3
-        jsr     L1569
+        LDAX    $A9
+        STAX    $C2
+        jsr     MultiplyC2ByC4
         clc
         adc     $D8
         sta     $D8
@@ -2935,11 +2867,9 @@ L7576:  SUB16   $CF, $D8, $C4
         sbc     $D5
         jsr     L16A2
         SUB16   $CF, $D8, $C4
-        lda     $C2
-        ldx     $C3
-        sta     $A9
-        stx     $AA
-        jsr     L1569
+        LDAX    $C2
+        STAX    $A9
+        jsr     MultiplyC2ByC4
         clc
         adc     $D8
         sta     $D8
@@ -2949,11 +2879,9 @@ L7576:  SUB16   $CF, $D8, $C4
         sta     $D9
         sta     $D5
         SUB16   $CD, $D6, $C4
-        lda     $A9
-        ldx     $AA
-        sta     $C2
-        stx     $C3
-        jsr     L1569
+        LDAX    $A9
+        STAX    $C2
+        jsr     MultiplyC2ByC4
         clc
         adc     $D6
         sta     $D6
@@ -2987,11 +2915,9 @@ L75F4:  SUB16   $CF, $D8, $C4
         adc     $D5
         jsr     L16A2
         SUB16   $CD, $D6, $C4
-        lda     $C2
-        ldx     $C3
-        sta     $A9
-        stx     $AA
-        jsr     L1569
+        LDAX    $C2
+        STAX    $A9
+        jsr     MultiplyC2ByC4
         clc
         adc     $D6
         sta     $D6
@@ -2999,11 +2925,9 @@ L75F4:  SUB16   $CF, $D8, $C4
         adc     $D7
         sta     $D7
         SUB16   $CF, $D8, $C4
-        lda     $A9
-        ldx     $AA
-        sta     $C2
-        stx     $C3
-        jsr     L1569
+        LDAX    $A9
+        STAX    $C2
+        jsr     MultiplyC2ByC4
         clc
         adc     $D8
         sta     $D8
@@ -4217,22 +4141,16 @@ L7EB0:  ror     $A2
         sta     $32
         bcc     L7EC9
         inc     $33
-L7EC9:  lda     $4A
-        ldx     $4B
-        sta     $18
-        stx     $19
+L7EC9:  LDAX    $4A
+        STAX    $18
         lda     $4C
         sta     $1A
-        lda     $4D
-        ldx     $4E
-        sta     $1B
-        stx     $1C
+        LDAX    $4D
+        STAX    $1B
         lda     $4F
         sta     $1D
-        lda     $50
-        ldx     $51
-        sta     $1E
-        stx     $1F
+        LDAX    $50
+        STAX    $1E
         lda     $52
         sta     $20
         ldy     #$01
@@ -4569,15 +4487,11 @@ L813A:  lda     #$00
         ldy     #$7E
         lda     #$AB
         jsr     ZPMultiply
-        lda     $A2
-        ldx     $A3
-        sta     $C2
-        stx     $C3
-        lda     $84
-        ldx     $85
-        sta     $C4
-        stx     $C5
-        jsr     L1569
+        LDAX    $A2
+        STAX    $C2
+        LDAX    $84
+        STAX    $C4
+        jsr     MultiplyC2ByC4
         jsr     L8234
         ldx     #$9E
         ldy     #$7A
@@ -4587,15 +4501,11 @@ L813A:  lda     #$00
         ldy     #$80
         lda     #$AB
         jsr     ZPMultiply
-        lda     $A2
-        ldx     $A3
-        sta     $C2
-        stx     $C3
-        lda     $86
-        ldx     $87
-        sta     $C4
-        stx     $C5
-        jsr     L1569
+        LDAX    $A2
+        STAX    $C2
+        LDAX    $86
+        STAX    $C4
+        jsr     MultiplyC2ByC4
         jsr     L8234
         ldx     #$9E
         ldy     #$7C
@@ -4605,15 +4515,11 @@ L813A:  lda     #$00
         ldy     #$82
         lda     #$AB
         jsr     ZPMultiply
-        lda     $A2
-        ldx     $A3
-        sta     $C2
-        stx     $C3
-        lda     $88
-        ldx     $89
-        sta     $C4
-        stx     $C5
-        jsr     L1569
+        LDAX    $A2
+        STAX    $C2
+        LDAX    $88
+        STAX    $C4
+        jsr     MultiplyC2ByC4
         jsr     L8234
         ldx     $E5
         lda     $30
@@ -5427,8 +5333,7 @@ L8933:  jsr     DrawNav1
         jsr     L8AC4
         rts
 
-L8943:  lda     $0843
-        ldx     $0844
+L8943:  LDAX    $0843
         ldy     $0A12
         cpy     #$0A
         bcs     L8956
@@ -5436,8 +5341,7 @@ L8943:  lda     $0843
         stx     $0A37
 L8956:  jsr     L8959
 L8959:  ldy     #$00
-        lda     $0843
-        ldx     $0844
+        LDAX    $0843
         cpx     $0A37
         bcc     L8971
         bne     L8972
@@ -5940,7 +5844,7 @@ Select1:
         bne     L8CB2
         lda     #$00
         ldx     #$00
-        beq     L8CC6
+        beq     L8CC6           ; always
 L8CB2:  cmp     #$06            ; Nav Radio (upper) ?
         beq     L8CBA
         cmp     #$07            ; Nav Radio (lower) ?

@@ -2910,7 +2910,7 @@ CharBitmapTable:
 
         ;; $C2-C3 = $00,X
         ;; $C4-C5 = $00,Y
-        ;; $00,A = (result of jsr $1569)
+        ;; $00,A = (result of jsr MultiplyC2byC4)
         sta     $A5
         lda     $00,x
         sta     $C2
@@ -2920,13 +2920,13 @@ CharBitmapTable:
         sta     $C4
         lda     $01,y
         sta     $C5
-        jsr     L1569
+        jsr     MultiplyC2byC4
         ldy     $A5
         sta     $00,y
         stx     $01,y
         rts
 
-L1569:  lda     $C2             ; If $C2-C3 is zero...
+MultiplyC2byC4:  lda     $C2             ; If $C2-C3 is zero...
         ora     $C3
         beq     L1575
         lda     $C4             ; Or $C4-C5 is zero...
@@ -3118,14 +3118,14 @@ L159C:  lda     $C5
 .proc MultiplyC2ByAX
         sta     $C4
         stx     $C5
-        jmp     ZPMultiply::L1569
+        jmp     ZPMultiply::MultiplyC2byC4
 .endproc
 
 .proc MultiplyC2ByAXIntoC2
         .refto MultiplyC2ByAXIntoC2
         sta     $C4
         stx     $C5
-        jsr     ZPMultiply::L1569
+        jsr     ZPMultiply::MultiplyC2byC4
         sta     $C2
         stx     $C3
         rts
