@@ -165,7 +165,6 @@ LE2D1           := $E2D1
 LE2FA           := $E2FA
 LE40E           := $E40E
 LE646           := $E646
-LE667           := $E667
 LF261           := $F261
 LF3CA           := $F3CA
 
@@ -212,7 +211,7 @@ L6026:  rts
 
         rts
 
-        lda     $08F3
+L6029:  lda     $08F3
         beq     L6049
         lda     #$00
         sta     $08F2
@@ -251,7 +250,7 @@ L6076:  ora     $08F4
         sta     $08F4
 L607C:  rts
 
-        iny
+L607D:  iny
         lda     ($8B),y
         pha
         iny
@@ -302,11 +301,11 @@ L60D0:  iny
         bne     L60D0
         rts
 
-        ldy     #$05
-L60DD:  lda     ($8B),y
+L60DB:  ldy     #$05
+:       lda     ($8B),y
         sta     $08E4,y
         dey
-        bne     L60DD
+        bne     :-
         lda     $08E9
         bmi     L60FD
         pha
@@ -847,8 +846,9 @@ L656A:  dec     $E7
 
 L6571:  sta     ($8E),y
         iny
-L6574:  .byte   $49
-L6575:  .byte   $7F
+L6574:
+L6575 := *+1
+        eor     #$7F            ; self-modified
         sta     ($8E),y
         iny
         eor     #$7F
@@ -973,8 +973,9 @@ L6637:  lda     $ED
 L663F:  ldy     #$00
         jmp     L6571
 
-L6644:  .byte   $A4
-L6645:  .byte   $E7
+L6644:
+L6645 := *+1
+        ldy     $E7             ; self-modified
 L6646:  lda     HiresTableLo,y
         sta     $8E
         lda     HiresTableHi,y
@@ -1023,102 +1024,79 @@ L66A4:  ldx     $B2
         rts
 
         brk
-L66A8:  iny
-L66A9:  adc     #$88
-        pla
-        .byte   $9F
-        pla
-        .byte   $8B
-        .byte   $6F
-        .byte   $AF
-        adc     L6021
-        .byte   $52
-        .byte   $6B
-        ldy     #$6B
-        jmp     (LAD67)
 
-        .byte   $67
-        lda     $4867
-        adc     L676C
-        .byte   $DB
-        rts
-
-        .byte   $B2
-        .byte   $67
-        jmp     (L6C67)
-
-        .byte   $67
-        .byte   $C3
-        .byte   $67
-        .byte   $07
-        .byte   $7B
-        sbc     $F36D
-        adc     L676C
-        jmp     (L6C67)
-
-        .byte   $67
-        .byte   $80
-        .byte   $67
-        tsx
-        .byte   $67
-        ror     $6D
-        ldx     $7A,y
-        .byte   $D4
-        .byte   $7A
-        and     #$60
-        adc     L6C60,x
-        .byte   $67
-        ror     L896E,x
-        ror     L6E97
-        sbc     ($6E),y
-        .byte   $64
-        .byte   $6B
-        stx     L6C6D
-        .byte   $67
-        jmp     ($1D67)
-
-        .byte   $6F
-        iny
-        .byte   $67
-        jmp     (LE667)
-
-        adc     #$6C
-        .byte   $67
-        jmp     (L6C67)
-
-        .byte   $67
-        .byte   $BB
-        .byte   $67
-        jmp     ($4767)
-
-        adc     #$BA
-        pla
-        sbc     #$68
-        jmp     (LA767)
-
-        adc     #$6C
-        .byte   $67
-        jmp     (L6C67)
-
-        .byte   $67
-        jmp     (L6C67)
-
-        .byte   $67
-        jmp     (L6C67)
-
-        .byte   $67
-        jmp     (L6C67)
-
-        .byte   $67
-        jmp     ($8F67)
-
-        pla
-        ldx     $68
-        lsr     L6C69
-        .byte   $67
-        jmp     (L6C67)
-
-        .byte   $67
+        ;; Proc table
+L66A8:
+        .addr   L69C8
+        .addr   L6888
+        .addr   L689F
+        .addr   L6F8B
+        .addr   L6DAF
+        .addr   L6021
+        .addr   L6B52
+        .addr   L6BA0
+        .addr   L676C
+        .addr   L67AD
+        .addr   L67AD
+        .addr   L6D48
+        .addr   L676C
+        .addr   L60DB
+        .addr   L67B2
+        .addr   L676C
+        .addr   L676C
+        .addr   L67C3
+        .addr   L7B07
+        .addr   L6DED
+        .addr   L6DF3
+        .addr   L676C
+        .addr   L676C
+        .addr   L676C
+        .addr   L6780
+        .addr   L67BA
+        .addr   L6D66
+        .addr   L7AB6
+        .addr   L7AD4
+        .addr   L6029
+        .addr   L607D
+        .addr   L676C
+        .addr   L6E7E
+        .addr   L6E89
+        .addr   L6E97
+        .addr   L6EF1
+        .addr   L6B64
+        .addr   L6D8E
+        .addr   L676C
+        .addr   L676C
+        .addr   L6F1D
+        .addr   L67C8
+        .addr   L676C
+        .addr   L69E6
+        .addr   L676C
+        .addr   L676C
+        .addr   L676C
+        .addr   L67BB
+        .addr   L676C
+        .addr   L6947
+        .addr   L68BA
+        .addr   L68E9
+        .addr   L676C
+        .addr   L69A7
+        .addr   L676C
+        .addr   L676C
+        .addr   L676C
+        .addr   L676C
+        .addr   L676C
+        .addr   L676C
+        .addr   L676C
+        .addr   L676C
+        .addr   L676C
+        .addr   L676C
+        .addr   L688F
+        .addr   L68A6
+        .addr   L694E
+        .addr   L676C
+        .addr   L676C
+        .addr   L676C
 
         ;; Called by chunk3
 L6734:  lda     $08F2
@@ -1152,11 +1130,11 @@ L6771:  asl     a
         tax
         lda     L66A8,x
         sta     L00A5
-        lda     L66A9,x
-        sta     $A6
+        lda     L66A8+1,x
+        sta     L00A5+1
         jmp     (L00A5)
 
-        lda     $8B
+L6780:  lda     $8B
         clc
         adc     #$03
         pha
@@ -1182,23 +1160,25 @@ L6771:  asl     a
         sta     $8B
         jmp     L674D
 
-        lda     #$03
+L67AD:  lda     #$03
         jmp     L67FD
 
-        lda     $08C6
+L67B2:  lda     $08C6
         beq     L67BA
         jmp     LF3CA
 
 L67BA:  rts
 
-        lda     #$FF
+L67BB:  lda     #$FF
         sta     $2C
         lda     #$00
         sta     $B5
-        lda     #$01
+
+
+L67C3:  lda     #$01
         jmp     L67FD
 
-        lda     $2C
+L67C8:  lda     $2C
         bne     L67DD
         ldx     #$09
 L67CE:  lda     $07,x
@@ -1242,9 +1222,9 @@ L67FD:  jsr     AddTo8B
 
 
 L6803:  ldy     #$D4
-        .byte   $20
-L6806:  .byte   $BC
-L6807:  ror     $2CA5,x
+L6806 := *+1
+        jsr     L7EBC           ; self-modified
+        lda     $2C
         beq     L6839
         ldy     $B5
         cpy     #$3C
@@ -1272,10 +1252,12 @@ L6839:  jsr     L73CB
         jsr     L7C0F
 L6843:  rts
 
+;;; ============================================================
+
 L6844:  ldy     #$CB
-        .byte   $20
-L6847:  .byte   $BC
-L6848:  ror     $2CA5,x
+L6847 := *+1
+        jsr     L7EBC           ; self-modified
+        lda     $2C
         beq     L6874
         ldy     $B5
         inc     $B5
@@ -1305,31 +1287,31 @@ L6880:  lda     $C9,x
         bne     L6880
         rts
 
-        ldx     #$C5
+L6888:  ldx     #$C5
         lda     #$80
         jmp     L6893
 
-        ldx     #$BC
+L688F:  ldx     #$BC
         lda     #$7E
 L6893:  stx     L6847
-        sta     L6848
+        sta     L6847+1
         jsr     L6844
 L689C:  jmp     L674D
 
-        ldx     #$C5
+L689F:  ldx     #$C5
         lda     #$80
         jmp     L68AA
 
-        ldx     #$BC
+L68A6:  ldx     #$BC
         lda     #$7E
 L68AA:  stx     L6806
-        sta     L6807
+        sta     L6806+1
         jsr     L6803
         lda     $2C
         bne     L689C
         jmp     L6AE3
 
-        jsr     L6987
+L68BA:  jsr     L6987
         lda     $2C
         beq     L68C7
         jsr     L6919
@@ -1352,7 +1334,7 @@ L68CF:  lda     ($2D),y
 L68E4:  lda     #$01
         jmp     L67FD
 
-        jsr     L6987
+L68E9:  jsr     L6987
         lda     $2C
         beq     L68FB
         jsr     L6919
@@ -1399,14 +1381,14 @@ L6919:  ldy     #$00
         sta     $D3
         rts
 
-        ldx     #$C5
+L6947:  ldx     #$C5
         lda     #$80
         jmp     L6952
 
-        ldx     #$BC
+L694E:  ldx     #$BC
         lda     #$7E
 L6952:  stx     L6806
-        sta     L6807
+        sta     L6806+1
         jsr     L6987
         ldx     #$09
 L695D:  lda     $D2,x
@@ -1450,7 +1432,7 @@ L698A:  ldx     #$00
         jsr     AddTo8B
         rts
 
-        jsr     L6987
+L69A7:  jsr     L6987
         lda     #$01
         jsr     AddTo8B
         ldy     #$07
@@ -1466,10 +1448,10 @@ L69B5:  lda     ($2D),y
         sta     $CA
         jmp     L69D5
 
-        ldx     #$C5
+L69C8:  ldx     #$C5
         lda     #$80
         stx     L6847
-        sta     L6848
+        sta     L6847+1
         jsr     L6844
 L69D5:  lda     $CA
         beq     L69DC
@@ -1480,12 +1462,12 @@ L69DC:  jsr     L7BF3
         jsr     L7963
 L69E3:  jmp     L674D
 
-        ldx     #$BC
+L69E6:  ldx     #$BC
         lda     #$7E
         stx     L6806
         stx     L6847
-        sta     L6807
-        sta     L6848
+        sta     L6806+1
+        sta     L6847+1
         jsr     L6844
         dec     $8B
         lda     $8B
@@ -1611,7 +1593,7 @@ L6B52:  iny
         lda     #$05
         jmp     L67FD
 
-        iny
+L6B64:  iny
         lda     ($8B),y
         pha
         LDAX    $5A
@@ -1634,7 +1616,7 @@ L6B92:  lda     #$FF
         lda     #$08
         jmp     L67FD
 
-        iny
+L6BA0:  iny
         lda     ($8B),y
         tax
         lda     #$00
@@ -1737,15 +1719,11 @@ L6C48:  cpx     #$02
 L6C53:  LDAX    $18
         STAX    $66
         LDAX    $1B
-        .byte   $85
-L6C60:  pla
-        stx     $69
+        STAX    $68
         LDAX    $1E
-L6C67:  sta     $6A
-L6C69:  stx     $6B
-        .byte   $4C
-        plp
-L6C6D:  .byte   $6D
+        STAX    $6A
+        jmp     L6D28
+
 L6C6E:  ldx     $19
         ldy     $66
         stx     $66
@@ -1870,7 +1848,7 @@ L6D43:  lda     $69
         sta     $36
         rts
 
-        jsr     L6D56
+L6D48:  jsr     L6D56
         LDAX    L00A5
         STAX    $8B
         jmp     L674D
@@ -1886,7 +1864,7 @@ L6D56:  iny
         sta     $A6
         rts
 
-        iny
+L6D66:  iny
         lda     ($8B),y
         sta     L00A5
         iny
@@ -1909,7 +1887,7 @@ L6D56:  iny
         lda     #$05
         jmp     L67FD
 
-        iny
+L6D8E:  iny
         lda     ($8B),y
         sta     $A7
         iny
@@ -1928,7 +1906,7 @@ L6D56:  iny
         lda     #$05
         jmp     L67FD
 
-        jsr     L6D56
+L6DAF:  jsr     L6D56
         lda     #$02
         jsr     AddTo8B
         lda     #$F8
@@ -1957,10 +1935,10 @@ L6DD9:  lda     #$02
         STAX    $8B
         jmp     L674D
 
-        jsr     L6E17
+L6DED:  jsr     L6E17
 L6DF0:  jmp     L674D
 
-        jsr     L6E17
+L6DF3:  jsr     L6E17
         sec
         lda     $0836
         beq     L6E07
@@ -2002,14 +1980,15 @@ L6E17:  jsr     L6D56
 L6E44:  iny
         lda     ($8B),y
         sec
-        .byte   $E5
-L6E49:  .byte   $64
+L6E49 := *+1
+        sbc     $64             ; self-modified
         sta     $AB
         iny
         lda     ($8B),y
-        .byte   $E5
-L6E50:  adc     $85
-        ldy     $0E30
+L6E50 := *+1
+        sbc     $65             ; self-modified
+        sta     $AC
+        bmi     L6E63
         lda     $98
         sec
         sbc     $AB
@@ -2018,7 +1997,7 @@ L6E50:  adc     $85
         bpl     L6E6E
         jmp     L6E6F
 
-        lda     $98
+L6E63:  lda     $98
         clc
         adc     $AB
         lda     $99
@@ -2034,12 +2013,12 @@ L6E6F:  pla
         STAX    $8B
         jmp     L674D
 
-        jsr     L6D56
+L6E7E:  jsr     L6D56
         jsr     L6EA8
         lda     #$09
         jmp     L67FD
 
-        jsr     L6D56
+L6E89:  jsr     L6D56
         jsr     L6EA8
         jsr     L6EA8
         lda     #$0F
@@ -2077,8 +2056,8 @@ L6ECE:  bvc     L6EE4
 L6ED0:  iny
         lda     ($8B),y
         sec
-        .byte   $E9
-L6ED5:  brk
+L6ED5 := *+1
+        sbc     #$00            ; self-modified
         iny
         lda     ($8B),y
         sbc     ($8E,x)
@@ -2094,7 +2073,7 @@ L6EE6:  LDAX    L00A5
         STAX    $8B
         jmp     L674D
 
-        jsr     L6D56
+L6EF1:  jsr     L6D56
         iny
         lda     ($8B),y
         sta     $8E
@@ -2118,7 +2097,7 @@ L6F16:  ldy     $B3
         lda     #$07
         jmp     L67FD
 
-        iny
+L6F1D:  iny
         lda     ($8B),y
         sta     $A9
         jsr     L6D56
@@ -2179,7 +2158,7 @@ L6F84:  ldy     $B3
         lda     #$08
         jmp     L67FD
 
-        lda     $08C6
+L6F8B:  lda     $08C6
         beq     L6F93
         jmp     LF261
 
@@ -3184,8 +3163,8 @@ L787B:  lda     $0B38,x
         adc     $0BB8,x
         sta     $0B38,x
         lda     $0B78,x
-        .byte   $85
-L7889:  .byte   $02
+L7889 := *+1
+        sta     $02             ; self-modified
         inc     L7889
         adc     $0BF8,x
         sta     $0B78,x
@@ -3505,7 +3484,7 @@ L7AAF:  cpx     #$03
         bne     L7A9F
         dey
         bpl     L7A9F
-        lda     #$84
+L7AB6:  lda     #$84
         sta     L7A08
         lda     #$B1
         sta     L7A09
@@ -3518,7 +3497,7 @@ L7AAF:  cpx     #$03
         lda     #$01
         jmp     L67FD
 
-        lda     $083C
+L7AD4:  lda     $083C
         and     #$01
         bne     L7AF2
         lda     #$10
@@ -3544,7 +3523,9 @@ L7AF7:  brk
         .byte   $02
         ora     ($03,x)
         ora     ($03,x)
-        iny
+
+
+L7B07:  iny
         lda     ($8B),y
         tay
         lda     L7AF7,y
@@ -3918,28 +3899,23 @@ L7D78:  .byte   $FF
         eor     #$FF
 L7D7F:  rts
 
-        brk
-        brk
-        ora     ($01,x)
-        .byte   $02
-        .byte   $02
-        .byte   $03
-        .byte   $03
-        .byte   $04
-        .byte   $04
-        ora     $05
-        asl     $07
-        .byte   $07
-        php
-        php
-        ora     #$09
-        asl     a
-        asl     a
-        .byte   $0B
-        .byte   $0B
-        .byte   $0C
-        ora     $0E0D
-        asl     $0F0F
+        .byte   0, 0
+        .byte   1, 1
+        .byte   2, 2
+        .byte   3, 3
+        .byte   4, 4
+        .byte   5, 5
+        .byte   6
+        .byte   7, 7
+        .byte   8, 8
+        .byte   9, 9
+        .byte   $A, $A
+        .byte   $B, $B
+        .byte   $C
+        .byte   $D, $D
+        .byte   $E, $E
+        .byte   $F, $F
+
         bpl     L7DB0
         ora     ($11),y
         .byte   $12
@@ -4132,7 +4108,7 @@ L7EB0:  ror     $A2
         ror     $9E
         jmp     L7F7F
 
-        sty     $E5
+L7EBC:  sty     $E5
         lda     $32
         clc
         adc     #$51
@@ -5346,7 +5322,7 @@ L8959:  ldy     #$00
         cmp     $0A36
         bcc     L8971
         .byte   $F0
-L896E:  .byte   $3A
+        .byte   $3A
         bne     L8972
 L8971:  dey
 L8972:  tya
@@ -9209,7 +9185,7 @@ LA750:  lda     ($40),y
 
         lda     #$00
         .byte   $85
-LA767:  eor     $20
+        eor     $20
         .byte   $92
         .byte   $A7
         jmp     LA773
@@ -9281,7 +9257,7 @@ LA7D3:  rts
         .byte   $A7
         .byte   $41
 
-LA7E0:  .word   $B000
+LA7E0:  .word   LB000
 
         ;; $A7E2 - Called from chunk4 - Reset/Interrupt handler
         jmp     LAB91
@@ -9658,7 +9634,7 @@ LAD58:  sta     $C1
         dex
         cpx     #$63
         bne     LAD42
-LAD67:  rts
+        rts
 
 LAD68:  .byte   $C3
         .byte   $8F
@@ -10097,6 +10073,8 @@ LAFCB:  .byte   $C7
         .byte   $0F
         brk
         brk
+
+LB000:
         adc     $C908,y
         inx
 
