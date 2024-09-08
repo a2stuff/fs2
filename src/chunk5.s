@@ -3899,184 +3899,43 @@ L7D78:  .byte   $FF
         eor     #$FF
 L7D7F:  rts
 
-        .byte   0, 0
-        .byte   1, 1
-        .byte   2, 2
-        .byte   3, 3
-        .byte   4, 4
-        .byte   5, 5
-        .byte   6
-        .byte   7, 7
-        .byte   8, 8
-        .byte   9, 9
-        .byte   $A, $A
-        .byte   $B, $B
-        .byte   $C
-        .byte   $D, $D
-        .byte   $E, $E
-        .byte   $F, $F
+;;; 7D80
 
-        bpl     L7DB0
-        ora     ($11),y
-        .byte   $12
-        .byte   $13
-        .byte   $13
-        .byte   $14
-        .byte   $14
-        ora     $15,x
-        asl     $16,x
-        .byte   $17
-        .byte   $17
-        clc
-        clc
-        .byte   $19
-L7DB0:  .byte   $1A
-        .byte   $1A
-        .byte   $1B
-        .byte   $1B
-        .byte   $1C
-        .byte   $1C
-        ora     $1E1D,x
-        asl     $201F,x
-        jsr     $2121
-        .byte   $22
-        .byte   $22
-        .byte   $23
-        .byte   $23
-        bit     $24
-        and     $26
-        rol     $27
-        .byte   $27
-        plp
-        plp
-        and     #$29
-        rol     a
-        rol     a
-        .byte   $2B
-        bit     $2D2C
-        and     $2E2E
-        .byte   $2F
-        .byte   $2F
-        bmi     L7E0B
-        and     ($31),y
-        .byte   $32
-        .byte   $33
-        .byte   $33
-        .byte   $34
-        .byte   $34
-        and     $35,x
-        rol     $36,x
-        .byte   $37
-        .byte   $37
-        sec
-        and     $3A39,y
-        .byte   $3A
-        .byte   $3B
-        .byte   $3B
-        .byte   $3C
-        .byte   $3C
-        and     $3E3D,x
-        .byte   $3F
-        .byte   $3F
-        rti
+        .byte   $00, $00, $01, $01, $02, $02, $03, $03
+        .byte   $04, $04, $05, $05, $06, $07, $07, $08
+        .byte   $08, $09, $09, $0A, $0A, $0B, $0B, $0C
+        .byte   $0D, $0D, $0E, $0E, $0F, $0F, $10, $10
+        .byte   $11, $11, $12, $13, $13, $14, $14, $15
+        .byte   $15, $16, $16, $17, $17, $18, $18, $19
+        .byte   $1A, $1A, $1B, $1B, $1C, $1C, $1D, $1D
+        .byte   $1E, $1E, $1F, $20, $20, $21, $21, $22
+        .byte   $22, $23, $23, $24, $24, $25, $26, $26
+        .byte   $27, $27, $28, $28, $29, $29, $2A, $2A
+        .byte   $2B, $2C, $2C, $2D, $2D, $2E, $2E, $2F
+        .byte   $2F, $30, $30, $31, $31, $32, $33, $33
+        .byte   $34, $34, $35, $35, $36, $36, $37, $37
+        .byte   $38, $39, $39, $3A, $3A, $3B, $3B, $3C
+        .byte   $3C, $3D, $3D, $3E, $3F, $3F, $40, $40
+        .byte   $41, $41, $42, $42, $43, $43, $44, $45
+        .byte   $00, $00, $00, $01, $01, $01, $02, $02
+        .byte   $03, $03, $03, $04, $04, $05, $05, $05
+        .byte   $06, $06, $07, $07, $07, $08, $08, $08
+        .byte   $09, $09, $0A, $0A, $0A, $0B, $0B, $0C
+        .byte   $0C, $0C, $0D, $0D, $0E, $0E, $0E, $0F
+        .byte   $0F, $10, $10, $10, $11, $11, $11, $12
+        .byte   $12, $13, $13, $13, $14, $14, $15, $15
+        .byte   $15, $16, $16, $17, $17, $17, $18, $18
+        .byte   $19, $19, $19, $1A, $1A, $1A, $1B, $1B
+        .byte   $1C, $1C, $1C, $1D, $1D, $1E, $1E, $1E
+        .byte   $1F, $1F, $20, $20, $20, $21, $21, $21
+        .byte   $22, $22, $23, $23, $23, $24, $24, $25
+        .byte   $25, $25, $26, $26, $27, $27, $27, $28
+        .byte   $28, $29, $29, $29, $2A, $2A, $2A, $2B
+        .byte   $2B, $2C, $2C, $2C, $2D, $2D, $2E, $2E
+        .byte   $2E, $2F, $2F, $30, $30, $30, $31, $31
 
-        rti
+;;; ============================================================
 
-        eor     ($41,x)
-        .byte   $42
-        .byte   $42
-        .byte   $43
-        .byte   $43
-        .byte   $44
-        eor     $00
-        brk
-        brk
-        ora     ($01,x)
-        ora     ($02,x)
-        .byte   $02
-        .byte   $03
-        .byte   $03
-        .byte   $03
-L7E0B:  .byte   $04
-        .byte   $04
-        ora     $05
-        ora     $06
-        asl     $07
-        .byte   $07
-        .byte   $07
-        php
-        php
-        php
-        ora     #$09
-        asl     a
-        asl     a
-        asl     a
-        .byte   $0B
-        .byte   $0B
-        .byte   $0C
-        .byte   $0C
-        .byte   $0C
-        ora     $0E0D
-        asl     $0F0E
-        .byte   $0F
-        bpl     L7E3B
-        bpl     L7E3E
-        ora     ($11),y
-        .byte   $12
-        .byte   $12
-        .byte   $13
-        .byte   $13
-        .byte   $13
-        .byte   $14
-        .byte   $14
-        ora     $15,x
-        ora     $16,x
-        .byte   $16
-L7E3B:  .byte   $17
-        .byte   $17
-        .byte   $17
-L7E3E:  clc
-        clc
-        ora     $1919,y
-        .byte   $1A
-        .byte   $1A
-        .byte   $1A
-        .byte   $1B
-        .byte   $1B
-        .byte   $1C
-        .byte   $1C
-        .byte   $1C
-        ora     $1E1D,x
-        asl     $1F1E,x
-        .byte   $1F
-        jsr     $2020
-        and     ($21,x)
-        and     ($22,x)
-        .byte   $22
-        .byte   $23
-        .byte   $23
-        .byte   $23
-        bit     $24
-        and     $25
-        and     $26
-        rol     $27
-        .byte   $27
-        .byte   $27
-        plp
-        plp
-        and     #$29
-        and     #$2A
-        rol     a
-        rol     a
-        .byte   $2B
-        .byte   $2B
-        bit     $2C2C
-        and     $2E2D
-        rol     $2F2E
-        .byte   $2F
-        bmi     L7EAD
-        bmi     L7EB0
-        .byte   $31
 L7E80:  ldx     #$00
         stx     L7D77
         ldx     #$7E
@@ -4101,7 +3960,7 @@ L7E80:  ldx     #$00
 
 L7EAD:  ror     a
         sta     $A3
-L7EB0:  ror     $A2
+        ror     $A2
         lda     $9F
         rol     a
         ror     $9F
