@@ -88,3 +88,25 @@ label:                          ; optional label
         _op_hi  sbc, {arg2}
         sta     result+1
 .endmacro
+
+;;; Define bitmap pattern as a string
+;;; * '#' is a 1 bit, anything else is a 0
+;;; * must be a multiple of 7 pixels wide.
+;;; * high bit is always set
+;;; e.g. PIXELS "..##############....."
+.macro PIXELS str, dummy
+        .if .paramcount < 2
+
+        ;; Pad out with 0 bits
+        PIXELS .concat(str, "......"), 1234
+
+        .else
+
+        ;; Process each 7 characters into a byte.
+        .repeat .strlen(str) / 7, idx
+        __pixel__ .set idx * 7
+        .byte ((.strat(str, __pixel__+0) = '#') << 0) | ((.strat(str, __pixel__+1) = '#') << 1) | ((.strat(str, __pixel__+2) = '#') << 2) | ((.strat(str, __pixel__+3) = '#') << 3) | ((.strat(str, __pixel__+4) = '#') << 4) | ((.strat(str, __pixel__+5) = '#') << 5) | ((.strat(str, __pixel__+6) = '#') << 6) | $80
+        .endrepeat
+
+        .endif
+.endmacro
