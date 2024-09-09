@@ -4657,29 +4657,33 @@ L838B:  lda     HiresTableLo,x
 
 ;;; Apply AND / OR mask to artificial horizon
 
-L83B7:
+.proc ApplyArtificialHorizonMask
         ldx     #$6E
-L83B9:  lda     HiresTableLo,x
+row:
+        lda     HiresTableLo,x
         sta     $8E
         lda     HiresTableHi,x
         sta     $8F
         stx     $B0
         ldx     #$00
         ldy     #$08
-L83C9:  lda     ($2D,x)
-L83CB:  ora     ($8E),y         ; self-modified (AND/ORA)
+col:
+        lda     ($2D,x)
+MaskOpCode:
+        ora     ($8E),y         ; self-modified (AND/ORA)
         sta     ($8E),y
         inc     $2D
-        bne     L83D5
+        bne     :+
         inc     $2E
-L83D5:  iny
+:       iny
         cpy     #$0E
-        bne     L83C9
+        bne     col
         ldx     $B0
         inx
         cpx     #$8E
-        bne     L83B9
+        bne     row
         rts
+.endproc
 
 ;;; ============================================================
 
@@ -4689,16 +4693,16 @@ L83D5:  iny
         lda     #<HorizonANDMask
         sta     $2D
         lda     #OPC_AND_izy
-        sta     L83CB
-        jsr     L83B7
+        sta     ApplyArtificialHorizonMask::MaskOpCode
+        jsr     ApplyArtificialHorizonMask
 
         lda     #>HorizonORAMask
         sta     $2E
         lda     #<HorizonORAMask
         sta     $2D
         lda     #OPC_ORA_izy
-        sta     L83CB
-        jsr     L83B7
+        sta     ApplyArtificialHorizonMask::MaskOpCode
+        jsr     ApplyArtificialHorizonMask
 
         rts
 .endproc
