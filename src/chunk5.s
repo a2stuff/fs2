@@ -10,6 +10,9 @@
 
         .refto __APPLE2__
 
+OPC_ORA_izy = $11
+OPC_AND_izy = $31
+
 KBD             := $C000
 KBDSTRB         := $C010
 SPKR            := $C030
@@ -4492,7 +4495,7 @@ L8280:  jsr     L7BA9
         adc     #$20
         cmp     #$40
         bcc     L8298
-        jmp     L83E2
+        jmp     ApplyArtificialHorizonMasks
 
 L8298:  lsr     a
         tax
@@ -4605,7 +4608,7 @@ L835C:  sta     $E7
         sec
         sbc     #$6F
         bpl     L8381
-L8365:  jmp     L83E2
+L8365:  jmp     ApplyArtificialHorizonMasks
 
 L8368:  lda     $6D
         bmi     L8354
@@ -4621,7 +4624,7 @@ L8374:  sta     $B5
         sbc     $B5
         bmi     L8384
 L8381:  jsr     L8387
-L8384:  jmp     L83E2
+L8384:  jmp     ApplyArtificialHorizonMasks
 
 L8387:  sta     $B5
         ldx     $E7
@@ -4678,22 +4681,29 @@ L83D5:  iny
         bne     L83B9
         rts
 
+;;; ============================================================
 
-L83E2:  lda     #$86
+.proc ApplyArtificialHorizonMasks
+        lda     #>HorizonANDMask
         sta     $2E
-        lda     #$0D
+        lda     #<HorizonANDMask
         sta     $2D
-        lda     #$31
+        lda     #OPC_AND_izy
         sta     L83CB
         jsr     L83B7
-        lda     #$85
+
+        lda     #>HorizonORAMask
         sta     $2E
-        lda     #$4D
+        lda     #<HorizonORAMask
         sta     $2D
-        lda     #$11
+        lda     #OPC_ORA_izy
         sta     L83CB
         jsr     L83B7
+
         rts
+.endproc
+
+;;; ============================================================
 
         stx     $B2
         ldy     $E7
@@ -4889,6 +4899,7 @@ L8505:  pha
         ;; height is 32 rows
 
         ;; $854D - ORA mask
+HorizonORAMask:
         PIXELS "...#..........##.....#.....##..........#.."
         PIXELS "..#.........##......###......##.........#."
         PIXELS ".##.......##.......#####.......##.......##"
@@ -4922,7 +4933,7 @@ L8505:  pha
         PIXELS "..#.......##.....##....##......##.......##"
         PIXELS "..##.......######........######........##."
 
-        ;; $860D - AND mask
+HorizonANDMask:
         PIXELS "...#..........###############..........#.."
         PIXELS "..#.........###################.........#."
         PIXELS ".##.......#######################.......##"
