@@ -2566,7 +2566,7 @@ HiresTableLo:
         .byte   $50,$50,$50,$50,$50,$50,$50,$50
         .byte   $d0,$d0,$d0,$d0,$d0,$d0,$d0,$d0
 
-L101A:
+HiresPixelToByteTable:
         .byte   $00, $00, $00, $00, $00, $00, $00
         .byte   $01, $01, $01, $01, $01, $01, $01
         .byte   $02, $02, $02, $02, $02, $02, $02
@@ -2608,13 +2608,10 @@ L101A:
         .byte   $26, $26, $26, $26, $26, $26, $26
         .byte   $27, $27, $27, $27, $27, $27, $27
 
-L111A := $111A
-
-L1132:
+HiresPixelToBitMaskTable:
         .repeat 38
         .byte   $01, $02, $04, $08, $10, $20, $40
         .endrepeat
-L1224 := $1224
 
 L123C:
         .byte   $00, $00, $00, $00
@@ -3670,6 +3667,8 @@ L19FA:  ldy     $E7
         bpl     L1A01
         rts
 
+;;; Airspeed indicator ??? Generic instrument EOR code?
+
 L1A01:  clc                     ; self-modified
         lda     $A5
 L1A04:  adc     ($96),y         ; self-modified
@@ -3689,8 +3688,8 @@ L1A04:  adc     ($96),y         ; self-modified
         adc     $8D
         sta     $BB
         ldx     $E6
-L1A26:  ldy     L101A,x
-        lda     L1132,x
+L1A26:  ldy     HiresPixelToByteTable,x
+        lda     HiresPixelToBitMaskTable,x         ; mask
         eor     ($9A),y
         sta     ($9A),y
         sta     ($BA),y
@@ -3932,14 +3931,14 @@ L1BBC:  ldy     L0A50
         sta     $BA
         lda     L0A3F
         beq     L1BFB
-        ldy     L111A,x
+        ldy     HiresPixelToByteTable+256,x
         lda     ($8E),y
-        eor     L1224,x
+        eor     HiresPixelToBitMaskTable+242,x
         jmp     L1C03
 
-L1BFB:  ldy     L101A,x
+L1BFB:  ldy     HiresPixelToByteTable,x
         lda     ($8E),y
-        eor     L1132,x
+        eor     HiresPixelToBitMaskTable,x
 L1C03:  sta     ($8E),y
         sta     ($BA),y
         dec     $F1

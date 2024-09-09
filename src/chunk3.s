@@ -23,6 +23,8 @@ ValueForString := $B6
 L03F0           := $03F0
 HiresTableHi    := $0E9A
 HiresTableLo    := $0F5A
+HiresPixelToByteTable    := $101A
+HiresPixelToBitMaskTable := $1132
 L1569           := $1569
 MultiplyC2ByAX          := $168F
 MultiplyC2ByAXIntoC2    := $1696
@@ -2037,19 +2039,19 @@ LE770:  lda     HiresTableHi,y
         sta     $B9
         lda     HiresTableLo,y
         sta     $B8
-        lda     $101A,x
+        lda     HiresPixelToByteTable,x
         ldy     $A5
         beq     LE784
-        lda     $111A,x
+        lda     HiresPixelToByteTable+256,x
 LE784:  clc
         adc     $B8
         sta     $B8
         bcc     LE78D
         inc     $B9
-LE78D:  lda     $1132,x
+LE78D:  lda     HiresPixelToBitMaskTable,x
         ldy     $A5
         beq     LE797
-        lda     $1224,x
+        lda     HiresPixelToBitMaskTable+242,x
 LE797:  tax
         ldy     #$00
         rts
