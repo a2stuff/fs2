@@ -99,24 +99,24 @@ L1880           := $1880
 L188D           := $188D
 L18B6           := $18B6
 L18CB           := $18CB
-L18DD           := $18DD
+UpdateAirspeedIndicator         := $18DD
 L1907           := $1907
-L1915           := $1915
+UpdateVerticalSpeedIndicator    := $1915
 L192D           := $192D
-L1A3D           := $1A3D
+UpdateElevatorPositionIndicator := $1A3D
 L1A45           := $1A45
-L1A57           := $1A57
+UpdateAileronPositionIndicator  := $1A57
 L1A5F           := $1A5F
 L1A6E           := $1A6E
-L1A78           := $1A78
+UpdateRudderPositionIndicator   := $1A78
 L1A80           := $1A80
 L1A8C           := $1A8C
 L1A94           := $1A94
-L1AAC           := $1AAC
+UpdateFlapsIndicator            := $1AAC
 L1AB4           := $1AB4
 L1ABF           := $1ABF
 L1AC7           := $1AC7
-L1ADA           := $1ADA
+L1ADA           := $1ADA        ; Carb heat indicator???
 L1AEC           := $1AEC
 L1AFA           := $1AFA
 L1B0C           := $1B0C
@@ -5338,8 +5338,8 @@ L8A55:  lda     $08BB
         beq     L8A62
         dec     InputCounter
 L8A62:  jsr     L93CA
-        jsr     L18DD
-        jsr     L1915
+        jsr     UpdateAirspeedIndicator
+        jsr     UpdateVerticalSpeedIndicator
         lda     $31
         and     #$03
         bne     L8A54
@@ -6447,7 +6447,7 @@ L915D:  lsr     a
         lsr     a
         lsr     a
         lsr     a
-        jsr     L1AAC
+        jsr     UpdateFlapsIndicator
         LDAX    $0A5E
         STAX    $C2
         LDAX    $0A31
@@ -6509,7 +6509,7 @@ L91DE:  lda     #$50
         cmp     L8AFE
         beq     L91F2
         sta     L8AFE
-        jsr     L1A3D
+        jsr     UpdateElevatorPositionIndicator
 L91F2:  rts
 
 ;;; D key
@@ -6579,7 +6579,7 @@ L9270:  lda     $0A53
         cmp     L8AFF
         sta     L8AFF
         beq     L9284
-        jsr     L1A57
+        jsr     UpdateAileronPositionIndicator
 L9284:  LDAX    $0A52
         STAX    $C2
         LDAX    $0A2F
@@ -6615,7 +6615,7 @@ L92CB:  lda     $0A65
         lsr     a
         lsr     a
         lsr     a
-        jsr     L1A78
+        jsr     UpdateRudderPositionIndicator
         jsr     L9311
 L92DA:  rts
 

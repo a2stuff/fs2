@@ -2355,7 +2355,7 @@ L0B1F:  .byte   $FF
         bvc     L0DFD
         .byte   $32
         rol     a
-        asl     L191B,x
+        asl     $191B,x
         ora     $3264,y
         asl     $12,x
         .byte   $0F
@@ -3463,6 +3463,7 @@ L187B:  ldy     $C5
         inx
 L188C:  rts
 
+;;; 188D: UpdateAltimeterIndicator
         lda     L0A12
         tax
         lsr     a
@@ -3512,6 +3513,7 @@ L18D6:  sta     L02A2,x
         jsr     L1931
 L18DC:  rts
 
+;;; 18DD: UpdateAirspeedIndicator
         lda     $FB
         lsr     a
         bcc     L18DC
@@ -3521,6 +3523,7 @@ L18DC:  rts
         beq     L18DC
         sta     $B6
         jsr     L190C
+
         lda     L0A33
         sec
         sbc     $B6
@@ -3538,17 +3541,16 @@ L1902:  inx
         adc     $B6
         ldx     #$02
         sta     L02A2,x
+
 L190C:  cmp     #$58
         bcc     L1912
         sbc     #$58
 L1912:  jmp     L1931
 
+;;; 1915: UpdateVerticalSpeedIndicator
         ldx     #$03
-        .byte   $BD
-        .byte   $A2
-        .byte   $02
-        .byte   $C5
-L191B:  rol     a
+        lda     $02A2,x
+        cmp     $2A
         beq     L18DC
         php
         pha
@@ -3562,6 +3564,9 @@ L192A:  clc
         adc     #$01
         ldx     #$03
         bne     L18D6
+
+;;; Generic indicator logic???
+
 L1931:  sta     L0A3B
         stx     L0A3C
         lda     #$B6
@@ -3713,6 +3718,7 @@ L1A48:  ldx     #$64
         lda     #$02
         jmp     L1A6E
 
+;;; 1A57: UpdateAileronPositionIndicator
         pha
         lda     L0A43
         jsr     L1A62
@@ -3730,6 +3736,7 @@ L1A6E:  sta     $9D
         sta     L0A3F
         jmp     L1BAC
 
+;;; 1A78: UpdateRudderPositionIndicator
         pha
         lda     L0A45
         jsr     L1A83
@@ -3759,6 +3766,7 @@ L1A97:  eor     #$FF
         lda     #$14
         jmp     L1A6E
 
+;;; 1AAC: UpdateFlapsIndicator
         pha
         lda     L0A47
         jsr     L1AB7
@@ -3796,6 +3804,8 @@ L1AE2:  tay
         cmp     L0A44
         bne     L1AF2
         rts
+
+;;; Slip/Skid indicator???
 
 L1AF2:  pha
         lda     L0A44
@@ -3854,6 +3864,8 @@ L1B4B:  lda     #$89
         cmp     L0A4C
         bne     L1B5F
 L1B5E:  rts
+
+;;; Fuel indicator
 
 L1B5F:  pha
         lda     L0A4C
