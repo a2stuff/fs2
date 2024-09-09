@@ -3660,14 +3660,14 @@ L19EA:  lda     #OPC_INC_zp
         sta     $E7
         rts
 
+;;; Used to draw instrument indicators - processes a table of rows/pixels
+
 L19F6:  ldy     #$00
         sty     $E7
 L19FA:  ldy     $E7
         lda     ($96),y
         bpl     L1A01
         rts
-
-;;; Airspeed indicator ??? Generic instrument EOR code?
 
 L1A01:  clc                     ; self-modified
         lda     $A5
