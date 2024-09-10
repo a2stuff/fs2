@@ -29,13 +29,14 @@ PTRIG           := $C070
 LCBANK2         := $C083
 RdROMWrRAM1     := $C089
 
-L000E           := $000E
 L003C           := $003C
 L00A5           := $00A5
 
 ;;; Zero Page
 
 HiresPageDelta  := $8D          ; Either +$20 or -$20
+
+PixelListData   := $9C          ; For `DrawPixelList`
 
 ValueForString  := $B6     ; $B6-$B7
 ;;; Used by `Set3DigitString` and `DivideByAXAndSetDigitY`
@@ -109,27 +110,27 @@ UpdateElevatorPositionIndicator := $1A3D
 L1A45           := $1A45
 UpdateAileronPositionIndicator  := $1A57
 L1A5F           := $1A5F
-L1A6E           := $1A6E
+DrawPixelListHelper             := $1A6E
 UpdateRudderPositionIndicator   := $1A78
 L1A80           := $1A80
-L1A8C           := $1A8C
+UpdateThrottleIndicator         := $1A8C
 L1A94           := $1A94
 UpdateFlapsIndicator            := $1AAC
 L1AB4           := $1AB4
 L1ABF           := $1ABF
 L1AC7           := $1AC7
 L1ADA           := $1ADA        ; Carb heat indicator???
-L1AEC           := $1AEC
+UpdateSlipSkidIndicator         := $1AEC
 L1AFA           := $1AFA
-L1B0C           := $1B0C        ; Oil / Fuel ???
+UpdateOilTempAndPressureGauges  := $1B0C
 L1B1E           := $1B1E
 L1B24           := $1B24
 L1B38           := $1B38
-L1B56           := $1B56
+UpdateFuelTankGauges            := $1B56
 L1B67           := $1B67
 L1B6D           := $1B6D
 L1B80           := $1B80
-L1B9F           := $1B9F
+UpdateFuelTankIndicator           := $1B9F
 DivideByAXAndSetDigitY  := $1C73
 DrawMessageWhite        := $1C96
 DrawMessageOrange       := $1C9F
@@ -5097,7 +5098,7 @@ L8804:  lda     $2B
         bcs     L882D
         jsr     LA5E1
         jsr     L8A06
-        jsr     L1B0C
+        jsr     UpdateOilTempAndPressureGauges
         jsr     L8AFD
         lda     $2B
         and     #$04
@@ -5108,7 +5109,7 @@ L8804:  lda     $2B
         jsr     L8AFD
         jmp     L8863
 
-L882D:  jsr     L1B56
+L882D:  jsr     UpdateFuelTankGauges
         jsr     L9AA3
         jmp     L8863
 
@@ -5910,7 +5911,7 @@ L8DEA:  lda     InputMode
         lda     $0998
         beq     L8DF8
         dec     $0998
-L8DF8:  jmp     L1B9F
+L8DF8:  jmp     UpdateFuelTankIndicator
 
 L8DFB:  rts
 
@@ -6085,7 +6086,7 @@ L8F35:  lda     InputMode
         lda     $0998
         bne     L8F43
         inc     $0998
-L8F43:  jsr     L1B9F
+L8F43:  jsr     UpdateFuelTankIndicator
 L8F46:  rts
 
 ;;; A = 10s digit, X = 1s digit
@@ -6363,7 +6364,7 @@ L90E8:  lda     $0A6F
         lsr     a
         lsr     a
         lsr     a
-        jmp     L1A8C
+        jmp     UpdateThrottleIndicator
 
 ;;; / key
 ToggleThrottle:
@@ -8191,7 +8192,7 @@ LA082:  cmp     #$F8
         lda     #$F8
 LA088:  clc
         adc     #$09
-        jmp     L1AEC
+        jmp     UpdateSlipSkidIndicator
 
 LA08E:  rts
 
@@ -8216,26 +8217,15 @@ LA092:  .byte   $02
         lsr     a
         ora     $1EAE,x
         brk
-        jsr     L000E
-        ora     ($00,x)
-        .byte   $02
-        brk
-        .byte   $03
-        brk
-        .byte   $04
-        brk
-        ora     $00
-        asl     $00
-        .byte   $07
-        ora     ($01,x)
-        ora     ($02,x)
-        ora     ($03,x)
-        ora     ($04,x)
-        ora     ($05,x)
-        ora     ($06,x)
-        ora     ($07,x)
-        brk
-        brk
+        .byte   $20
+
+PLVORNeedle:
+        .byte   14
+        .byte   0,1, 0,2, 0,3, 0,4, 0,5, 0,6, 0,7
+        .byte   1,1, 1,2, 1,3, 1,4, 1,5, 1,6, 1,7
+
+        .byte   $00, $00
+
 LA0D0:  lda     #$01
         ldy     L8880
         ldx     $0905
@@ -8301,7 +8291,7 @@ LA14D:  lda     $FB
         beq     LA17A
         lda     $0981
         pha
-        jsr     LA31A
+        jsr     DrawVOR1CourseDeviationIndicatorNeedle
         lda     $0985
         pha
         jsr     LA205
@@ -8310,13 +8300,13 @@ LA14D:  lda     $FB
         pla
         jsr     LA205
         pla
-        jsr     LA31A
+        jsr     DrawVOR1CourseDeviationIndicatorNeedle
 LA17A:  lda     $0981
         cmp     $0982
         beq     LA197
         php
         pha
-        jsr     LA31A
+        jsr     DrawVOR1CourseDeviationIndicatorNeedle
         pla
         plp
         bpl     LA18E
@@ -8325,7 +8315,7 @@ LA17A:  lda     $0981
 LA18E:  sec
         sbc     #$01
         sta     $0981
-        jsr     LA31A
+        jsr     DrawVOR1CourseDeviationIndicatorNeedle
 LA197:  lda     $0985
         cmp     $0986
         beq     LA1B4
@@ -8355,13 +8345,13 @@ LA1B8:  lda     $FD
         beq     LA1E2
         lda     $0983
         pha
-        jsr     LA316
+        jsr     DrawVOR2CourseDeviationIndicatorNeedle
         lda     $0988
         clc
         adc     #$03
         jsr     DrawVORFlag
         pla
-        jsr     LA316
+        jsr     DrawVOR2CourseDeviationIndicatorNeedle
 LA1E2:  lda     $097B
         bne     LA204
         lda     $0983
@@ -8369,7 +8359,7 @@ LA1E2:  lda     $097B
         beq     LA204
         php
         pha
-        jsr     LA316
+        jsr     DrawVOR2CourseDeviationIndicatorNeedle
         pla
         plp
         bpl     LA1FB
@@ -8378,7 +8368,7 @@ LA1E2:  lda     $097B
 LA1FB:  sec
         sbc     #$01
         sta     $0983
-        jsr     LA316
+        jsr     DrawVOR2CourseDeviationIndicatorNeedle
 LA204:  rts
 
 LA205:  tax
@@ -8538,20 +8528,34 @@ LA30F:  lda     #$00
         sta     $B6
         rts
 
-LA316:  ldy     #$A1
-        bne     LA31C
-LA31A:  ldy     #$76
+;;; ============================================================
+
+;;; Draw VOR1/2 course deviation indicator needle
+;;; Inputs: A = needle position
+
+;;; VOR2
+DrawVOR2CourseDeviationIndicatorNeedle:
+        ldy     #$A1            ; y pos
+        bne     LA31C           ; always
+
+;;; VOR1
+DrawVOR1CourseDeviationIndicatorNeedle:
+        ldy     #$76            ; y pos
+
 LA31C:  tax
         bmi     LA32C
         clc
-        adc     #$A5
+        adc     #$A5            ; x base pos
         tax
-        lda     #$B1
-        sta     $9C
-        lda     #$A0
-        jmp     L1A6E
+        lda     #<PLVORNeedle
+        sta     PixelListData
+        lda     #>PLVORNeedle
+        jmp     DrawPixelListHelper
 
 LA32C:  rts
+
+;;; ============================================================
+
 
 LA32D:  LDAX    $B6
         bmi     LA33D

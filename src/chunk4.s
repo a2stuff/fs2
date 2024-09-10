@@ -89,8 +89,9 @@ LA851           := $A851        ; into middle of message???
         .byte   $02
         .byte   $01
 
-;;; Pixel list for ???
-PL0240: .byte   6, 0,0, 1,0, 0,1, 1,1, 0,2, 1,2
+;;; Pixel list for elevator control position
+PLElevatorControlPositionIndicator:
+        .byte   6, 0,0, 1,0, 0,1, 1,1, 0,2, 1,2
 
         brk
         brk
@@ -109,15 +110,17 @@ L0256:  brk
         brk
         brk
 
-;;; Pixel list for aileron indicator
-PLAileronIndicator:
+;;; Pixel list for aileron indicator and rudder indicator
+PLAileronAndRudderIndicators:
         .byte   9, 0,0, 1,0, 2,0, 3,0, 4,0, 1,1, 2,1, 3,1, 2,2
 
-;;; Pixel list for ???
-PL0270: .byte   12, 1,0, 2,0, 0,1, 1,1, 2,1, 3,1, 0,2, 1,2, 2,2, 3,2, 1,3, 2,3
+;;; Pixel list for slip/skid indicator
+PLSlipSkidIndicator:
+        .byte   12, 1,0, 2,0, 0,1, 1,1, 2,1, 3,1, 0,2, 1,2, 2,2, 3,2, 1,3, 2,3
 
-;;; Pixel list for ???
-PL0289: .byte   12, 0,0, 0,1, 0,2, 0,3, 0,4, 0,5, 1,0, 1,1, 1,2, 1,3, 1,4, 1,5
+;;; Pixel list for fuel/oil gauges
+PLFuelAndOilGauges:
+        .byte   12, 0,0, 0,1, 0,2, 0,3, 0,4, 0,5, 1,0, 1,1, 1,2, 1,3, 1,4, 1,5
 
 L02A2:  brk
         brk
@@ -2801,8 +2804,9 @@ L148D:  ora     $C7,x
         .byte   $03
         .byte   $0F
 
-;;; Pixel list for ???
-PL14AC: .byte   4, 0,0, 1,0, 0,1, 1,1
+;;; Pixel list for throttle control indicator
+PLThrottleIndicator:
+        .byte   4, 0,0, 1,0, 0,1, 1,1
 
 ;;; Pixel list for flaps indicator
 PLFlapsIndicator:
@@ -3658,6 +3662,11 @@ L1A32:  inx                     ; self-modified
 L1A38:  inc     $A7             ; self-modified
         jmp     L19FA
 
+;;; ============================================================
+
+.proc UpdateElevatorPositionIndicator
+        .refto UpdateElevatorPositionIndicator
+
         pha
         lda     L0A42
         jsr     L1A48
@@ -3667,12 +3676,16 @@ L1A48:  ldx     #$64
         clc
         adc     #$9F
         tay
-        lda     #<PL0240
+        lda     #<PLElevatorControlPositionIndicator
         sta     PixelListData
-        lda     #>PL0240
+        lda     #>PLElevatorControlPositionIndicator
         jmp     DrawPixelListHelper
+.endproc
 
-;;; 1A57: UpdateAileronPositionIndicator
+;;; ============================================================
+
+.proc UpdateAileronPositionIndicator
+        .refto UpdateAileronPositionIndicator
         pha
         lda     L0A43
         jsr     L1A62
@@ -3682,17 +3695,21 @@ L1A62:  clc
         adc     #$55
         tax
         ldy     #$94
-L1A68:  lda     #<PLAileronIndicator
+        ;; fall through to `DrawAileronOrRudderIndicator`
+.endproc
+
+DrawAileronOrRudderIndicator:
+        lda     #<PLAileronAndRudderIndicators
         sta     PixelListData
-        lda     #>PLAileronIndicator
+        lda     #>PLAileronAndRudderIndicators
 DrawPixelListHelper:
         sta     PixelListData+1
         lda     #$00
         sta     PixelListXHi
         jmp     DrawPixelList
 
-;;; TODO: Skeptical this is right...
-;;; 1A78: UpdateRudderPositionIndicator
+;;; ============================================================
+
 .proc UpdateRudderPositionIndicator
         .refto UpdateRudderPositionIndicator
         pha
@@ -3703,9 +3720,14 @@ DrawPixelListHelper:
 L1A83:  clc
         adc     #$55
         tax
-        ldy     #$BC
-        jmp     L1A68
+        ldy     #$BC            ; rudder
+        jmp     DrawAileronOrRudderIndicator
+.endproc
 
+;;; ============================================================
+
+.proc UpdateThrottleIndicator
+        .refto UpdateThrottleIndicator
         pha
         lda     L0A46
         jsr     L1A97
@@ -3719,13 +3741,14 @@ L1A97:  eor     #$FF
         clc
         adc     #$AF
         tay
-        lda     #<PL14AC
+        lda     #<PLThrottleIndicator
         sta     PixelListData
-        lda     #>PL14AC
+        lda     #>PLThrottleIndicator
         jmp     DrawPixelListHelper
 .endproc
 
-;;; 1AAC: UpdateFlapsIndicator
+;;; ============================================================
+
 .proc UpdateFlapsIndicator
         .refto UpdateFlapsIndicator
 
@@ -3762,13 +3785,16 @@ L1AE2:  tay
         sta     PixelListData
         lda     #>PLFlapsIndicator
         jmp     DrawPixelListHelper
+.endproc
+
+;;; ============================================================
+
+.proc UpdateSlipSkidIndicator
+        .refto UpdateSlipSkidIndicator
 
         cmp     L0A44
         bne     L1AF2
         rts
-.endproc
-
-;;; Slip/Skid indicator???
 
 L1AF2:  pha
         lda     L0A44
@@ -3779,11 +3805,16 @@ L1AFD:  clc
         adc     #$0E
         tax
         ldy     #$B4
-        lda     #<PL0270
+        lda     #<PLSlipSkidIndicator
         sta     PixelListData
-        lda     #>PL0270
+        lda     #>PLSlipSkidIndicator
         jmp     DrawPixelListHelper
+.endproc
 
+;;; ============================================================
+
+.proc UpdateOilTempAndPressureGauges
+        .refto UpdateOilTempAndPressureGauges
         lda     L0994
         lsr     a
         cmp     L0A4A
@@ -3809,29 +3840,35 @@ L1B16:  pha
         pla
         sta     L0A4B
         clc
-        adc     #$1E
+        adc     #$1E            ; Oil pressure X position
 L1B3E:  clc
-        adc     #$E8
+        adc     #$E8            ; Oil temp X position
         tax
         lda     #$00
         adc     #$00
         sta     PixelListXHi
-        ldy     #$A2
-L1B4B:  lda     #<PL0289
+        ldy     #$A2            ; Oil
+        ;; fall through to `DrawFuelOrOilGauge`
+.endproc
+
+.proc DrawFuelOrOilGauge
+        lda     #<PLFuelAndOilGauges
         sta     PixelListData
-        lda     #>PL0289
+        lda     #>PLFuelAndOilGauges
         sta     PixelListData+1
         jmp     DrawPixelList
+.endproc
 
+;;; ============================================================
+
+.proc UpdateFuelTankGauges
+        .refto UpdateFuelTankGauges
         lda     L099C
         cmp     L0A4C
         bne     L1B5F
 L1B5E:  rts
 
-;;; Fuel indicator
-
-.proc L1B5F
-        pha
+L1B5F:  pha
         lda     L0A4C
         jsr     L1B86
         pla
@@ -3849,23 +3886,29 @@ L1B5E:  rts
         pla
         sta     L0A4D
         clc
-        adc     #$1E
+        adc     #$1E            ; Tank 2 X offset
 L1B86:  clc
-        adc     #$E8
+        adc     #$E8            ; Tank 1 X position
         tax
         lda     #$00
         adc     #$00
         sta     PixelListXHi
-        ldy     #$AA
-        jmp     L1B4B
+        ldy     #$AA            ; Fuel tank Y position
+        jmp     DrawFuelOrOilGauge
 
-PL1B96: .byte   4, 0,0, 3,0, 0,2, 3,2
+.endproc
 
+;;; ============================================================
+
+PLFuelTankIndicator:
+        .byte   4, 0,0, 3,0, 0,2, 3,2
+
+.proc UpdateFuelTankIndicator
         ldx     #$FB
         ldy     #$A4
-        lda     #<PL1B96
+        lda     #<PLFuelTankIndicator
         sta     PixelListData
-        lda     #>PL1B96
+        lda     #>PLFuelTankIndicator
         jmp     DrawPixelListHelper
 .endproc
 
