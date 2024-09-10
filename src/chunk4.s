@@ -20,6 +20,10 @@ OPC_INC_zp  = $E6
 
 L002D           := $002D
 
+HiresPageDelta  := $8D          ; Either +$20 or -$20
+
+PixelListData   := $9C          ; For `DrawPixelList`
+
 ValueForString  := $B6          ; $B6-B7
 ;;; Used by `DivideByAXAndSetDigitY`
 
@@ -83,15 +87,11 @@ LA851           := $A851        ; into middle of message???
         jsr     L0810
         .byte   $04
         .byte   $02
-        ora     ($06,x)
-        brk
-        brk
-        ora     ($00,x)
-        brk
-        ora     ($01,x)
-        ora     ($00,x)
-        .byte   $02
-        ora     ($02,x)
+        .byte   $01
+
+;;; Pixel list for ???
+PL0240: .byte   6, 0,0, 1,0, 0,1, 1,1, 0,2, 1,2
+
         brk
         brk
         brk
@@ -108,56 +108,17 @@ L0256:  brk
         brk
         brk
         brk
-        ora     #$00
-        brk
-        ora     ($00,x)
-        .byte   $02
-        brk
-        .byte   $03
-        brk
-        .byte   $04
-        brk
-        ora     ($01,x)
-        .byte   $02
-        ora     ($03,x)
-        ora     ($02,x)
-        .byte   $02
-        .byte   $0C
-        ora     ($00,x)
-        .byte   $02
-        brk
-        brk
-        ora     ($01,x)
-        ora     ($02,x)
-        ora     ($03,x)
-        ora     ($00,x)
-        .byte   $02
-        ora     ($02,x)
-        .byte   $02
-        .byte   $02
-        .byte   $03
-        .byte   $02
-        ora     ($03,x)
-        .byte   $02
-        .byte   $03
-        .byte   $0C
-        brk
-        brk
-        brk
-        ora     ($00,x)
-        .byte   $02
-        brk
-        .byte   $03
-        brk
-        .byte   $04
-        brk
-        ora     $01
-        brk
-        ora     ($01,x)
-        ora     ($02,x)
-        ora     ($03,x)
-        ora     ($04,x)
-        ora     ($05,x)
+
+;;; Pixel list for aileron indicator
+PLAileronIndicator:
+        .byte   9, 0,0, 1,0, 2,0, 3,0, 4,0, 1,1, 2,1, 3,1, 2,2
+
+;;; Pixel list for ???
+PL0270: .byte   12, 1,0, 2,0, 0,1, 1,1, 2,1, 3,1, 0,2, 1,2, 2,2, 3,2, 1,3, 2,3
+
+;;; Pixel list for ???
+PL0289: .byte   12, 0,0, 0,1, 0,2, 0,3, 0,4, 0,5, 1,0, 1,1, 1,2, 1,3, 1,4, 1,5
+
 L02A2:  brk
         brk
         brk
@@ -1669,7 +1630,7 @@ L0A3B:  brk
 L0A3C:  brk
 L0A3D:  brk
         brk
-L0A3F:  brk
+PixelListXHi:  brk
         php
         php
 L0A42:  brk
@@ -2839,20 +2800,13 @@ L148D:  ora     $C7,x
         brk
         .byte   $03
         .byte   $0F
-        .byte   $04
-        brk
-        brk
-        ora     ($00,x)
-        brk
-        ora     ($01,x)
-        ora     ($04,x)
-        brk
-        brk
-        .byte   $02
-        brk
-        brk
-        ora     ($02,x)
-        .byte   $01
+
+;;; Pixel list for ???
+PL14AC: .byte   4, 0,0, 1,0, 0,1, 1,1
+
+;;; Pixel list for flaps indicator
+PLFlapsIndicator:
+        .byte   4, 0,0, 2,0, 0,1, 2,1
 
 ;;; Map 3 character bits to pixels (doubled)
 
@@ -3690,7 +3644,7 @@ L1A04:  adc     ($96),y         ; self-modified
         lda     HiresTableHi,x
         sta     $9B
         clc
-        adc     $8D
+        adc     HiresPageDelta
         sta     $BB
         ldx     $E6
 L1A26:  ldy     HiresPixelToByteTable,x
@@ -3713,10 +3667,10 @@ L1A48:  ldx     #$64
         clc
         adc     #$9F
         tay
-        lda     #$40
-        sta     $9C
-        lda     #$02
-        jmp     L1A6E
+        lda     #<PL0240
+        sta     PixelListData
+        lda     #>PL0240
+        jmp     DrawPixelListHelper
 
 ;;; 1A57: UpdateAileronPositionIndicator
         pha
@@ -3728,15 +3682,19 @@ L1A62:  clc
         adc     #$55
         tax
         ldy     #$94
-L1A68:  lda     #$5D
-        sta     $9C
-        lda     #$02
-L1A6E:  sta     $9D
+L1A68:  lda     #<PLAileronIndicator
+        sta     PixelListData
+        lda     #>PLAileronIndicator
+DrawPixelListHelper:
+        sta     PixelListData+1
         lda     #$00
-        sta     L0A3F
-        jmp     L1BAC
+        sta     PixelListXHi
+        jmp     DrawPixelList
 
+;;; TODO: Skeptical this is right...
 ;;; 1A78: UpdateRudderPositionIndicator
+.proc UpdateRudderPositionIndicator
+        .refto UpdateRudderPositionIndicator
         pha
         lda     L0A45
         jsr     L1A83
@@ -3755,18 +3713,22 @@ L1A83:  clc
         sta     L0A46
 L1A97:  eor     #$FF
         clc
-        clc
+        clc                     ; ???
         adc     #$10
         ldx     #$CA
         clc
         adc     #$AF
         tay
-        lda     #$AC
-        sta     $9C
-        lda     #$14
-        jmp     L1A6E
+        lda     #<PL14AC
+        sta     PixelListData
+        lda     #>PL14AC
+        jmp     DrawPixelListHelper
+.endproc
 
 ;;; 1AAC: UpdateFlapsIndicator
+.proc UpdateFlapsIndicator
+        .refto UpdateFlapsIndicator
+
         pha
         lda     L0A47
         jsr     L1AB7
@@ -3796,14 +3758,15 @@ L1ADD:  ldx     #$D0
         clc
         adc     #$AF
 L1AE2:  tay
-        lda     #$B5
-        sta     $9C
-        lda     #$14
-        jmp     L1A6E
+        lda     #<PLFlapsIndicator
+        sta     PixelListData
+        lda     #>PLFlapsIndicator
+        jmp     DrawPixelListHelper
 
         cmp     L0A44
         bne     L1AF2
         rts
+.endproc
 
 ;;; Slip/Skid indicator???
 
@@ -3816,10 +3779,10 @@ L1AFD:  clc
         adc     #$0E
         tax
         ldy     #$B4
-        lda     #$70
-        sta     $9C
-        lda     #$02
-        jmp     L1A6E
+        lda     #<PL0270
+        sta     PixelListData
+        lda     #>PL0270
+        jmp     DrawPixelListHelper
 
         lda     L0994
         lsr     a
@@ -3852,13 +3815,13 @@ L1B3E:  clc
         tax
         lda     #$00
         adc     #$00
-        sta     L0A3F
+        sta     PixelListXHi
         ldy     #$A2
-L1B4B:  lda     #$89
-        sta     $9C
-        lda     #$02
-        sta     $9D
-        jmp     L1BAC
+L1B4B:  lda     #<PL0289
+        sta     PixelListData
+        lda     #>PL0289
+        sta     PixelListData+1
+        jmp     DrawPixelList
 
         lda     L099C
         cmp     L0A4C
@@ -3867,7 +3830,8 @@ L1B5E:  rts
 
 ;;; Fuel indicator
 
-L1B5F:  pha
+.proc L1B5F
+        pha
         lda     L0A4C
         jsr     L1B86
         pla
@@ -3891,71 +3855,92 @@ L1B86:  clc
         tax
         lda     #$00
         adc     #$00
-        sta     L0A3F
+        sta     PixelListXHi
         ldy     #$AA
         jmp     L1B4B
 
-        .byte   $04
-        brk
-        brk
-        .byte   $03
-        brk
-        brk
-        .byte   $02
-        .byte   $03
-        .byte   $02
+PL1B96: .byte   4, 0,0, 3,0, 0,2, 3,2
+
         ldx     #$FB
         ldy     #$A4
-        lda     #$96
-        sta     $9C
-        lda     #$1B
-        jmp     L1A6E
+        lda     #<PL1B96
+        sta     PixelListData
+        lda     #>PL1B96
+        jmp     DrawPixelListHelper
+.endproc
 
-L1BAC:  stx     L0A4E
-        sty     L0A4F
+;;; ============================================================
+
+;;; Inputs: $9C points at data; first byte is length (copied to $F1),
+;;;         rest is X,Y pixel offsets (single byte each)
+;;;         X = x pos (low byte)
+;;;         Y = y pos
+;;;         PixelListXHi = x pos (high byte)
+
+.proc DrawPixelList
+        data_ptr    := PixelListData
+        data_offset := L0A50
+        data_count  := $F1
+        hires_ptr1  := $8E
+        hires_ptr2  := $BA
+        x_pos       := L0A4E
+        y_pos       := L0A4F
+
+        x_hi        := PixelListXHi ; hi byte of X coord
+
+        stx     x_pos
+        sty     y_pos
         ldy     #$00
-        lda     ($9C),y
-        sta     $F1
+        lda     (data_ptr),y
+        sta     data_count
         iny
-        sty     L0A50
-L1BBC:  ldy     L0A50
-        lda     ($9C),y
+        sty     data_offset
+
+loop:
+        ldy     data_offset
+        lda     (data_ptr),y    ; X coord in data
         clc
-        adc     L0A4E
-        tax
-        lda     L0A3F
+        adc     x_pos
+        tax                     ; low byte of X
+        lda     x_hi
         adc     #$00
-        sta     L0A3F
+        sta     x_hi            ; hi byte of X
         iny
-        lda     ($9C),y
+        lda     (data_ptr),y    ; Y coord in data
         iny
-        sty     L0A50
+        sty     data_offset
         clc
-        adc     L0A4F
+        adc     y_pos
         tay
         lda     HiresTableHi,y
-        sta     $8F
-        clc
-        adc     $8D
-        sta     $BB
+        sta     hires_ptr1+1
+        clc                     ; TODO: Just EOR with %01100000
+        adc     HiresPageDelta
+        sta     hires_ptr2+1
         lda     HiresTableLo,y
-        sta     $8E
-        sta     $BA
-        lda     L0A3F
-        beq     L1BFB
-        ldy     HiresPixelToByteTable+256,x
-        lda     ($8E),y
-        eor     HiresPixelToBitMaskTable+242,x
-        jmp     L1C03
+        sta     hires_ptr1
+        sta     hires_ptr2
 
-L1BFB:  ldy     HiresPixelToByteTable,x
-        lda     ($8E),y
+        ;; x > 256
+        lda     x_hi
+        beq     low
+        ldy     HiresPixelToByteTable+256,x
+        lda     (hires_ptr1),y
+        eor     HiresPixelToBitMaskTable+242,x
+        jmp     write
+low:
+        ldy     HiresPixelToByteTable,x
+        lda     (hires_ptr1),y
         eor     HiresPixelToBitMaskTable,x
-L1C03:  sta     ($8E),y
-        sta     ($BA),y
-        dec     $F1
-        bne     L1BBC
+write:
+        sta     (hires_ptr1),y
+        sta     (hires_ptr2),y
+        dec     data_count
+        bne     loop
         rts
+.endproc
+
+;;; ============================================================
 
 ;;; Draw message to both hires screens
 ;;; A,X = message (row, col, null-terminated string)

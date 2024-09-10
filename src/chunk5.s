@@ -35,6 +35,8 @@ L00A5           := $00A5
 
 ;;; Zero Page
 
+HiresPageDelta  := $8D          ; Either +$20 or -$20
+
 ValueForString  := $B6     ; $B6-$B7
 ;;; Used by `Set3DigitString` and `DivideByAXAndSetDigitY`
 
@@ -119,7 +121,7 @@ L1AC7           := $1AC7
 L1ADA           := $1ADA        ; Carb heat indicator???
 L1AEC           := $1AEC
 L1AFA           := $1AFA
-L1B0C           := $1B0C
+L1B0C           := $1B0C        ; Oil / Fuel ???
 L1B1E           := $1B1E
 L1B24           := $1B24
 L1B38           := $1B38
@@ -630,13 +632,13 @@ L639D:  txa
         ldx     #$C0
 L63A2:  lda     $0E99,x
         clc
-        adc     $8D
+        adc     HiresPageDelta
         sta     $0E99,x
         dex
         bne     L63A2
-        lda     $8D
+        lda     HiresPageDelta
         eor     #$C0
-        sta     $8D
+        sta     HiresPageDelta
         bpl     L63BB
         sta     LOWSCR
         bmi     L63BE
@@ -4836,7 +4838,7 @@ L84B0:  dec     $93
 L84DC:  lda     #$00
 L84DE:  sta     $AF
         lda     $0A40
-        ldx     $8D
+        ldx     HiresPageDelta
         bpl     L84EA
         lda     $0A41
 L84EA:  cmp     $AF
@@ -4847,7 +4849,7 @@ L84EF:  jsr     L8505
         lda     $AF
 
 ::L84F4 := *
-        ldx     $8D
+        ldx     HiresPageDelta
         bpl     L84FE
         sta     $0A41
         jmp     L8501
@@ -8387,7 +8389,7 @@ LA205:  tax
         lda     HiresTableHi,x
         sta     $B7
         clc
-        adc     $8D
+        adc     HiresPageDelta
         sta     $3F
         lda     HiresTableLo,x
         sta     $B6
@@ -10114,7 +10116,7 @@ LB150:  ora     #$29
 LB15A:  lda     HiresTableHi,y
         sta     $A6
         clc
-        adc     $8D
+        adc     HiresPageDelta
         sta     $A8
         lda     HiresTableLo,y
         sta     L00A5
