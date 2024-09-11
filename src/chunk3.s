@@ -32,7 +32,7 @@ L1735           := $1735
 L1763           := $1763
 L1768           := $1768
 L180C           := $180C
-L1931           := $1931
+DrawIndicatorDialNeedle := $1931
 L1AD2           := $1AD2
 DrawMessage     := $1C0C
 DrawMessageWhite        := $1C96
@@ -495,11 +495,11 @@ LD9FE:  lda     LD9E6
         sta     LD9E9
         beq     LDA52
         txa
-        ldx     #$04
-        jsr     L1931
+        ldx     #$04            ; needle index
+        jsr     DrawIndicatorDialNeedle
         lda     LD9E9
-        ldx     #$04
-        jsr     L1931
+        ldx     #$04            ; needle index
+        jsr     DrawIndicatorDialNeedle
         jsr     LDA53
 LDA52:  rts
 
@@ -564,8 +564,8 @@ LDB28:
         CALLAX  DrawMultiMessage, mDA79
         lda     #$0A
         sta     LD9E9
-        ldx     #$04
-        jsr     L1931
+        ldx     #$04            ; needle index
+        jsr     DrawIndicatorDialNeedle
         CALLAX  DrawMessageOrange, mDB22
         CALLAX  DrawMessageOrange, mD9EA
         rts

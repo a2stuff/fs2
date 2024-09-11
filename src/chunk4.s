@@ -122,226 +122,59 @@ PLSlipSkidIndicator:
 PLFuelAndOilGauges:
         .byte   12, 0,0, 0,1, 0,2, 0,3, 0,4, 0,5, 1,0, 1,1, 1,2, 1,3, 1,4, 1,5
 
-L02A2:  brk
-        brk
-        brk
-        brk
-        brk
-L02A7:  .byte   $82
+IndicatorDialNeedleLastValue:
+        .byte   0, 0, 0, 0, 0
+
+;;; Table used by `DrawIndicatorDialNeedle`, indexed by needle
+IndicatorDialNeedleX:
+        .byte   $82
         .byte   $82
         .byte   $1A
         .byte   $82
-        .byte   $B4
-L02AC:  ror     $7E7E,x
-        tax
-        .byte   $AF
-L02B1:  brk
-        ora     ($00,x)
-        ora     ($01,x)
-        .byte   $14
-        .byte   $03
-        .byte   $1B
-        .byte   $03
-        .byte   $22
-        .byte   $03
-        and     $3A03
-        .byte   $03
-        eor     #$03
-        .byte   $5C
-        .byte   $03
-        adc     ($03),y
-        dey
-        .byte   $03
-        lda     ($03,x)
-        ldy     a:$03,x
-        .byte   $04
-        .byte   $1F
-        .byte   $04
-        rti
+        .byte   $B4             ; ???
 
-        .byte   $04
-        .byte   $63
-        .byte   $04
-        dey
-        .byte   $04
-        .byte   $AF
-        .byte   $04
-        dec     $04,x
-        .byte   $FF
-        .byte   $04
-        plp
-        ora     $53
-        ora     $7E
-        ora     $A9
-        ora     $D4
-        ora     $D4
-        ora     $DD
-        ora     $E8
-        ora     $F5
-        ora     $04
-        asl     $13
-        asl     $24
-        asl     $37
-        asl     $4C
-        asl     $63
-        asl     $7C
-        asl     $95
-        asl     $B0
-        asl     $CD
-        asl     $EC
-        asl     $0B
-        .byte   $07
-        bit     $4F07
-        .byte   $07
-        .byte   $72
-        .byte   $07
-        sta     $07,x
-        tsx
-        .byte   $07
-        bvc     L0320
-        adc     $0E,x
-        ora     ($0A,x)
-        brk
-        ora     $01,x
-        asl     a
-        .byte   $FF
-        ora     ($05,x)
-        brk
-        bpl     L0321
-L0320:  .byte   $14
-L0321:  .byte   $FF
-        ora     ($03,x)
-        brk
-        ora     #$01
-        .byte   $0C
-        asl     $0C
-        bpl     L0331
-        .byte   $FF
-        ora     ($02,x)
-        brk
-        .byte   $07
-L0331:  ora     ($0A,x)
-        ora     $0A
-        .byte   $0B
-        php
-        ora     ($04),y
-        .byte   $FF
-        brk
-        .byte   $03
-        ora     ($05,x)
-        ora     ($08,x)
-        .byte   $04
-        php
-        php
-        .byte   $07
-        ora     $1105
-        .byte   $03
-        .byte   $FF
-        brk
-        .byte   $03
-        ora     ($04,x)
-        ora     ($06,x)
-        .byte   $03
-        asl     $06
-        asl     $09
-        ora     $0C
-        .byte   $04
-        .byte   $0F
-        .byte   $03
-        .byte   $12
-        .byte   $02
-        .byte   $FF
-        brk
-        .byte   $02
-        ora     ($03,x)
-        ora     ($05,x)
-        .byte   $03
-        ora     $05
-        ora     $08
-        .byte   $04
-        asl     a
-        .byte   $04
-        .byte   $0C
-        .byte   $04
-        .byte   $0F
-        .byte   $03
-        ora     ($02),y
-        .byte   $FF
-        brk
-        .byte   $02
-        ora     ($03,x)
-        ora     ($05,x)
-        .byte   $03
-        .byte   $04
-        ora     $04
-        .byte   $07
-        .byte   $04
-        ora     #$04
-        .byte   $0B
-        .byte   $03
-        ora     $0F03
-        .byte   $03
-        ora     ($02),y
-        .byte   $FF
-        brk
-        .byte   $03
-        brk
-        ora     $00
-        asl     $01
-        asl     $03
-        asl     $05
-        ora     $07
-        .byte   $04
-        ora     #$04
-        .byte   $0B
-        .byte   $03
-        ora     $0F02
-        .byte   $02
-        ora     ($01),y
-        .byte   $FF
-        brk
-        .byte   $03
-        brk
-        .byte   $04
-        brk
-        ora     $01
-        asl     $03
-        ora     $04
-        ora     $06
-        .byte   $04
-        php
-        .byte   $03
-        ora     #$03
+;;; Table used by `DrawIndicatorDialNeedle`, indexed by needle
+IndicatorDialNeedleY:
+        .byte   $7E
+        .byte   $7E
+        .byte   $7E
+        .byte   $AA
+        .byte   $AF             ; ???
 
-        ;; $03D0 - warm start jump vector
-        .byte   $0B
-        .byte   $03
-        .byte   $0C
-        .byte   $03
-        asl     $1002
-        ora     ($FF,x)
-        brk
-        .byte   $03
-        brk
-        .byte   $04
-        brk
-        ora     $01
-        ora     $03
-        .byte   $04
-        .byte   $04
-        .byte   $04
-        ora     $04
-        .byte   $07
-        .byte   $03
-        php
-        .byte   $03
-        ora     #$03
-        .byte   $0B
-        .byte   $02
-        .byte   $0C
-        .byte   $02
-        ora     $0F02
-        ora     ($FF,x)
+;;; Table used by `DrawIndicatorDialNeedle`, indexed by needle
+;;; 0 = skinny, 1 = thick
+IndicatorDialNeedleStyle:
+        .byte   0, 1, 0, 1
+        .byte   1               ; ???
+
+;;; Thin needle data - table of addrs indexed by needle pos
+IndicatorDialThinNeedleTable:
+        .addr   ND0314, ND031B, ND0322, ND032D, ND033A, ND0349, ND035C, ND0371
+        .addr   ND0388, ND03A1, ND03BC, ND0400, ND041F, ND0440, ND0463, ND0488
+        .addr   ND04AF, ND04D6, ND04FF, ND0528, ND0553, ND057E, ND05A9
+
+        .addr   ND05D4
+
+;;; Thick needle data - table of addrs indexed by needle pos
+IndicatorDialThickNeedleTable:
+        .addr   ND05D4, ND05DD, ND05E8, ND05F5, ND0604, ND0613, ND0624, ND0637
+        .addr   ND064C, ND0663, ND067C, ND0695, ND06B0, ND06CD, ND06EC, ND070B
+        .addr   ND072C, ND074F, ND0772, ND0795, ND07BA, ND0E50, ND0E75
+
+;;; Dial needle pixel lists
+ND0314: .byte   $01, $0a, $00, $15, $01, $0a, $ff
+ND031B: .byte   $01, $05, $00, $10, $01, $14, $ff
+ND0322: .byte   $01, $03, $00, $09, $01, $0c, $06, $0c, $10, $05, $ff
+ND032D: .byte   $01, $02, $00, $07, $01, $0a, $05, $0a, $0b, $08, $11, $04, $ff
+ND033A: .byte   $00, $03, $01, $05, $01, $08, $04, $08, $08, $07, $0d, $05, $11, $03, $ff
+ND0349: .byte   $00, $03, $01, $04, $01, $06, $03, $06, $06, $06, $09, $05, $0c, $04, $0f, $03, $12, $02, $ff
+ND035C: .byte   $00, $02, $01, $03, $01, $05, $03, $05, $05, $05, $08, $04, $0a, $04, $0c, $04, $0f, $03, $11, $02, $ff
+ND0371: .byte   $00, $02, $01, $03, $01, $05, $03, $04, $05, $04, $07, $04, $09, $04, $0b, $03, $0d, $03, $0f, $03, $11, $02, $ff
+ND0388: .byte   $00, $03, $00, $05, $00, $06, $01, $06, $03, $06, $05, $05, $07, $04, $09, $04, $0b, $03, $0d, $02, $0f, $02, $11, $01, $ff
+ND03A1: .byte   $00, $03, $00, $04, $00, $05, $01, $06, $03, $05, $04, $05, $06, $04, $08, $03, $09, $03, $0b, $03, $0c, $03, $0e, $02, $10, $01, $ff
+ND03BC: .byte    $00, $03, $00, $04, $00, $05, $01, $05, $03, $04, $04, $04, $05, $04, $07, $03, $08, $03, $09, $03, $0b, $02, $0c, $02, $0d, $02, $0f, $01, $ff
+
+
         jmp     $B7B5
 
         lda     $9D0F
@@ -369,730 +202,41 @@ L0331:  ora     ($0A,x)
 
         ;; Text page 1 - and screen holes!
 
-        brk
-L0401:  .byte   $03
-        brk
-        .byte   $04
-        brk
-        ora     $01
-        ora     $02
-        .byte   $04
-        .byte   $03
-        .byte   $04
-        ora     $03
-        asl     $03
-        .byte   $07
-        .byte   $03
-        php
-        .byte   $03
-        ora     #$03
-        asl     a
-        .byte   $02
-        .byte   $0C
-        ora     ($0D,x)
-        ora     ($0E,x)
-        ora     ($FF,x)
-        brk
-        .byte   $03
-        brk
-        .byte   $04
-        brk
-        .byte   $04
-        ora     ($04,x)
-        .byte   $02
-        .byte   $04
-        .byte   $03
-        .byte   $04
-        .byte   $04
-        .byte   $03
-        ora     $03
-        asl     $03
-        .byte   $07
-        .byte   $03
-        php
-        .byte   $02
-        ora     #$02
-        asl     a
-        .byte   $02
-        .byte   $0B
-        .byte   $02
-        .byte   $0C
-        ora     ($0D,x)
-        ora     ($FF,x)
-        brk
-        .byte   $03
-        brk
-        .byte   $04
-        brk
-        .byte   $04
-        ora     ($04,x)
-        .byte   $02
-        .byte   $04
-        .byte   $03
-        .byte   $03
-        .byte   $03
-        .byte   $04
-        .byte   $04
-        .byte   $03
-        ora     $03
-        asl     $03
-        .byte   $07
-        .byte   $02
-        php
-        .byte   $02
-        ora     #$02
-        ora     #$02
-        asl     a
-        .byte   $02
-        .byte   $0B
-        ora     ($0C,x)
-        ora     ($FF,x)
-        brk
-        .byte   $03
-        brk
-        .byte   $04
-        brk
-        .byte   $04
-        ora     ($04,x)
-        ora     ($04,x)
-        .byte   $02
-        .byte   $04
-        .byte   $03
-        .byte   $03
-        .byte   $04
-        .byte   $03
-        .byte   $04
-        .byte   $03
-        ora     $03
-        asl     $02
-        .byte   $07
-        .byte   $02
-        .byte   $07
-        .byte   $02
-        php
-        .byte   $02
-        ora     #$01
-        asl     a
-        ora     ($0A,x)
-        ora     ($0B,x)
-        ora     ($FF,x)
-        brk
-        ora     ($00,x)
-        .byte   $03
-        ora     ($02,x)
-        ora     ($03,x)
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $03
-        .byte   $03
-        .byte   $02
-        .byte   $04
-        .byte   $02
-        .byte   $04
-        .byte   $02
-        ora     $02
-        ora     $02
-        asl     $02
-        asl     $02
-        .byte   $07
-        .byte   $02
-        php
-        ora     ($08,x)
-        .byte   $02
-        ora     #$01
-        ora     #$02
-        asl     a
-        ora     ($FF,x)
-        brk
-        ora     ($00,x)
-        .byte   $03
-        ora     ($02,x)
-        ora     ($03,x)
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $03
-        .byte   $03
-        .byte   $02
-        .byte   $03
-        .byte   $02
-        .byte   $04
-        .byte   $02
-        .byte   $04
-        .byte   $02
-        ora     $02
-        ora     $02
-        asl     $02
-        asl     $02
-        .byte   $07
-        ora     ($07,x)
-        .byte   $02
-        php
-        ora     ($08,x)
-        .byte   $02
-        ora     #$01
-        .byte   $FF
-        brk
-        ora     ($00,x)
-        .byte   $03
-        brk
-        .byte   $03
-        ora     ($03,x)
-        ora     ($03,x)
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $03
-        .byte   $03
-        .byte   $02
-        .byte   $03
-        .byte   $02
-        .byte   $04
-        .byte   $02
-        .byte   $04
-        .byte   $02
-        .byte   $04
-        .byte   $02
-        ora     $02
-        ora     $02
-        asl     $01
-        asl     $02
-        .byte   $07
-        ora     ($07,x)
-        ora     ($08,x)
-        ora     ($08,x)
-        ora     ($FF,x)
-        brk
-        ora     ($00,x)
-        .byte   $03
-        brk
-        .byte   $03
-        ora     ($02,x)
-        ora     ($03,x)
-        .byte   $01
-L050A:  .byte   $03
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $03
-        .byte   $03
-        .byte   $02
-        .byte   $03
-        .byte   $02
-        .byte   $03
-        .byte   $02
-        .byte   $04
-        ora     ($04,x)
-        .byte   $02
-        .byte   $04
-        .byte   $02
-        ora     $01
-        ora     $01
-        ora     $02
-        asl     $01
-        asl     $01
-        .byte   $FF
-        ora     ($01,x)
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($03,x)
-        ora     ($03,x)
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $03
-        .byte   $02
-        .byte   $03
-        .byte   $02
-        .byte   $03
-        .byte   $02
-        .byte   $03
-        .byte   $02
-        .byte   $04
-        ora     ($04,x)
-        ora     ($04,x)
-        .byte   $02
-        .byte   $04
-        .byte   $02
-        ora     $01
-        ora     $01
-        .byte   $FF
-        ora     ($01,x)
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($03,x)
-        ora     ($03,x)
-        ora     ($03,x)
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $03
-        ora     ($03,x)
-        ora     ($03,x)
-        ora     ($03,x)
-        .byte   $02
-        .byte   $03
-        .byte   $02
-        .byte   $04
-        ora     ($04,x)
-        ora     ($04,x)
-        ora     ($FF,x)
-        ora     ($01,x)
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        .byte   $02
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($FF,x)
-        ora     ($01,x)
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        ora     ($01,x)
-        ora     ($01,x)
-        ora     ($01,x)
-        ora     ($01,x)
-        ora     ($01,x)
-        ora     ($01,x)
-        ora     ($01,x)
-        ora     ($01,x)
-        ora     ($01,x)
-        ora     ($01,x)
-        .byte   $FF
-        .byte   $07
-        php
-        brk
-        .byte   $12
-        .byte   $04
-        ora     L050A
-        .byte   $FF
-        .byte   $07
-        .byte   $07
-        brk
-        bpl     L05E5
-        .byte   $0F
-        .byte   $07
-        asl     a
-L05E5:  .byte   $0B
-        .byte   $04
-        .byte   $FF
-        brk
-        ora     ($00,x)
-        asl     L0E02
-        ora     $0D
-        ora     #$08
-        .byte   $0C
-        .byte   $03
-        .byte   $FF
-        brk
-        ora     ($00,x)
-        .byte   $07
-        .byte   $02
-        .byte   $0C
-        .byte   $04
-        .byte   $0C
-        asl     $0C
-        ora     #$07
-        .byte   $0B
-        .byte   $03
-        .byte   $FF
-        brk
-        .byte   $04
-L0606:  ora     ($09,x)
-        .byte   $03
-        .byte   $0B
-        ora     $0A
-        .byte   $07
-        ora     #$09
-        .byte   $07
-        .byte   $0B
-        asl     $FF
-        brk
-        .byte   $03
-        ora     ($06,x)
-        .byte   $03
-        php
-        ora     $09
-        asl     $09
-        php
-        php
-        asl     a
-        asl     $0C
-        ora     $FF
-        brk
-        .byte   $02
-        ora     ($04,x)
-        .byte   $03
-        asl     $04
-        php
-        ora     $09
-        .byte   $07
-        php
-        php
-        php
-        ora     #$07
-        .byte   $0B
-        asl     $FF
-        brk
-        .byte   $02
-        ora     ($03,x)
-        .byte   $02
-        .byte   $04
-        .byte   $04
-        ora     $05
-        asl     $06
-        .byte   $07
-        .byte   $07
-        .byte   $07
-        php
-        .byte   $07
-        asl     a
-        ora     $0B
-        ora     $FF
-        brk
-        ora     ($01,x)
-        .byte   $02
-        .byte   $02
-        .byte   $03
-        .byte   $03
-        .byte   $04
-        .byte   $04
-        ora     $05
-        asl     $07
-        asl     $08
-        asl     $09
-        ora     $0A
-        ora     $0C
-        .byte   $03
-        .byte   $FF
-        brk
-        ora     ($01,x)
-        .byte   $02
-        .byte   $02
-        .byte   $03
-        .byte   $03
-        .byte   $03
-        .byte   $04
-        .byte   $04
-        ora     $05
-        ora     $07
-        asl     $07
-        .byte   $07
-        .byte   $07
-        php
-        asl     $09
-        asl     $0C
-        .byte   $03
-        .byte   $FF
-        brk
-        ora     ($01,x)
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $03
-        .byte   $03
-        .byte   $04
-        .byte   $04
-        ora     $04
-        ora     $06
-        asl     $06
-        .byte   $07
-        asl     $08
-        ora     $09
-        ora     $0B
-        .byte   $03
-        .byte   $FF
-        brk
-        ora     ($01,x)
-        .byte   $02
-        ora     ($03,x)
-        .byte   $02
-        .byte   $03
-        .byte   $03
-        .byte   $04
-        .byte   $04
-        .byte   $04
-        .byte   $04
-        ora     $05
-        asl     $06
-        asl     $07
-        ora     $07
-        asl     $08
-        ora     $0A
-        .byte   $03
-        .byte   $FF
-        brk
-        ora     ($01,x)
-        ora     ($01,x)
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $03
-        .byte   $02
-        .byte   $03
-        .byte   $04
-        .byte   $04
-        .byte   $04
-        .byte   $04
-        ora     $05
-        ora     $06
-        ora     $06
-        ora     $07
-        ora     $08
-        .byte   $04
-        asl     a
-        .byte   $02
-        .byte   $FF
-        brk
-        ora     ($01,x)
-        ora     ($01,x)
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $03
-        .byte   $03
-        .byte   $04
-        .byte   $04
-        .byte   $04
-        .byte   $04
-        ora     $05
-        ora     $05
-        asl     $06
-        ora     $06
-        ora     $07
-        ora     $08
-        .byte   $04
-        asl     a
-        .byte   $02
-        .byte   $FF
-        brk
-        ora     ($01,x)
-        ora     ($01,x)
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $03
-        .byte   $03
-        .byte   $03
-        .byte   $03
-        .byte   $03
-        .byte   $04
-        .byte   $03
-        .byte   $04
-        .byte   $04
-        ora     $04
-        ora     $05
-        asl     $04
-        asl     $05
-        .byte   $07
-        .byte   $04
-        ora     #$02
-        .byte   $FF
-        brk
-        ora     ($00,x)
-        .byte   $02
-        ora     ($02,x)
-        ora     ($02,x)
-        .byte   $02
-        .byte   $02
-        .byte   $02
-        .byte   $03
-        .byte   $03
-        .byte   $03
-        .byte   $03
-        .byte   $04
-        .byte   $03
-        ora     $04
-        .byte   $04
-        .byte   $04
-        ora     $05
-        ora     $05
-        ora     $06
-        .byte   $04
-        .byte   $07
-        .byte   $03
-        ora     #$01
-        .byte   $FF
-        brk
-        ora     ($00,x)
-        .byte   $02
-        ora     ($01,x)
-        ora     ($02,x)
-        ora     ($03,x)
-        .byte   $02
-        .byte   $03
-        .byte   $02
-        .byte   $03
-        .byte   $02
-        .byte   $04
-        .byte   $02
-        ora     $03
-        ora     $03
-        ora     $03
-        asl     $04
-        ora     $04
-        ora     $05
-        .byte   $04
-        asl     $03
-        php
-        ora     ($FF,x)
-        brk
-        ora     ($00,x)
-        .byte   $02
-        brk
-        .byte   $02
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($03,x)
-        ora     ($04,x)
-        .byte   $02
-        .byte   $03
-        .byte   $02
-        .byte   $04
-        .byte   $02
-        .byte   $04
-        .byte   $02
-        ora     $03
-        .byte   $04
-        .byte   $03
-        ora     $03
-        ora     $04
-        .byte   $04
-        ora     $03
-        .byte   $07
-        ora     ($FF,x)
-        brk
-        ora     ($00,x)
-        .byte   $02
-        brk
-        .byte   $02
-        brk
-        .byte   $03
-        ora     ($02,x)
-        ora     ($03,x)
-        ora     ($03,x)
-        ora     ($04,x)
-        ora     ($04,x)
-        ora     ($05,x)
-        .byte   $02
-        .byte   $04
-        .byte   $02
-        ora     $02
-        ora     $02
-        ora     $03
-        .byte   $04
-        .byte   $04
-        .byte   $03
-        asl     $01
-        .byte   $FF
-        ora     ($01,x)
-        ora     ($01,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($03,x)
-        ora     ($03,x)
-        ora     ($04,x)
-        .byte   $02
-        .byte   $03
-        .byte   $02
-        .byte   $03
-        .byte   $02
-        .byte   $04
-        .byte   $02
-        .byte   $04
-        .byte   $02
-        ora     $02
-        ora     $02
-        ora     $03
-        .byte   $03
-        .byte   $03
-        .byte   $03
-        .byte   $04
-        ora     ($04,x)
-        ora     ($FF,x)
-        ora     ($01,x)
-        ora     ($01,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($03,x)
-        ora     ($03,x)
-        ora     ($03,x)
-        ora     ($03,x)
-        ora     ($04,x)
-        ora     ($04,x)
-        ora     ($04,x)
-        ora     ($05,x)
-        ora     ($05,x)
-        .byte   $02
-        .byte   $03
-        .byte   $02
-        .byte   $03
-        .byte   $03
-        ora     ($03,x)
-        ora     ($FF,x)
+;;; Dial needle pixel lists
+ND0400: .byte   $00, $03, $00, $04, $00, $05, $01, $05, $02, $04, $03, $04, $05, $03, $06, $03, $07, $03, $08, $03, $09, $03, $0a, $02, $0c, $01, $0d, $01, $0e, $01, $ff
+ND041F: .byte   $00, $03, $00, $04, $00, $04, $01, $04, $02, $04, $03, $04, $04, $03, $05, $03, $06, $03, $07, $03, $08, $02, $09, $02, $0a, $02, $0b, $02, $0c, $01, $0d, $01, $ff
+ND0440: .byte   $00, $03, $00, $04, $00, $04, $01, $04, $02, $04, $03, $03, $03, $04, $04, $03, $05, $03, $06, $03, $07, $02, $08, $02, $09, $02, $09, $02, $0a, $02, $0b, $01, $0c, $01, $ff
+ND0463: .byte   $00, $03, $00, $04, $00, $04, $01, $04, $01, $04, $02, $04, $03, $03, $04, $03, $04, $03, $05, $03, $06, $02, $07, $02, $07, $02, $08, $02, $09, $01, $0a, $01, $0a, $01, $0b, $01, $ff
+ND0488: .byte   $00, $01, $00, $03, $01, $02, $01, $03, $02, $02, $02, $03, $03, $02, $04, $02, $04, $02, $05, $02, $05, $02, $06, $02, $06, $02, $07, $02, $08, $01, $08, $02, $09, $01, $09, $02, $0a, $01, $ff
+ND04AF: .byte   $00, $01, $00, $03, $01, $02, $01, $03, $02, $02, $02, $03, $03, $02, $03, $02, $04, $02, $04, $02, $05, $02, $05, $02, $06, $02, $06, $02, $07, $01, $07, $02, $08, $01, $08, $02, $09, $01, $ff
+ND04D6: .byte   $00, $01, $00, $03, $00, $03, $01, $03, $01, $03, $02, $02, $02, $03, $03, $02, $03, $02, $04, $02, $04, $02, $04, $02, $05, $02, $05, $02, $06, $01, $06, $02, $07, $01, $07, $01, $08, $01, $08, $01, $ff
+ND04FF: .byte   $00, $01, $00, $03, $00, $03, $01, $02, $01, $03, $01, $03, $02, $02, $02, $02, $02, $03, $03, $02, $03, $02, $03, $02, $04, $01, $04, $02, $04, $02, $05, $01, $05, $01, $05, $02, $06, $01, $06, $01, $ff
+ND0528: .byte   $01, $01, $00, $03, $00, $03, $01, $02, $01, $02, $01, $03, $01, $03, $02, $02, $02, $02, $02, $02, $02, $02, $03, $02, $03, $02, $03, $02, $03, $02, $04, $01, $04, $01, $04, $02, $04, $02, $05, $01, $05, $01, $ff
+ND0553: .byte   $01, $01, $00, $03, $00, $03, $00, $03, $01, $02, $01, $02, $01, $03, $01, $03, $01, $03, $02, $02, $02, $02, $02, $02, $02, $02, $03, $01, $03, $01, $03, $01, $03, $02, $03, $02, $04, $01, $04, $01, $04, $01, $ff
+ND057E: .byte   $01, $01, $00, $03, $00, $03, $00, $03, $00, $03, $00, $03, $01, $02, $01, $02, $01, $02, $01, $02, $01, $02, $01, $02, $01, $02, $01, $02, $01, $02, $01, $02, $02, $01, $02, $01, $02, $01, $02, $01, $02, $01, $ff
+ND05A9: .byte   $01, $01, $00, $03, $00, $03, $00, $03, $00, $03, $00, $03, $00, $03, $00, $03, $00, $03, $00, $03, $00, $03, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $ff
+ND05D4: .byte   $07, $08, $00, $12, $04, $0d, $0a, $05, $ff
+ND05DD: .byte   $07, $07, $00, $10, $03, $0f, $07, $0a, $0b, $04, $ff
+ND05E8: .byte   $00, $01, $00, $0e, $02, $0e, $05, $0d, $09, $08, $0c, $03, $ff
+ND05F5: .byte   $00, $01, $00, $07, $02, $0c, $04, $0c, $06, $0c, $09, $07, $0b, $03, $ff
+ND0604: .byte   $00, $04, $01, $09, $03, $0b, $05, $0a, $07, $09, $09, $07, $0b, $06, $ff
+ND0613: .byte   $00, $03, $01, $06, $03, $08, $05, $09, $06, $09, $08, $08, $0a, $06, $0c, $05, $ff
+ND0624: .byte   $00, $02, $01, $04, $03, $06, $04, $08, $05, $09, $07, $08, $08, $08, $09, $07, $0b, $06, $ff
+ND0637: .byte   $00, $02, $01, $03, $02, $04, $04, $05, $05, $06, $06, $07, $07, $07, $08, $07, $0a, $05, $0b, $05, $ff
+ND064C: .byte   $00, $01, $01, $02, $02, $03, $03, $04, $04, $05, $05, $06, $07, $06, $08, $06, $09, $05, $0a, $05, $0c, $03, $ff
+ND0663: .byte   $00, $01, $01, $02, $02, $03, $03, $03, $04, $04, $05, $05, $05, $07, $06, $07, $07, $07, $08, $06, $09, $06, $0c, $03, $ff
+ND067C: .byte   $00, $01, $01, $02, $02, $02, $03, $03, $04, $04, $05, $04, $05, $06, $06, $06, $07, $06, $08, $05, $09, $05, $0b, $03, $ff
+ND0695: .byte   $00, $01, $01, $02, $01, $03, $02, $03, $03, $04, $04, $04, $04, $05, $05, $06, $06, $06, $07, $05, $07, $06, $08, $05, $0a, $03, $ff
+ND06B0: .byte   $00, $01, $01, $01, $01, $02, $02, $02, $03, $02, $03, $04, $04, $04, $04, $05, $05, $05, $06, $05, $06, $05, $07, $05, $08, $04, $0a, $02, $ff
+ND06CD: .byte   $00, $01, $01, $01, $01, $02, $02, $02, $02, $03, $03, $04, $04, $04, $04, $05, $05, $05, $05, $06, $06, $05, $06, $05, $07, $05, $08, $04, $0a, $02, $ff
+ND06EC: .byte   $00, $01, $01, $01, $01, $02, $02, $02, $02, $03, $03, $03, $03, $03, $04, $03, $04, $04, $05, $04, $05, $05, $06, $04, $06, $05, $07, $04, $09, $02, $ff
+ND070B: .byte   $00, $01, $00, $02, $01, $02, $01, $02, $02, $02, $02, $03, $03, $03, $03, $04, $03, $05, $04, $04, $04, $05, $05, $05, $05, $05, $06, $04, $07, $03, $09, $01, $ff
+ND072C: .byte   $00, $01, $00, $02, $01, $01, $01, $02, $01, $03, $02, $03, $02, $03, $02, $04, $02, $05, $03, $05, $03, $05, $03, $06, $04, $05, $04, $05, $05, $04, $06, $03, $08, $01, $ff
+ND074F: .byte   $00, $01, $00, $02, $00, $02, $01, $02, $01, $02, $01, $03, $01, $04, $02, $03, $02, $04, $02, $04, $02, $05, $03, $04, $03, $05, $03, $05, $04, $04, $05, $03, $07, $01, $ff
+ND0772: .byte   $00, $01, $00, $02, $00, $02, $00, $03, $01, $02, $01, $03, $01, $03, $01, $04, $01, $04, $01, $05, $02, $04, $02, $05, $02, $05, $02, $05, $03, $04, $04, $03, $06, $01, $ff
+ND0795: .byte   $01, $01, $01, $01, $01, $02, $01, $02, $01, $03, $01, $03, $01, $04, $02, $03, $02, $03, $02, $04, $02, $04, $02, $05, $02, $05, $02, $05, $03, $03, $03, $03, $04, $01, $04, $01, $ff
+ND07BA: .byte   $01, $01, $01, $01, $01, $02, $01, $02, $01, $02, $01, $03, $01, $03, $01, $03, $01, $03, $01, $04, $01, $04, $01, $04, $01, $05, $01, $05, $02, $03, $02, $03, $03, $01, $03, $01, $ff
+
         ror     $6A6C
         pla
         ror     $64
@@ -1629,8 +773,10 @@ L0A33:  brk
         brk
         brk
         brk
-L0A3B:  brk
-L0A3C:  brk
+
+IndicatorDialNeedlePos:         .byte   0
+IndicatorDialNeedleIndex:       .byte   0
+
 L0A3D:  brk
         brk
 PixelListXHi:  brk
@@ -2364,7 +1510,7 @@ L0DFD:  .byte   $FF
         .byte   $FC
         .byte   $07
         brk
-L0E02:  brk
+        brk
         .byte   $FC
         .byte   $07
         ora     ($00,x)
@@ -2383,7 +1529,7 @@ L0E02:  brk
         .byte   $FC
         .byte   $07
         ora     $01
-        sbc     L0606,x
+        sbc     $0606,x
         ora     ($FD,x)
         asl     $07
         ora     ($FD,x)
@@ -2421,57 +1567,10 @@ L0E02:  brk
         inc     $FBBB,x
         tsx
         ldx     $FEBE,y
-        ora     ($01,x)
-        ora     ($01,x)
-        ora     ($01,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        brk
-        .byte   $04
-        brk
-        .byte   $04
-        brk
-        .byte   $04
-        brk
-        .byte   $04
-        brk
-        ora     $00
-        ora     $00
-        ora     $01
-        .byte   $03
-        ora     ($03,x)
-        .byte   $02
-        ora     ($02,x)
-        ora     ($FF,x)
-        ora     ($01,x)
-        ora     ($01,x)
-        ora     ($01,x)
-        ora     ($01,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        ora     ($02,x)
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        brk
-        .byte   $03
-        brk
-        .byte   $04
-        brk
-        .byte   $04
-        brk
-        .byte   $04
-        brk
-        .byte   $04
-        brk
-        .byte   $03
-        ora     ($02,x)
-        ora     ($01,x)
-        ora     ($01,x)
-        .byte   $FF
+
+;;; Dial needle pixel lists
+ND0E50: .byte   $01, $01, $01, $01, $01, $01, $01, $02, $01, $02, $01, $02, $01, $02, $00, $04, $00, $04, $00, $04, $00, $04, $00, $05, $00, $05, $00, $05, $01, $03, $01, $03, $02, $01, $02, $01, $ff
+ND0E75: .byte   $01, $01, $01, $01, $01, $01, $01, $01, $01, $02, $01, $02, $01, $02, $00, $03, $00, $03, $00, $03, $00, $04, $00, $04, $00, $04, $00, $04, $00, $03, $01, $02, $01, $01, $01, $01, $ff
 
 ;;; HBASH table
 
@@ -2690,7 +1789,7 @@ L13EE:  .byte   0, 2, 4, 6, 1, 3, 5, 7
         bpl     L143A
         .byte   $02
         php
-        jsr     L0401
+        jsr     $0401
         bpl     L1441
         .byte   $02
         php
@@ -3421,7 +2520,12 @@ L187B:  ldy     $C5
         inx
 L188C:  rts
 
+;;; ============================================================
+
 ;;; 188D: UpdateAltimeterIndicator
+.proc UpdateAltimeterIndicator
+        .refto UpdateAltimeterIndicator
+
         lda     L0A12
         tax
         lsr     a
@@ -3452,33 +2556,45 @@ L188C:  rts
         sta     $C3
         rts
 
-        ldx     #$00
-        lda     L02A2,x
+        ldx     #$00            ; needle index
+        lda     IndicatorDialNeedleLastValue,x
         cmp     $28
         bne     L18C0
         rts
 
-L18C0:  jsr     L1931
-        ldx     #$01
-        lda     L02A2,x
-        jsr     L1931
+L18C0:  jsr     DrawIndicatorDialNeedle
+        ldx     #$01            ; needle index
+        lda     IndicatorDialNeedleLastValue,x
+        jsr     DrawIndicatorDialNeedle
         lda     $29
-        ldx     #$01
-        jsr     L18D6
+        ldx     #$01            ; needle index
+        jsr     DrawIndicatorDialNeedleHelper
         lda     $28
         ldx     #$00
-L18D6:  sta     L02A2,x
-        jsr     L1931
-L18DC:  rts
+.endproc
 
-;;; 18DD: UpdateAirspeedIndicator
+;;; ============================================================
+
+;;; some common code
+
+DrawIndicatorDialNeedleHelper:
+        sta     IndicatorDialNeedleLastValue,x
+        jsr     DrawIndicatorDialNeedle
+
+HandyRTS:
+        rts
+
+;;; ============================================================
+
+.proc UpdateAirspeedIndicator
+        .refto UpdateAirspeedIndicator
         lda     $FB
         lsr     a
-        bcc     L18DC
+        bcc     HandyRTS
         ldx     #$02
-        lda     L02A2,x
+        lda     IndicatorDialNeedleLastValue,x
         cmp     L0A33
-        beq     L18DC
+        beq     HandyRTS
         sta     $B6
         jsr     L190C
 
@@ -3497,22 +2613,27 @@ L1902:  inx
         txa
         clc
         adc     $B6
-        ldx     #$02
-        sta     L02A2,x
+        ldx     #$02            ; needle index
+        sta     IndicatorDialNeedleLastValue,x
 
 L190C:  cmp     #$58
         bcc     L1912
         sbc     #$58
-L1912:  jmp     L1931
+L1912:  jmp     DrawIndicatorDialNeedle
+.endproc
 
-;;; 1915: UpdateVerticalSpeedIndicator
-        ldx     #$03
-        lda     $02A2,x
+;;; ============================================================
+
+.proc UpdateVerticalSpeedIndicator
+        .refto UpdateVerticalSpeedIndicator
+
+        ldx     #$03            ; needle index
+        lda     IndicatorDialNeedleLastValue,x
         cmp     $2A
-        beq     L18DC
+        beq     HandyRTS
         php
         pha
-        jsr     L1931
+        jsr     DrawIndicatorDialNeedle
         pla
         plp
         bcc     L192A
@@ -3520,68 +2641,93 @@ L1912:  jmp     L1931
         sbc     #$02
 L192A:  clc
         adc     #$01
-        ldx     #$03
-        bne     L18D6
+        ldx     #$03            ; needle index
+        bne     DrawIndicatorDialNeedleHelper
+        ;; fall through to `DrawIndicatorDialNeedle`
+.endproc
 
-;;; Generic indicator logic???
+;;; ============================================================
 
-L1931:  sta     L0A3B
-        stx     L0A3C
-        lda     #$B6
-        sta     $94
-        lda     #$02
-        sta     $95
-        lda     L02B1,x
+;;; Generic indicator logic
+;;; Inputs:
+;;;     A = ???
+;;;     X = needle index (0=alt1, 1=alt2, 2=airspeed, 3=vertical, 4=???)
+
+.proc DrawIndicatorDialNeedle
+        sta     IndicatorDialNeedlePos
+        stx     IndicatorDialNeedleIndex           ; needle index
+
+        NeedlePosTable := $94
+
+
+        ;; Defaults for thin needle
+        lda     #<IndicatorDialThinNeedleTable
+        sta     NeedlePosTable
+        lda     #>IndicatorDialThinNeedleTable
+        sta     NeedlePosTable+1
+
+        lda     IndicatorDialNeedleStyle,x
         beq     L194C
-        lda     #$E6
-        sta     $94
-        lda     #$02
-        sta     $95
-L194C:  lda     L02A7,x
+        ;; thick needle
+        lda     #<IndicatorDialThickNeedleTable
+        sta     NeedlePosTable
+        lda     #>IndicatorDialThickNeedleTable
+        sta     NeedlePosTable+1
+
+L194C:
+        lda     IndicatorDialNeedleX,x
         sta     $A5
-        lda     L02AC,x
+        lda     IndicatorDialNeedleY,x
         sta     $A7
-        lda     L0A3B
+
+        ;; Determine quadrant
+        lda     IndicatorDialNeedlePos
         cmp     #$42
         bcs     L198F
         cmp     #$2C
         bcs     L1980
         cmp     #$16
         bcs     L1971
-        jsr     L19A9
-        jsr     L19DB
-        lda     L0A3B
+
+        jsr     SetUpForINXAndADC
+        jsr     SetUpForDEC
+        lda     IndicatorDialNeedlePos
         jmp     L199B
 
-L1971:  jsr     L19C2
-        jsr     L19DB
+L1971:  jsr     SetUpForDEXAndSBC
+        jsr     SetUpForDEC
         lda     #$2C
         sec
-        sbc     L0A3B
+        sbc     IndicatorDialNeedlePos
         jmp     L199B
 
-L1980:  jsr     L19C2
-        jsr     L19EA
-        lda     L0A3B
+L1980:  jsr     SetUpForDEXAndSBC
+        jsr     SetUpForINC
+        lda     IndicatorDialNeedlePos
         sec
         sbc     #$2C
         jmp     L199B
 
-L198F:  jsr     L19A9
-        jsr     L19EA
+L198F:  jsr     SetUpForINXAndADC
+        jsr     SetUpForINC
         lda     #$58
         sec
-        sbc     L0A3B
+        sbc     IndicatorDialNeedlePos
+
+        data_ptr := $96
+
+        ;; Convert adjusted pos into an index
 L199B:  asl     a
         tay
-        lda     ($94),y
-        sta     $96
+        lda     (NeedlePosTable),y
+        sta     data_ptr
         iny
-        lda     ($94),y
-        sta     $97
+        lda     (NeedlePosTable),y
+        sta     data_ptr+1
         jmp     L19F6
 
-L19A9:  lda     #OPC_INX
+SetUpForINXAndADC:
+        lda     #OPC_INX
         sta     L1A32
         lda     $A5
         clc
@@ -3594,7 +2740,8 @@ L19A9:  lda     #OPC_INX
         dec     $A5
         rts
 
-L19C2:  lda     #OPC_DEX
+SetUpForDEXAndSBC:
+        lda     #OPC_DEX
         sta     L1A32
         lda     $A5
         clc
@@ -3607,7 +2754,8 @@ L19C2:  lda     #OPC_DEX
         inc     $A5
         rts
 
-L19DB:  lda     #OPC_DEC_zp
+SetUpForDEC:
+        lda     #OPC_DEC_zp
         sta     L1A38
         lda     $A7
         clc
@@ -3616,7 +2764,8 @@ L19DB:  lda     #OPC_DEC_zp
         inc     $A7
         rts
 
-L19EA:  lda     #OPC_INC_zp
+SetUpForINC:
+        lda     #OPC_INC_zp
         sta     L1A38
         dec     $A7
         lda     $A7
@@ -3625,11 +2774,13 @@ L19EA:  lda     #OPC_INC_zp
 
 ;;; Used to draw instrument indicators - processes a table of rows/pixels
 
+        data_offset := $E7
+
 L19F6:  ldy     #$00
-        sty     $E7
-L19FA:  ldy     $E7
-        lda     ($96),y
-        bpl     L1A01
+        sty     data_offset
+L19FA:  ldy     data_offset
+        lda     (data_ptr),y
+        bpl     L1A01           ; high bit as sentinel
         rts
 
 L1A01:  clc                     ; self-modified
@@ -3661,6 +2812,7 @@ L1A32:  inx                     ; self-modified
         bne     L1A26
 L1A38:  inc     $A7             ; self-modified
         jmp     L19FA
+.endproc
 
 ;;; ============================================================
 
@@ -3904,6 +3056,7 @@ PLFuelTankIndicator:
         .byte   4, 0,0, 3,0, 0,2, 3,2
 
 .proc UpdateFuelTankIndicator
+        .refto UpdateFuelTankIndicator
         ldx     #$FB
         ldy     #$A4
         lda     #<PLFuelTankIndicator
