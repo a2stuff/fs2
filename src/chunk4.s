@@ -2566,7 +2566,8 @@ L18C0:  jsr     DrawIndicatorDialNeedle
         ldx     #$01            ; needle index
         lda     IndicatorDialNeedleLastValue,x
         jsr     DrawIndicatorDialNeedle
-        lda     $29
+Init:   lda     $29
+        .refto Init
         ldx     #$01            ; needle index
         jsr     DrawIndicatorDialNeedleHelper
         lda     $28
@@ -2613,7 +2614,8 @@ L1902:  inx
         txa
         clc
         adc     $B6
-        ldx     #$02            ; needle index
+Init:   ldx     #$02            ; needle index
+        .refto Init
         sta     IndicatorDialNeedleLastValue,x
 
 L190C:  cmp     #$58
@@ -2641,7 +2643,8 @@ L1912:  jmp     DrawIndicatorDialNeedle
         sbc     #$02
 L192A:  clc
         adc     #$01
-        ldx     #$03            ; needle index
+Init:   ldx     #$03            ; needle index
+        .refto Init
         bne     DrawIndicatorDialNeedleHelper
         ;; fall through to `DrawIndicatorDialNeedle`
 .endproc
@@ -2823,7 +2826,8 @@ L1A38:  inc     $A7             ; self-modified
         lda     L0A42
         jsr     L1A48
         pla
-        sta     L0A42
+Init:   sta     L0A42
+        .refto Init
 L1A48:  ldx     #$64
         clc
         adc     #$9F
@@ -2842,7 +2846,8 @@ L1A48:  ldx     #$64
         lda     L0A43
         jsr     L1A62
         pla
-        sta     L0A43
+Init:   sta     L0A43
+        .refto Init
 L1A62:  clc
         adc     #$55
         tax
@@ -2868,7 +2873,8 @@ DrawPixelListHelper:
         lda     L0A45
         jsr     L1A83
         pla
-        sta     L0A45
+Init:   sta     L0A45
+        .refto Init
 L1A83:  clc
         adc     #$55
         tax
@@ -2884,7 +2890,8 @@ L1A83:  clc
         lda     L0A46
         jsr     L1A97
         pla
-        sta     L0A46
+Init:   sta     L0A46
+        .refto Init
 L1A97:  eor     #$FF
         clc
         clc                     ; ???
@@ -2903,17 +2910,19 @@ L1A97:  eor     #$FF
 
 .proc UpdateFlapsIndicator
         .refto UpdateFlapsIndicator
-
         pha
         lda     L0A47
         jsr     L1AB7
         pla
-        sta     L0A47
+Init:   sta     L0A47
+        .refto Init
 L1AB7:  ldx     #$C8
         clc
         adc     #$66
         jmp     L1AE2
+.endproc
 
+;;; ???
         pha
         lda     L0A48
         jsr     L1ACA
@@ -2924,6 +2933,7 @@ L1ACA:  ldx     #$C8
         adc     #$8E
         jmp     L1AE2
 
+;;; ???
         pha
         lda     L0A49
         jsr     L1ADD
@@ -2932,12 +2942,13 @@ L1ACA:  ldx     #$C8
 L1ADD:  ldx     #$D0
         clc
         adc     #$AF
+        ;; fall through to `L1AE2`
+
 L1AE2:  tay
         lda     #<PLFlapsIndicator
         sta     PixelListData
         lda     #>PLFlapsIndicator
         jmp     DrawPixelListHelper
-.endproc
 
 ;;; ============================================================
 
@@ -2952,7 +2963,8 @@ L1AF2:  pha
         lda     L0A44
         jsr     L1AFD
         pla
-        sta     L0A44
+Init:   sta     L0A44
+        .refto Init
 L1AFD:  clc
         adc     #$0E
         tax
@@ -2977,7 +2989,8 @@ L1B16:  pha
         lda     L0A4A
         jsr     L1B3E
         pla
-        sta     L0A4A
+Init:   sta     L0A4A
+        .refto Init
         jmp     L1B3E
 
         lda     L0997
@@ -2990,7 +3003,8 @@ L1B16:  pha
         adc     #$1E
         jsr     L1B3E
         pla
-        sta     L0A4B
+Init2:  sta     L0A4B
+        .refto Init2
         clc
         adc     #$1E            ; Oil pressure X position
 L1B3E:  clc
@@ -3024,7 +3038,8 @@ L1B5F:  pha
         lda     L0A4C
         jsr     L1B86
         pla
-        sta     L0A4C
+Init:   sta     L0A4C
+        .refto Init
         jmp     L1B86
 
         lda     L099D
@@ -3036,7 +3051,8 @@ L1B5F:  pha
         adc     #$1E
         jsr     L1B86
         pla
-        sta     L0A4D
+Init2:  sta     L0A4D
+        .refto Init2
         clc
         adc     #$1E            ; Tank 2 X offset
 L1B86:  clc

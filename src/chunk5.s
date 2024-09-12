@@ -99,38 +99,39 @@ L177B           := $177B
 L180C           := $180C
 L1818           := $1818
 L1880           := $1880
-L188D           := $188D
+UpdateAltimeterIndicator                := $188D
 L18B6           := $18B6
-L18CB           := $18CB
-UpdateAirspeedIndicator         := $18DD
-L1907           := $1907
-UpdateVerticalSpeedIndicator    := $1915
-L192D           := $192D
-UpdateElevatorPositionIndicator := $1A3D
-L1A45           := $1A45
-UpdateAileronPositionIndicator  := $1A57
-L1A5F           := $1A5F
-DrawPixelListHelper             := $1A6E
-UpdateRudderPositionIndicator   := $1A78
-L1A80           := $1A80
-UpdateThrottleIndicator         := $1A8C
-L1A94           := $1A94
-UpdateFlapsIndicator            := $1AAC
-L1AB4           := $1AB4
+UpdateAltimeterIndicator_Init           := $18CB
+UpdateAirspeedIndicator                 := $18DD
+UpdateAirspeedIndicator_Init            := $1907
+UpdateVerticalSpeedIndicator            := $1915
+UpdateVerticalSpeedIndicator_Init       := $192D
+UpdateElevatorPositionIndicator         := $1A3D
+UpdateElevatorPositionIndicator_Init    := $1A45
+UpdateAileronPositionIndicator          := $1A57
+UpdateAileronPositionIndicator_Init     := $1A5F
+DrawPixelListHelper                     := $1A6E
+UpdateRudderPositionIndicator           := $1A78
+UpdateRudderPositionIndicator_Init      := $1A80
+UpdateThrottleIndicator                 := $1A8C
+UpdateThrottleIndicator_Init            := $1A94
+UpdateFlapsIndicator                    := $1AAC
+UpdateFlapsIndicator_Init               := $1AB4
 L1ABF           := $1ABF
 L1AC7           := $1AC7
 L1ADA           := $1ADA        ; Carb heat indicator???
-UpdateSlipSkidIndicator         := $1AEC
-L1AFA           := $1AFA
-UpdateOilTempAndPressureGauges  := $1B0C
-L1B1E           := $1B1E
+UpdateSlipSkidIndicator                 := $1AEC
+UpdateSlipSkidIndicator_Init            := $1AFA
+UpdateOilTempAndPressureGauges          := $1B0C
+UpdateOilTempAndPressureGauges_Init     := $1B1E
 L1B24           := $1B24
-L1B38           := $1B38
-UpdateFuelTankGauges            := $1B56
-L1B67           := $1B67
+UpdateOilTempAndPressureGauges_Init2    := $1B38
+UpdateFuelTankGauges                    := $1B56
+UpdateFuelTankGauges_Init               := $1B67
 L1B6D           := $1B6D
-L1B80           := $1B80
-UpdateFuelTankIndicator           := $1B9F
+UpdateFuelTankGauges_Init2              := $1B80
+UpdateFuelTankIndicator                 := $1B9F
+
 DivideByAXAndSetDigitY  := $1C73
 DrawMessageWhite        := $1C96
 DrawMessageOrange       := $1C9F
@@ -6760,7 +6761,7 @@ L93CA:  lda     $0937
         sta     $B8
         lda     #$0D
         sta     $B9
-        jsr     L188D
+        jsr     UpdateAltimeterIndicator
         tax
         ldy     $0A65
         jsr     L180C
@@ -6770,7 +6771,7 @@ L93CA:  lda     $0937
         sta     $B8
         lda     #$0D
         sta     $B9
-        jsr     L188D
+        jsr     UpdateAltimeterIndicator
         LDAX    $0A5A
         jsr     ScaleC2ByAX
         sta     $09AB
@@ -6787,7 +6788,7 @@ L93CA:  lda     $0937
         sta     $B8
         lda     #$93
         sta     $B9
-        jsr     L188D
+        jsr     UpdateAltimeterIndicator
         LDAX    $C2
         sta     L00A5
         stx     $A6
@@ -6977,7 +6978,7 @@ L9662:  lda     $0A0D
         sta     $B8
         lda     #$0D
         sta     $B9
-        jsr     L188D
+        jsr     UpdateAltimeterIndicator
         LDAX    $0A05
         jsr     ScaleC2ByAXIntoC2
         LDAX    $09F4
@@ -7010,7 +7011,7 @@ L96E0:  lda     #$C2
         sta     $B8
         lda     #$0D
         sta     $B9
-        jsr     L188D
+        jsr     UpdateAltimeterIndicator
         lda     $0899
         beq     L96F9
         LDAX    $0A0F
@@ -9459,35 +9460,35 @@ LACB4:  lda     #$00
 LACBA:  lda     #$01
         sta     $08BE
         lda     $0A33
-        jsr     L18CB
+        jsr     UpdateAltimeterIndicator_Init
         lda     $2A
-        jsr     L1907
+        jsr     UpdateAirspeedIndicator_Init
         lda     #$00
-        jsr     L192D
+        jsr     UpdateVerticalSpeedIndicator_Init
         lda     #$0A
-        jsr     L1A45
+        jsr     UpdateElevatorPositionIndicator_Init
         lda     #$0F
-        jsr     L1A5F
+        jsr     UpdateAileronPositionIndicator_Init
         lda     #$0F
-        jsr     L1A80
+        jsr     UpdateRudderPositionIndicator_Init
         lda     #$00
-        jsr     L1A94
+        jsr     UpdateThrottleIndicator_Init
         lda     #$00
-        jsr     L1AB4
+        jsr     UpdateFlapsIndicator_Init
         lda     #$05
         jsr     L1AC7
         lda     #$00
         jsr     L1ADA
         lda     #$00
-        jsr     L1AFA
+        jsr     UpdateSlipSkidIndicator_Init
         lda     #$00
-        jsr     L1B1E
+        jsr     UpdateOilTempAndPressureGauges_Init
         lda     #$00
-        jsr     L1B38
+        jsr     UpdateOilTempAndPressureGauges_Init2
         lda     #$00
-        jsr     L1B67
+        jsr     UpdateFuelTankGauges_Init
         lda     #$00
-        jsr     L1B80
+        jsr     UpdateFuelTankGauges_Init2
         jsr     DrawVOR1
         .byte   $20
 LAD0F:  .byte   $7C
