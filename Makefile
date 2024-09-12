@@ -10,13 +10,11 @@ OUTDIR = out
 # Headers
 HEADERS = src/macros.inc
 
-TARGETS = $(OUTDIR)/chunk1.built \
-	$(OUTDIR)/chunk2.built \
-	$(OUTDIR)/chunk3.built \
-	$(OUTDIR)/chunk4.built \
-	$(OUTDIR)/chunk5.built \
+CHUNKS = $(OUTDIR)/1_4000-5fff $(OUTDIR)/2_f600-fbff $(OUTDIR)/3_d300-f3ff $(OUTDIR)/4_0200-25ff $(OUTDIR)/5_6000-b3df
 
-.PHONY: clean all validate
+TARGETS = $(OUTDIR)/complete.built
+
+.PHONY: clean all chunks validate
 all: $(OUTDIR) $(TARGETS)
 
 $(OUTDIR):
@@ -24,44 +22,50 @@ $(OUTDIR):
 
 clean:
 	rm -f $(OUTDIR)/*.o
+	rm -f $(OUTDIR)/*.built
 	rm -f $(OUTDIR)/*.list
 	rm -f $(OUTDIR)/?_????-????
 	rm -f $(OUTDIR)/*.rev
 	rm -f $(OUTDIR)/*.pak
-	rm -f $(TARGETS)
 	rm -f $(OUTDIR)/prorwts2\#0624f8
 	rm -f $(OUTDIR)/fs2\#0624f8
 
-$(OUTDIR)/chunk1.built: res/loading_panel.bin
-	cp res/loading_panel.bin $(OUTDIR)/chunk1.built
+# Target that builds all the chunks at once as a single output; this
+# eases sharing definitions across chunks.
+$(OUTDIR)/complete.built: $(OUTDIR)/complete.o src/asm.cfg
+	ld65 $(LDFLAGS) -o $@ $<
 
-$(OUTDIR)/%.o: src/%.s $(HEADERS)
+$(OUTDIR)/complete.o: src/complete.s src/chunk2.s src/chunk3.s src/chunk4.s src/chunk5.s $(HEADERS)
 	ca65 $(CAFLAGS) --listing $(basename $@).list -o $@ $<
 
-$(OUTDIR)/%.built: $(OUTDIR)/%.o src/asm.cfg
-	ld65 $(LDFLAGS) -o $@ $<
+# Targets for individual "chunks", sliced out of the single output.
+# These are used for validating the chunks and creating a binary.
+$(OUTDIR)/1_4000-5fff: res/loading_panel.bin
+	cp $< $@
+$(OUTDIR)/2_f600-fbff: $(OUTDIR)/complete.built
+	dd if=$< of=$@ bs=1 skip=0 count=1536
+$(OUTDIR)/3_d300-f3ff: $(OUTDIR)/complete.built
+	dd if=$< of=$@ bs=1 skip=1536 count=8448
+$(OUTDIR)/4_0200-25ff: $(OUTDIR)/complete.built
+	dd if=$< of=$@ bs=1 skip=9984 count=9216
+$(OUTDIR)/5_6000-b3df: $(OUTDIR)/complete.built
+	dd if=$< of=$@ bs=1 skip=19200 count=21472
 
 # "Phony" target that verifies that built chunks exactly match the
 # original chunks of the @qkumba's ProDOS port.
-validate:
-	@diff -q chunks/1_4000-5fff out/chunk1.built > /dev/null || ( echo "Chunk 1 mismatch" && false )
-	@diff -q chunks/2_f600-fbff out/chunk2.built > /dev/null || ( echo "Chunk 2 mismatch" && false )
-	@diff -q chunks/3_d300-f3ff out/chunk3.built > /dev/null || ( echo "Chunk 3 mismatch" && false )
-	@diff -q chunks/4_0200-25ff out/chunk4.built > /dev/null || ( echo "Chunk 4 mismatch" && false )
-	@diff -q chunks/5_6000-b3df out/chunk5.built > /dev/null || ( echo "Chunk 5 mismatch" && false )
+validate: $(CHUNKS)
+	@diff -q chunks/1_4000-5fff $(OUTDIR)/1_4000-5fff > /dev/null || ( echo "Chunk 1 mismatch" && false )
+	@diff -q chunks/2_f600-fbff $(OUTDIR)/2_f600-fbff > /dev/null || ( echo "Chunk 2 mismatch" && false )
+	@diff -q chunks/3_d300-f3ff $(OUTDIR)/3_d300-f3ff > /dev/null || ( echo "Chunk 3 mismatch" && false )
+	@diff -q chunks/4_0200-25ff $(OUTDIR)/4_0200-25ff > /dev/null || ( echo "Chunk 4 mismatch" && false )
+	@diff -q chunks/5_6000-b3df $(OUTDIR)/5_6000-b3df > /dev/null || ( echo "Chunk 5 mismatch" && false )
 
 # Target that creates a FS2 binary using @qkumba's ProRWTS2, with
 # custom code for loading FS2 chunks.
 binary: $(OUTDIR)/fs2\#0624f8
 
-$(OUTDIR)/fs2\#0624f8: $(TARGETS)
-	cp $(OUTDIR)/chunk1.built $(OUTDIR)/1_4000-5fff
-	cp $(OUTDIR)/chunk2.built $(OUTDIR)/2_f600-fbff
-	cp $(OUTDIR)/chunk3.built $(OUTDIR)/3_d300-f3ff
-	cp $(OUTDIR)/chunk4.built $(OUTDIR)/4_0200-25ff
-	cp $(OUTDIR)/chunk5.built $(OUTDIR)/5_6000-b3df
+$(OUTDIR)/fs2\#0624f8: $(CHUNKS)
 	cd $(OUTDIR) && ../loader/pack.py
 	cd $(OUTDIR) && acme --report prorwts2.list ../loader/PRORWTS2.S
 	cd $(OUTDIR) && ../loader/movebytes.py
-
-
+	@echo Successfully created: $@

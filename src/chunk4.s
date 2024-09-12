@@ -1,31 +1,4 @@
-; da65 V2.19 - Git 7f1dd09bc
-; Created:    2024-08-24 11:58:16
-; Input file: ../chunks/4_0200-25ff
-; Page:       1
-
-        .setcpu "6502"
         .org $200
-        .include "macros.inc"
-
-        .refto __APPLE2__
-
-OPC_ADC_izy = $71
-OPC_SBC_izy = $F1
-OPC_CLC     = $18
-OPC_SEC     = $38
-OPC_DEX     = $CA
-OPC_INX     = $E8
-OPC_DEC_zp  = $C6
-OPC_INC_zp  = $E6
-
-L002D           := $002D
-
-HiresPageDelta  := $8D          ; Either +$20 or -$20
-
-PixelListData   := $9C          ; For `DrawPixelList`
-
-ValueForString  := $B6          ; $B6-B7
-;;; Used by `DivideByAXAndSetDigitY`
 
 ;;; chunk5 references
 LA7E2           := $A7E2        ; reset (etc) handler)
@@ -1960,12 +1933,12 @@ CharBitmapTable:
 ;;; Input: ZP locations specified by X, Y
 ;;; Output: ZP location specified by A
 ;;; Uses $C2-C6, $A5, $A7
-.scope ZPScale
+.proc ZPScale
         ;; $154A
 
         ;; $C2-C3 = $00,X
         ;; $C4-C5 = $00,Y
-        ;; $00,A = (result of jsr ScaleC2byC4)
+        ;; $00,A = (result of jsr ScaleC2ByC4)
         sta     $A5
         lda     $00,x
         sta     $C2
@@ -1975,13 +1948,13 @@ CharBitmapTable:
         sta     $C4
         lda     $01,y
         sta     $C5
-        jsr     ScaleC2byC4
+        jsr     ScaleC2ByC4
         ldy     $A5
         sta     $00,y
         stx     $01,y
         rts
 
-ScaleC2byC4:
+ScaleC2ByC4:
         lda     $C2             ; If $C2-C3 is zero...
         ora     $C3
         beq     L1575
@@ -2167,21 +2140,22 @@ L159C:  lda     $C5
         tax
         lda     $A7
         rts
-.endscope
+.endproc
+ScaleC2ByC4 := ZPScale::ScaleC2ByC4
 
 ;;; ============================================================
 
 .proc ScaleC2ByAX
         sta     $C4
         stx     $C5
-        jmp     ZPScale::ScaleC2byC4
+        jmp     ZPScale::ScaleC2ByC4
 .endproc
 
 .proc ScaleC2ByAXIntoC2
         .refto ScaleC2ByAXIntoC2
         sta     $C4
         stx     $C5
-        jsr     ZPScale::ScaleC2byC4
+        jsr     ZPScale::ScaleC2ByC4
         sta     $C2
         stx     $C3
         rts
@@ -3445,6 +3419,11 @@ L1DA1:  jsr     L1C9A
 L1DA7:  rts
 .endproc
 
+DrawMessageOrange := DrawMessage::DrawMessageOrange
+DrawMessageWhite := DrawMessage::DrawMessageWhite
+DrawMultiMessage := DrawMessage::DrawMultiMessage
+DivideByAXAndSetDigitY := DrawMessage::DivideByAXAndSetDigitY
+
 ;;; Clear viewport on both hires screens
 .proc ClearViewportsToBlack
         .refto ClearViewportsToBlack
@@ -3843,5 +3822,5 @@ L1FFB:  rts
         brk
         brk
 
-        .assert * = $2000, error, "mismatch"
+        .assert * = $2000, error, "EOF mismatch"
         .incbin "../res/c4_hires.bin"

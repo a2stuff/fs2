@@ -1,41 +1,8 @@
-; da65 V2.19 - Git 7f1dd09bc
-; Created:    2024-08-24 11:55:32
-; Input file: ../chunks/2_f600-fbff
-; Page:       1
-
-
-        .setcpu "6502"
         .org $f600
-
-        .include "macros.inc"
-
-        .refto __APPLE2__
-
-LCBANK2         := $C083
-LCBANK1         := $C08B
 
 ;;; Possible chunk4 references
 L168F           := $168F
-L1763           := $1763
-L1768           := $1768
-L180C           := $180C
-L1818           := $1818
 L1A6E           := $1A6E
-DrawMultiMessage        := $1D92
-ClearViewportsToBlack   := $1DA8
-
-;;; Possible chunk5 references
-L6006           := $6006
-L6C89           := $6C89
-TogglePause     := $89D0
-MoreThrottle    := $90C0
-LessThrottle    := $90D3
-YokeLeft        := $91F7
-YokeCenter      := $920C
-YokeRight       := $924C
-YokeUp          := $92DB
-LA23D           := $A23D
-LA4D2           := $A4D2
 
 
 msg_courseplotter:
@@ -756,3 +723,5 @@ LFB7B:  rts
         .byte   $FF
         brk
         .byte   $76
+
+        .assert * = $FC00, error, "EOF mismatch"

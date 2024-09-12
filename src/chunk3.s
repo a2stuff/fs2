@@ -1,44 +1,14 @@
-; da65 V2.19 - Git 7f1dd09bc
-; Created:    2024-08-24 11:58:04
-; Input file: ../chunks/3_d300-f3ff
-; Page:       1
-
-
-        .setcpu "6502"
         .org $d300
-
-        .include "macros.inc"
-
-        .refto __APPLE2__
-
 
 L002D           := $002D
 L0045           := $0045
 L00BA           := $00BA
 
-ValueForString := $B6
-;;; Used by `Set3DigitString` and `DivideByAXAndSetDigitY`
-
 ;;; Possible chunk4 references
 L03F0           := $03F0
-HiresTableHi    := $0E9A
-HiresTableLo    := $0F5A
-HiresPixelToByteTable    := $101A
-HiresPixelToBitMaskTable := $1132
 L1569           := $1569
-MultiplyC2ByAX          := $168F
-MultiplyC2ByAXIntoC2    := $1696
 L1735           := $1735
-L1763           := $1763
-L1768           := $1768
-L180C           := $180C
-DrawIndicatorDialNeedle := $1931
 L1AD2           := $1AD2
-DrawMessage     := $1C0C
-DrawMessageWhite        := $1C96
-DrawMessageOrange       := $1C9F
-DrawMultiMessage        := $1D92
-ClearViewportsToBlack   := $1DA8
 L1EC6           := $1EC6
 L1FC4           := $1FC4
 L1FE0           := $1FE0
@@ -47,19 +17,7 @@ L1FE0           := $1FE0
 L6018           := $6018
 L601B           := $601B
 L601E           := $601E
-L6734           := $6734
-L67FD           := $67FD
 L6D4B           := $6D4B
-TogglePauseRelay        := $8743
-Set3DigitStringRelay    := $8773
-L8CC6           := $8CC6
-SetInputModeAndCounter  := $9071
-L9093           := $9093
-L9100           := $9100
-L91DE           := $91DE
-Set3DigitString         := $9CFC
-DrawCarbHeatAndLights   := $9F10
-LA23D           := $A23D
 
         .byte   $FF
         .byte   $FF
@@ -485,7 +443,7 @@ LD9FE:  lda     LD9E6
         ror     $C2
         ror     $BE
         LDAX    #$58
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         eor     #$FF
         clc
         adc     #$58
@@ -511,7 +469,7 @@ LDA53:  lda     $BE
         and     #$7F
         sta     $C3
         LDAX    #$168
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         STAX    ValueForString
         CALLAX  Set3DigitString, $DB24
         JUMPAX  DrawMessageOrange, mDB22
@@ -1363,9 +1321,9 @@ LE182:  sta     $C3
         lda     #$00
         sta     $C2
         LDAX    #$7D0
-        jsr     MultiplyC2ByAXIntoC2
+        jsr     ScaleC2ByAXIntoC2
         LDAX    $09A9
-        jsr     MultiplyC2ByAX
+        jsr     ScaleC2ByAX
         sta     $0A0D
         stx     $0A0E
         lda     L00BA
@@ -3807,3 +3765,5 @@ LF3A4:  lda     $8B
         .byte   $FF
         brk
         .byte   $76
+
+        .assert * = $F400, error, "EOF mismatch"

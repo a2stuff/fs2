@@ -1,59 +1,7 @@
-; da65 V2.19 - Git 7f1dd09bc
-; Created:    2024-08-24 11:58:27
-; Input file: ../chunks/5_6000-b3df
-; Page:       1
-
-
-        .setcpu "6502"
         .org $6000
-        .include "macros.inc"
-
-        .refto __APPLE2__
-
-OPC_ORA_izy = $11
-OPC_AND_izy = $31
-
-KBD             := $C000
-KBDSTRB         := $C010
-SPKR            := $C030
-TXTCLR          := $C050
-MIXCLR          := $C052
-LOWSCR          := $C054
-HISCR           := $C055
-HIRES           := $C057
-BUTN0           := $C061
-BUTN1           := $C062
-PADDL0          := $C064
-PADDL1          := $C065
-PTRIG           := $C070
-LCBANK2         := $C083
-RdROMWrRAM1     := $C089
 
 L003C           := $003C
 L00A5           := $00A5
-
-;;; Zero Page
-
-HiresPageDelta  := $8D          ; Either +$20 or -$20
-
-PixelListData   := $9C          ; For `DrawPixelList`
-
-ValueForString  := $B6     ; $B6-$B7
-;;; Used by `Set3DigitString` and `DivideByAXAndSetDigitY`
-
-InputMode       := $FA
-;;; $00 = Normal Flight
-;;; $01 = 3D View
-;;; $02 = Radar View
-;;; $03 = Magnetos / Fuel Mixture
-;;; $04 = Com Radio (upper digits)
-;;; $05 = Com Radio (lower digits)
-;;; $06 = Nav Radio (upper digits)
-;;; $07 = Nav Radio (lower digits)
-;;; $08 = Transponder
-;;; $0C = VORS
-;;; $0D = ???
-;;; $10 = Fuel Tank Select
 
 InputCounter    := $08F1
 ;;; ???
@@ -83,60 +31,17 @@ WW1AceScore     := $08C0
 WW1AceBombsStr  := $08D2
 WW1AceScoreStr  := $08DF
 
-HiresTableHi    := $0E9A
-HiresTableLo    := $0F5A
-ZPScale      := $154A
-ScaleC2ByC4          := $1569
-ScaleC2ByAX          := $168F
-ScaleC2ByAXIntoC2    := $1696
 L16A2           := $16A2
-AXDiv2          := $172C
-MultiplyAXByC2           := $1735
 L1763           := $1763
 L1768           := $1768
-L1778           := $1778
-L177B           := $177B
-L180C           := $180C
-L1818           := $1818
 L1880           := $1880
-UpdateAltimeterIndicator                := $188D
 L18B6           := $18B6
-UpdateAltimeterIndicator_Init           := $18CB
-UpdateAirspeedIndicator                 := $18DD
-UpdateAirspeedIndicator_Init            := $1907
-UpdateVerticalSpeedIndicator            := $1915
-UpdateVerticalSpeedIndicator_Init       := $192D
-UpdateElevatorPositionIndicator         := $1A3D
-UpdateElevatorPositionIndicator_Init    := $1A45
-UpdateAileronPositionIndicator          := $1A57
-UpdateAileronPositionIndicator_Init     := $1A5F
-DrawPixelListHelper                     := $1A6E
-UpdateRudderPositionIndicator           := $1A78
-UpdateRudderPositionIndicator_Init      := $1A80
-UpdateThrottleIndicator                 := $1A8C
-UpdateThrottleIndicator_Init            := $1A94
-UpdateFlapsIndicator                    := $1AAC
-UpdateFlapsIndicator_Init               := $1AB4
 L1ABF           := $1ABF
 L1AC7           := $1AC7
 L1ADA           := $1ADA        ; Carb heat indicator???
-UpdateSlipSkidIndicator                 := $1AEC
-UpdateSlipSkidIndicator_Init            := $1AFA
-UpdateOilTempAndPressureGauges          := $1B0C
-UpdateOilTempAndPressureGauges_Init     := $1B1E
 L1B24           := $1B24
-UpdateOilTempAndPressureGauges_Init2    := $1B38
-UpdateFuelTankGauges                    := $1B56
-UpdateFuelTankGauges_Init               := $1B67
 L1B6D           := $1B6D
-UpdateFuelTankGauges_Init2              := $1B80
-UpdateFuelTankIndicator                 := $1B9F
 
-DivideByAXAndSetDigitY  := $1C73
-DrawMessageWhite        := $1C96
-DrawMessageOrange       := $1C9F
-DrawMultiMessage        := $1D92
-ClearViewportsToBlack   := $1DA8
 
 ;;; Jump-table, which is patched at runtime
 L1EAD           := $1EAD
@@ -145,7 +50,6 @@ L1EB3           := $1EB3
 L1EBC           := $1EBC
 
 L1EC4           := $1EC4
-L1F89           := $1F89
 
 ;;; Possible chunk5 references - overlays?
 LB808           := $B808
@@ -176,7 +80,6 @@ LF261           := $F261
 LF3CA           := $F3CA
 
 ;;; Possible chunk2 references
-LF71C           := $F71C
 LF7E2           := $F7E2
 LF97A           := $F97A
 LF9B5           := $F9B5
@@ -2752,7 +2655,7 @@ L7470:  SUB16   $CF, $D8, $C4
         LDAX    $C2
         sta     $A9
         stx     $AA
-        jsr     ScaleC2ByC4
+        jsr     ZPScale::ScaleC2ByC4
         clc
         adc     $D4
         sta     $D4
@@ -2762,7 +2665,7 @@ L7470:  SUB16   $CF, $D8, $C4
         SUB16   $CF, $D8, $C4
         LDAX    $A9
         STAX    $C2
-        jsr     ScaleC2ByC4
+        jsr     ZPScale::ScaleC2ByC4
         clc
         adc     $D8
         sta     $D8
@@ -2800,7 +2703,7 @@ L74EE:  SUB16   $CF, $D8, $C4
         SUB16   $CB, $D4, $C4
         LDAX    $C2
         STAX    $A9
-        jsr     ScaleC2ByC4
+        jsr     ZPScale::ScaleC2ByC4
         clc
         adc     $D4
         sta     $D4
@@ -2810,7 +2713,7 @@ L74EE:  SUB16   $CF, $D8, $C4
         SUB16   $CF, $D8, $C4
         LDAX    $A9
         STAX    $C2
-        jsr     ScaleC2ByC4
+        jsr     ZPScale::ScaleC2ByC4
         clc
         adc     $D8
         sta     $D8
@@ -2853,7 +2756,7 @@ L7576:  SUB16   $CF, $D8, $C4
         SUB16   $CF, $D8, $C4
         LDAX    $C2
         STAX    $A9
-        jsr     ScaleC2ByC4
+        jsr     ZPScale::ScaleC2ByC4
         clc
         adc     $D8
         sta     $D8
@@ -2865,7 +2768,7 @@ L7576:  SUB16   $CF, $D8, $C4
         SUB16   $CD, $D6, $C4
         LDAX    $A9
         STAX    $C2
-        jsr     ScaleC2ByC4
+        jsr     ZPScale::ScaleC2ByC4
         clc
         adc     $D6
         sta     $D6
@@ -2901,7 +2804,7 @@ L75F4:  SUB16   $CF, $D8, $C4
         SUB16   $CD, $D6, $C4
         LDAX    $C2
         STAX    $A9
-        jsr     ScaleC2ByC4
+        jsr     ZPScale::ScaleC2ByC4
         clc
         adc     $D6
         sta     $D6
@@ -2911,7 +2814,7 @@ L75F4:  SUB16   $CF, $D8, $C4
         SUB16   $CF, $D8, $C4
         LDAX    $A9
         STAX    $C2
-        jsr     ScaleC2ByC4
+        jsr     ZPScale::ScaleC2ByC4
         clc
         adc     $D8
         sta     $D8
@@ -4331,7 +4234,7 @@ L813A:  lda     #$00
         STAX    $C2
         LDAX    $84
         STAX    $C4
-        jsr     ScaleC2ByC4
+        jsr     ZPScale::ScaleC2ByC4
         jsr     L8234
         ldx     #$9E
         ldy     #$7A
@@ -4345,7 +4248,7 @@ L813A:  lda     #$00
         STAX    $C2
         LDAX    $86
         STAX    $C4
-        jsr     ScaleC2ByC4
+        jsr     ZPScale::ScaleC2ByC4
         jsr     L8234
         ldx     #$9E
         ldy     #$7C
@@ -5001,6 +4904,7 @@ HorizonANDMask:
         jmp     L8AC4
 
         ;; Called from chunk3
+TogglePauseRelay:
         jmp     TogglePause
 
         jmp     LA524
@@ -5254,7 +5158,7 @@ L89A1:  lda     #$03
         sta     $60
 L89A9:  rts
 
-msg_crash:      MESSAGE $32, $14, "CRASH !!!"
+msg_crash2:     MESSAGE $32, $14, "CRASH !!!"
 
 L89B6:  lda     $0834
         bne     :+
@@ -5263,7 +5167,7 @@ L89B6:  lda     $0834
 :       lda     #$00
         sta     $0834
         jsr     ClearViewportsToBlack
-        CALLAX  DrawMessageWhite, msg_crash
+        CALLAX  DrawMessageWhite, msg_crash2
         ldx     #$01
         jmp     L9093
 
@@ -9460,35 +9364,35 @@ LACB4:  lda     #$00
 LACBA:  lda     #$01
         sta     $08BE
         lda     $0A33
-        jsr     UpdateAltimeterIndicator_Init
+        jsr     UpdateAltimeterIndicator::Init
         lda     $2A
-        jsr     UpdateAirspeedIndicator_Init
+        jsr     UpdateAirspeedIndicator::Init
         lda     #$00
-        jsr     UpdateVerticalSpeedIndicator_Init
+        jsr     UpdateVerticalSpeedIndicator::Init
         lda     #$0A
-        jsr     UpdateElevatorPositionIndicator_Init
+        jsr     UpdateElevatorPositionIndicator::Init
         lda     #$0F
-        jsr     UpdateAileronPositionIndicator_Init
+        jsr     UpdateAileronPositionIndicator::Init
         lda     #$0F
-        jsr     UpdateRudderPositionIndicator_Init
+        jsr     UpdateRudderPositionIndicator::Init
         lda     #$00
-        jsr     UpdateThrottleIndicator_Init
+        jsr     UpdateThrottleIndicator::Init
         lda     #$00
-        jsr     UpdateFlapsIndicator_Init
+        jsr     UpdateFlapsIndicator::Init
         lda     #$05
         jsr     L1AC7
         lda     #$00
         jsr     L1ADA
         lda     #$00
-        jsr     UpdateSlipSkidIndicator_Init
+        jsr     UpdateSlipSkidIndicator::Init
         lda     #$00
-        jsr     UpdateOilTempAndPressureGauges_Init
+        jsr     UpdateOilTempAndPressureGauges::Init
         lda     #$00
-        jsr     UpdateOilTempAndPressureGauges_Init2
+        jsr     UpdateOilTempAndPressureGauges::Init2
         lda     #$00
-        jsr     UpdateFuelTankGauges_Init
+        jsr     UpdateFuelTankGauges::Init
         lda     #$00
-        jsr     UpdateFuelTankGauges_Init2
+        jsr     UpdateFuelTankGauges::Init2
         jsr     DrawVOR1
         .byte   $20
 LAD0F:  .byte   $7C
@@ -10412,3 +10316,5 @@ LB3B3:  lda     ($3E),y
         jsr     MultiplyAXByC2
         asl     a
         rol     $C8
+
+        .assert * = $B3E0, error, "EOF mismatch"
