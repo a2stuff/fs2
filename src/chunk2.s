@@ -285,8 +285,11 @@ PLF94F: .byte   6, $95,$84, $94,$84, $94,$83, $95,$83, $91,$83, $61,$82
 
 PLF95C: .byte   7, $93,$8A, $92,$8A, $92,$89, $91,$89, $90,$89, $91,$8A, $94,$8B
 
-PLF96B: .byte   7, $8C,$8E, $8D,$8E, $8E,$8E, $8C,$8D, $8B,$8D, $8A,$8D, $8D,$8F, $A5,$60
+PLF96B: .byte   7, $8C,$8E, $8D,$8E, $8E,$8E, $8C,$8D, $8B,$8D, $8A,$8D, $8D,$8F
 
+        ;; Draw's altimeter's "third hand" (10k, arrow by outside)
+.proc UpdateAltimeter10K
+        lda     $60
         clc
         adc     #$02
         ldx     #$FF
@@ -302,7 +305,6 @@ LF98D:  txa
         bne     LF994
         rts
 
-        ;; Draw's altimeter's "third hand" (10k, arrow by outside)
 LF994:  ldx     LF8E6
         sta     LF8E6
         pha
@@ -318,6 +320,7 @@ LF9A2:  asl     a
         ldx     #$00
         ldy     #$00
         jmp     DrawPixelListHelper
+.endproc
 
 LF9B3:  brk
 LF9B4:  rts

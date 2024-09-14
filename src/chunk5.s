@@ -4886,7 +4886,7 @@ L8794:  jsr     LA7F4
         jmp     L87A8
 
 L87A2:  jsr     L97BF
-L87A5:  jsr     L8AFD
+L87A5:  jsr     NoOp
 L87A8:  jsr     LA60C
         jsr     LA61B
         jsr     L6000
@@ -4899,7 +4899,7 @@ L87A8:  jsr     LA60C
 L87BE:  jsr     L89B6
         jsr     L6003
         jsr     L6006
-        jsr     L8AFD
+        jsr     NoOp
         jsr     LA1E2
         jsr     DrawRPM
         jsr     LA14D
@@ -4909,14 +4909,14 @@ L87BE:  jsr     L89B6
         jsr     L6012
         jsr     DrawHeading
         jsr     DrawMagCompass
-        jsr     L8AFD
+        jsr     NoOp
         lda     $093A
         beq     L87F0
         jsr     LA7EE
-L87F0:  jsr     L8AFD
+L87F0:  jsr     NoOp
         jsr     L9F6B
         jsr     L9FE9
-        jsr     L8AFD
+        jsr     NoOp
         lda     $092C
         beq     L8804
         jsr     L8C6A
@@ -4928,14 +4928,14 @@ L8804:  lda     $2B
         jsr     LA5E1
         jsr     L8A06
         jsr     UpdateFuelTankGauges::Left
-        jsr     L8AFD
+        jsr     NoOp
         lda     $2B
         and     #$04
         beq     L8863
         jsr     DrawDME
         jsr     L9DDA
         jsr     L9DFB
-        jsr     L8AFD
+        jsr     NoOp
         jmp     L8863
 
 L882D:  jsr     UpdateOilTempAndPressureGauges::Temp
@@ -4945,15 +4945,16 @@ L882D:  jsr     UpdateOilTempAndPressureGauges::Temp
 L8836:  lsr     a
         bcs     L8842
         jsr     UpdateFuelTankGauges::Right
-        jsr     L8AFD
+        jsr     NoOp           ; self-modified to LF97A ???
+        .refto UpdateAltimeter10K
         jmp     L8848
 
 L8842:  jsr     UpdateOilTempAndPressureGauges::Pressure
-        jsr     L8AFD
+        jsr     NoOp
 L8848:  jsr     LA0D0
         jsr     LA139
         jsr     LA021
-        jsr     L8AFD
+        jsr     NoOp
         lda     $0832
         asl     a
         rol     $0833
@@ -5214,7 +5215,7 @@ L8A9F:  inx
 
         ;; ???
         lda     $08F0
-        bne     L8AFD
+        bne     NoOp
 L8AC4:  jsr     CheckForAbort
 
         ;; Update clock minutes display
@@ -5243,16 +5244,14 @@ L8AC4:  jsr     CheckForAbort
         sta     str_clock_hh+1
         CALLAX  DrawMessageOrange, msg_clock_hh
 
-L8AFD:  rts
+NoOp:   rts
 
-L8AFE:  brk
-L8AFF:  brk
+LastElevatorPosition:   .byte   0
+LastAileronPosition:    .byte   0
 
 
 ;;; Indexed by ASCII code, $00 through $5F
 KeyTable:
-
-Ignore := L9147                 ; convenient RTS
 
         .addr   Ignore          ; Ctrl+@
         .addr   ADF             ; Ctrl+A
@@ -5342,7 +5341,7 @@ Ignore := L9147                 ; convenient RTS
         .addr   Ignore          ; U
         .addr   TrimUp          ; V
         .addr   L8F73           ; W
-        .addr   DropBomb           ; X
+        .addr   DropBomb        ; X
         .addr   FlapsUp         ; Y
         .addr   L909E           ; Z
         .addr   Ignore          ; [
@@ -6145,7 +6144,7 @@ SaveModeToLibrary:
         bne     L9093           ; always
 
 ;;; Q key
-L909B:  jmp     L8AFD
+L909B:  jmp     NoOp
 
 ;;; Z key
 L909E:  lda     $0937
@@ -6261,7 +6260,7 @@ L913A:  lda     #$50
         lsr     a
         jsr     UpdateTrimIndicator
 
-L9147:  rts                     ; Used as no-op in `KeyTable`
+Ignore:  rts                    ; Used as no-op in `KeyTable`
 
 ;;; Y key
 FlapsUp:
@@ -6338,9 +6337,9 @@ L91DE:  lda     #$50
         lsr     a
         lsr     a
         lsr     a
-        cmp     L8AFE
+        cmp     LastElevatorPosition
         beq     L91F2
-        sta     L8AFE
+        sta     LastElevatorPosition
         jsr     UpdateElevatorPositionIndicator
 L91F2:  rts
 
@@ -6408,8 +6407,8 @@ L9270:  lda     $0A53
         lsr     a
         lsr     a
         lsr     a
-        cmp     L8AFF
-        sta     L8AFF
+        cmp     LastAileronPosition
+        sta     LastAileronPosition
         beq     L9284
         jsr     UpdateAileronPositionIndicator
 L9284:  LDAX    $0A52
