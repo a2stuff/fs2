@@ -1,10 +1,5 @@
         .org $f600
 
-;;; Possible chunk4 references
-L168F           := $168F
-L1A6E           := $1A6E
-
-
 msg_courseplotter:
         MESSAGE $0C, $0A, "**** COURSE PLOTTER SYSTEM ****"
         MESSAGE $14, $2D, " "
@@ -260,92 +255,37 @@ LF8C6:  lda     LF71A
 LF8E5:  rts
 
 LF8E6:  .byte   $FF
-        .byte   $F9
-LF8E8:  sed
-        asl     $F9
-        ora     $26F9,y
-        .byte   $F9
-        .byte   $33
-LF8F0:  sbc     LF944,y
-        .byte   $4F
-        sbc     LF95C,y
-        .byte   $6B
-        sbc     $8006,y
-        adc     #$80
-        ror     a
-        .byte   $82
-        ror     a
-        .byte   $80
-        .byte   $6B
-        sta     ($6B,x)
-        .byte   $82
-        .byte   $6B
-        ora     #$8C
-        .byte   $6B
-        txa
-        jmp     (L6C89)
 
-        .byte   $89
-        adc     $6D88
-        txa
-        adc     $6E89
-        dey
-        ror     $6E87
-        asl     $8E
-        adc     $6E8D
-        sta     $8E6F
-        .byte   $6F
-        sta     $8B70
-        .byte   $6F
-        asl     $93
-        .byte   $72
-        .byte   $92
-        .byte   $73
-        sty     $71,x
-        .byte   $92
-        .byte   $73
-        sta     ($73),y
-        bcc     LF9A6
-        php
-        sta     $78,x
-        tya
-        sei
-        stx     $79,y
-        sta     $79,x
-        sty     $79,x
-        sty     $7A,x
-        sta     $7A,x
-        sta     ($79),y
-LF944:  ora     $95
-        adc     $7D96,x
-        sty     $7D,x
-        sty     $7C,x
-        sty     $7E,x
-        asl     $95
-        sty     $94
-        sty     $94
-        .byte   $83
-        sta     $83,x
-        sta     ($83),y
-        adc     ($82,x)
-LF95C:  .byte   $07
-        .byte   $93
-        txa
-        .byte   $92
-        txa
-        .byte   $92
-        .byte   $89
-        sta     ($89),y
-        bcc     LF8F0
-        sta     ($8A),y
-        sty     $8B,x
-        .byte   $07
-        sty     $8D8E
-        stx     $8E8E
-        sty     $8B8D
-        sta     $8D8A
-        sta     $A58F
-        rts
+        ;; Table of PixelLists for altimeter's "third hand"
+PixelListAltimeter10KTable:
+        .addr   PLF8F9
+        .addr   PLF906
+        .addr   PLF919
+        .addr   PLF926
+        .addr   PLF933
+        .addr   PLF944
+        .addr   PLF94F
+        .addr   PLF95C
+        .addr   PLF96B
+
+PLF8F9: .byte   6, $80,$69, $80,$6A, $82,$6A, $80,$6B, $81,$6B, $82,$6B
+
+PLF906: .byte   9, $8C,$6B, $8A,$6C, $89,$6C, $89,$6D, $88,$6D, $8A,$6D, $89,$6E
+        .byte   $88,$6E, $87,$6E
+
+PLF919: .byte   6, $8E,$6D, $8D,$6E, $8D,$6F, $8E,$6F, $8D,$70, $8B,$6F
+
+PLF926: .byte   6, $93,$72, $92,$73, $94,$71, $92,$73, $91,$73, $90,$73
+
+PLF933: .byte   8, $95,$78, $98,$78, $96,$79, $95,$79, $94,$79, $94,$7A, $95,$7A, $91,$79
+
+PLF944: .byte   5, $95,$7D, $96,$7D, $94,$7D, $94,$7C, $94,$7E
+
+PLF94F: .byte   6, $95,$84, $94,$84, $94,$83, $95,$83, $91,$83, $61,$82
+
+PLF95C: .byte   7, $93,$8A, $92,$8A, $92,$89, $91,$89, $90,$89, $91,$8A, $94,$8B
+
+PLF96B: .byte   7, $8C,$8E, $8D,$8E, $8E,$8E, $8C,$8D, $8B,$8D, $8A,$8D, $8D,$8F, $A5,$60
 
         clc
         adc     #$02
@@ -362,6 +302,7 @@ LF98D:  txa
         bne     LF994
         rts
 
+        ;; Draw's altimeter's "third hand" (10k, arrow by outside)
 LF994:  ldx     LF8E6
         sta     LF8E6
         pha
@@ -371,14 +312,12 @@ LF994:  ldx     LF8E6
 LF9A1:  pla
 LF9A2:  asl     a
         tax
-        .byte   $BD
-        .byte   $E7
-LF9A6:  sed
-        sta     $9C
-        lda     LF8E8,x
+        lda     PixelListAltimeter10KTable,x
+        sta     PixelListData
+        lda     PixelListAltimeter10KTable+1,x
         ldx     #$00
         ldy     #$00
-        jmp     L1A6E
+        jmp     DrawPixelListHelper
 
 LF9B3:  brk
 LF9B4:  rts
@@ -426,7 +365,7 @@ LF9E7:  stx     $A5
         lda     #$00
         sta     $C2
         ldx     LF9B3
-        jsr     L168F
+        jsr     ScaleC2ByAX
         clc
         adc     $09AF
         sta     $09AF
@@ -454,7 +393,7 @@ LFA42:  sta     $C2
         stx     $C3
         lda     $09DE
         ldx     $09DF
-        jsr     L168F
+        jsr     ScaleC2ByAX
 LFA4F:  sta     $08A1
         stx     $08A2
         rts

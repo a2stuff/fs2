@@ -40,13 +40,13 @@ L6012:  jmp     L84B5
         jmp     L84F4
 
         ;; Called by chunk3
-        jmp     L67FD
+L6018:  jmp     L67FD
 
         ;; Called by chunk3
-        jmp     L790E
+L601B:  jmp     L790E
 
         ;; Called by chunk3
-        jmp     L7BA0
+L601E:  jmp     L7BA0
 
 L6021:  lda     #$09
         jmp     L67FD
@@ -1695,7 +1695,8 @@ L6D43:  lda     $69
         rts
 
 L6D48:  jsr     L6D56
-        LDAX    L00A5
+
+L6D4B:  LDAX    L00A5
         STAX    $8B
         jmp     L674D
 

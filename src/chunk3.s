@@ -6,18 +6,9 @@ L00BA           := $00BA
 
 ;;; Possible chunk4 references
 L03F0           := $03F0
-L1569           := $1569
-L1735           := $1735
-L1AD2           := $1AD2
 L1EC6           := $1EC6
 L1FC4           := $1FC4
 L1FE0           := $1FE0
-
-;;; Possible chunk5 references
-L6018           := $6018
-L601B           := $601B
-L601E           := $601E
-L6D4B           := $6D4B
 
         .byte   $FF
         .byte   $FF
@@ -628,7 +619,7 @@ LDC05:  lda     $FA
         dex
         bmi     LDC15
 LDC11:  txa
-        jsr     L1AD2
+        jsr     UpdateMixtureControlIndicator
 LDC15:  lda     $FA
         rts
 
@@ -1564,7 +1555,7 @@ LE40E:  ldx     $0956
         sta     $C3
         lda     $0973
         ldx     $0974
-        jsr     L1735
+        jsr     MultiplyAXByC2
         txa
         ldx     $C9
         jsr     LE4C7
@@ -1597,7 +1588,7 @@ LE467:  jsr     LE4C5
         sta     $C3
         lda     $0856
         ldx     $0857
-        jsr     L1735
+        jsr     MultiplyAXByC2
         ldy     #$00
         sty     LE3D7
         txa
@@ -3580,7 +3571,7 @@ LF261:  iny
         lda     ($8B),y
         sta     $3F
         sta     $C3
-        jsr     L1569
+        jsr     ScaleC2ByC4
         sta     $18
         stx     $19
         sta     LF25A
@@ -3602,7 +3593,7 @@ LF2AE:  txa
         ldx     $3F
         sta     $C2
         stx     $C3
-        jsr     L1569
+        jsr     ScaleC2ByC4
         sta     $1B
         stx     $1C
         sta     LF258
@@ -3628,7 +3619,7 @@ LF2DC:  txa
         ldx     $BF
         sta     $C4
         stx     $C5
-        jsr     L1569
+        jsr     ScaleC2ByC4
         sta     $1E
         stx     $1F
         lda     $9A
@@ -3639,7 +3630,7 @@ LF2DC:  txa
         ldx     $AA
         sta     $C4
         stx     $C5
-        jsr     L1569
+        jsr     ScaleC2ByC4
         sta     $A9
         stx     $AA
         clc
