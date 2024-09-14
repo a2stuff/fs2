@@ -1880,8 +1880,8 @@ L148D:  ora     $C7,x
 PLThrottleIndicator:
         .byte   4, 0,0, 1,0, 0,1, 1,1
 
-;;; Pixel list for flaps indicator
-PLFlapsIndicator:
+;;; Pixel list for flaps/trim/mixture indicator
+PLFlapsTrimMixtureIndicator:
         .byte   4, 0,0, 2,0, 0,1, 2,1
 
 ;;; Map 3 character bits to pixels (doubled)
@@ -2152,7 +2152,6 @@ ScaleC2ByC4 := ZPScale::ScaleC2ByC4
 .endproc
 
 .proc ScaleC2ByAXIntoC2
-        .refto ScaleC2ByAXIntoC2
         sta     $C4
         stx     $C5
         jsr     ZPScale::ScaleC2ByC4
@@ -2164,7 +2163,7 @@ ScaleC2ByC4 := ZPScale::ScaleC2ByC4
 ;;; ============================================================
 
         ;; 16-bit signed division val1 / val2 ???
-.scope
+.proc L16A2
         val1 := $C2
         val2 := $C4
 
@@ -2257,12 +2256,11 @@ L1710:
         inc     $33
 :
         rts
-.endscope
+.endproc
 
 ;;; Divide A,X by 2, signed
 ;;; Trashes Y
 .proc AXDiv2
-        .refto AXDiv2
         tay
         txa
         cmp     #$80
@@ -2278,7 +2276,6 @@ L1710:
 ;;; Output: A,X
 ;;; Uses $C4-C9
 .proc MultiplyAXByC2
-        .refto MultiplyAXByC2
         sta     $C4
         stx     $C5
         lda     #$00
@@ -2306,9 +2303,11 @@ L1752:  ror     a
         rts
 .endproc
 
+L1763:
         ldx     #$00
         jmp     L177B
 
+L1768:
         ldx     #$00
         jmp     L1778
 
@@ -2483,7 +2482,8 @@ L187B:  ldy     $C5
         lda     $C4
         rts
 
-        eor     #$FF
+
+L1880:  eor     #$FF
         tay
         txa
         eor     #$FF
@@ -2498,8 +2498,6 @@ L188C:  rts
 
 ;;; 188D: UpdateAltimeterIndicator
 .proc UpdateAltimeterIndicator
-        .refto UpdateAltimeterIndicator
-
         lda     L0A12
         tax
         lsr     a
@@ -2530,7 +2528,7 @@ L188C:  rts
         sta     $C3
         rts
 
-        ldx     #$00            ; needle index
+Init2:  ldx     #$00            ; needle index
         lda     IndicatorDialNeedleLastValue,x
         cmp     $28
         bne     L18C0
@@ -2541,7 +2539,6 @@ L18C0:  jsr     DrawIndicatorDialNeedle
         lda     IndicatorDialNeedleLastValue,x
         jsr     DrawIndicatorDialNeedle
 Init:   lda     $29
-        .refto Init
         ldx     #$01            ; needle index
         jsr     DrawIndicatorDialNeedleHelper
         lda     $28
@@ -2562,7 +2559,6 @@ HandyRTS:
 ;;; ============================================================
 
 .proc UpdateAirspeedIndicator
-        .refto UpdateAirspeedIndicator
         lda     $FB
         lsr     a
         bcc     HandyRTS
@@ -2589,7 +2585,6 @@ L1902:  inx
         clc
         adc     $B6
 Init:   ldx     #$02            ; needle index
-        .refto Init
         sta     IndicatorDialNeedleLastValue,x
 
 L190C:  cmp     #$58
@@ -2601,8 +2596,6 @@ L1912:  jmp     DrawIndicatorDialNeedle
 ;;; ============================================================
 
 .proc UpdateVerticalSpeedIndicator
-        .refto UpdateVerticalSpeedIndicator
-
         ldx     #$03            ; needle index
         lda     IndicatorDialNeedleLastValue,x
         cmp     $2A
@@ -2618,7 +2611,6 @@ L1912:  jmp     DrawIndicatorDialNeedle
 L192A:  clc
         adc     #$01
 Init:   ldx     #$03            ; needle index
-        .refto Init
         bne     DrawIndicatorDialNeedleHelper
         ;; fall through to `DrawIndicatorDialNeedle`
 .endproc
@@ -2794,14 +2786,11 @@ L1A38:  inc     $A7             ; self-modified
 ;;; ============================================================
 
 .proc UpdateElevatorPositionIndicator
-        .refto UpdateElevatorPositionIndicator
-
         pha
         lda     L0A42
         jsr     L1A48
         pla
 Init:   sta     L0A42
-        .refto Init
 L1A48:  ldx     #$64
         clc
         adc     #$9F
@@ -2815,13 +2804,11 @@ L1A48:  ldx     #$64
 ;;; ============================================================
 
 .proc UpdateAileronPositionIndicator
-        .refto UpdateAileronPositionIndicator
         pha
         lda     L0A43
         jsr     L1A62
         pla
 Init:   sta     L0A43
-        .refto Init
 L1A62:  clc
         adc     #$55
         tax
@@ -2842,13 +2829,11 @@ DrawPixelListHelper:
 ;;; ============================================================
 
 .proc UpdateRudderPositionIndicator
-        .refto UpdateRudderPositionIndicator
         pha
         lda     L0A45
         jsr     L1A83
         pla
 Init:   sta     L0A45
-        .refto Init
 L1A83:  clc
         adc     #$55
         tax
@@ -2859,13 +2844,11 @@ L1A83:  clc
 ;;; ============================================================
 
 .proc UpdateThrottleIndicator
-        .refto UpdateThrottleIndicator
         pha
         lda     L0A46
         jsr     L1A97
         pla
 Init:   sta     L0A46
-        .refto Init
 L1A97:  eor     #$FF
         clc
         clc                     ; ???
@@ -2883,52 +2866,52 @@ L1A97:  eor     #$FF
 ;;; ============================================================
 
 .proc UpdateFlapsIndicator
-        .refto UpdateFlapsIndicator
         pha
         lda     L0A47
         jsr     L1AB7
         pla
 Init:   sta     L0A47
-        .refto Init
 L1AB7:  ldx     #$C8
         clc
         adc     #$66
         jmp     L1AE2
 .endproc
 
-;;; ???
+.proc UpdateTrimIndicator
         pha
         lda     L0A48
         jsr     L1ACA
         pla
-        sta     L0A48
+Init:   sta     L0A48
 L1ACA:  ldx     #$C8
         clc
         adc     #$8E
         jmp     L1AE2
+.endproc
 
-;;; ???
+.proc UpdateMixtureControlIndicator
+        .refto UpdateMixtureControlIndicator
+
         pha
         lda     L0A49
         jsr     L1ADD
         pla
-        sta     L0A49
+Init:   sta     L0A49
 L1ADD:  ldx     #$D0
         clc
         adc     #$AF
         ;; fall through to `L1AE2`
+.endproc
 
 L1AE2:  tay
-        lda     #<PLFlapsIndicator
+        lda     #<PLFlapsTrimMixtureIndicator
         sta     PixelListData
-        lda     #>PLFlapsIndicator
+        lda     #>PLFlapsTrimMixtureIndicator
         jmp     DrawPixelListHelper
 
 ;;; ============================================================
 
 .proc UpdateSlipSkidIndicator
-        .refto UpdateSlipSkidIndicator
-
         cmp     L0A44
         bne     L1AF2
         rts
@@ -2938,7 +2921,6 @@ L1AF2:  pha
         jsr     L1AFD
         pla
 Init:   sta     L0A44
-        .refto Init
 L1AFD:  clc
         adc     #$0E
         tax
@@ -2951,8 +2933,8 @@ L1AFD:  clc
 
 ;;; ============================================================
 
-.proc UpdateOilTempAndPressureGauges
-        .refto UpdateOilTempAndPressureGauges
+.scope UpdateFuelTankGauges
+Left:
         lda     L0994
         lsr     a
         cmp     L0A4A
@@ -2963,10 +2945,11 @@ L1B16:  pha
         lda     L0A4A
         jsr     L1B3E
         pla
-Init:   sta     L0A4A
-        .refto Init
+InitLeft:
+        sta     L0A4A
         jmp     L1B3E
 
+Right:
         lda     L0997
         lsr     a
         cmp     L0A4B
@@ -2977,19 +2960,19 @@ Init:   sta     L0A4A
         adc     #$1E
         jsr     L1B3E
         pla
-Init2:  sta     L0A4B
-        .refto Init2
+InitRight:
+        sta     L0A4B
         clc
-        adc     #$1E            ; Oil pressure X position
+        adc     #$1E            ; Tank 2 X offset
 L1B3E:  clc
-        adc     #$E8            ; Oil temp X position
+        adc     #$E8            ; Tank 1 X position
         tax
         lda     #$00
         adc     #$00
         sta     PixelListXHi
-        ldy     #$A2            ; Oil
+        ldy     #$A2            ; Fuel tank Y position
         ;; fall through to `DrawFuelOrOilGauge`
-.endproc
+.endscope
 
 .proc DrawFuelOrOilGauge
         lda     #<PLFuelAndOilGauges
@@ -3001,8 +2984,8 @@ L1B3E:  clc
 
 ;;; ============================================================
 
-.proc UpdateFuelTankGauges
-        .refto UpdateFuelTankGauges
+.scope UpdateOilTempAndPressureGauges
+Temp:
         lda     L099C
         cmp     L0A4C
         bne     L1B5F
@@ -3012,10 +2995,11 @@ L1B5F:  pha
         lda     L0A4C
         jsr     L1B86
         pla
-Init:   sta     L0A4C
-        .refto Init
+InitTemp:
+        sta     L0A4C
         jmp     L1B86
 
+Pressure:
         lda     L099D
         cmp     L0A4D
         beq     L1B5E
@@ -3025,20 +3009,19 @@ Init:   sta     L0A4C
         adc     #$1E
         jsr     L1B86
         pla
-Init2:  sta     L0A4D
-        .refto Init2
+InitPressure:
+        sta     L0A4D
         clc
-        adc     #$1E            ; Tank 2 X offset
+        adc     #$1E            ; Oil pressure X position
 L1B86:  clc
-        adc     #$E8            ; Tank 1 X position
+        adc     #$E8            ; Oil temp X position
         tax
         lda     #$00
         adc     #$00
         sta     PixelListXHi
-        ldy     #$AA            ; Fuel tank Y position
+        ldy     #$AA            ; Oil Y position
         jmp     DrawFuelOrOilGauge
-
-.endproc
+.endscope
 
 ;;; ============================================================
 
@@ -3046,7 +3029,6 @@ PLFuelTankIndicator:
         .byte   4, 0,0, 3,0, 0,2, 3,2
 
 .proc UpdateFuelTankIndicator
-        .refto UpdateFuelTankIndicator
         ldx     #$FB
         ldy     #$A4
         lda     #<PLFuelTankIndicator
@@ -3132,8 +3114,6 @@ write:
 ;;; A,X = message (row, col, null-terminated string)
 
 .proc DrawMessage
-        .refto DrawMessage
-
         msg_ptr := $BE
         color_mask1 = $90
         color_mask2 = $91
@@ -3232,8 +3212,6 @@ L1C90:  ldy     $A7
 
 ;;; Color mask is white
 DrawMessageWhite:
-        .refto DrawMessageWhite
-
         sta     msg_ptr
         stx     msg_ptr+1
 L1C9A:  lda     #$7F
@@ -3242,8 +3220,6 @@ L1C9A:  lda     #$7F
 
 ;;; Color mask is orange
 DrawMessageOrange:
-        .refto DrawMessageOrange
-
         sta     msg_ptr
         stx     msg_ptr+1
 L1CA3:  lda     #$D5
@@ -3403,8 +3379,6 @@ NextCharacter:
 
 ;;; Draws multiple message, until sentinel is reached
 DrawMultiMessage:
-        .refto DrawMultiMessage
-
         sta     msg_ptr
         stx     msg_ptr+1
 L1D96:  ldy     #$00
@@ -3426,8 +3400,6 @@ DivideByAXAndSetDigitY := DrawMessage::DivideByAXAndSetDigitY
 
 ;;; Clear viewport on both hires screens
 .proc ClearViewportsToBlack
-        .refto ClearViewportsToBlack
-
         ptr1 := $8E
         ptr2 := $3C
 

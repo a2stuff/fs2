@@ -31,18 +31,6 @@ WW1AceScore     := $08C0
 WW1AceBombsStr  := $08D2
 WW1AceScoreStr  := $08DF
 
-L16A2           := $16A2
-L1763           := $1763
-L1768           := $1768
-L1880           := $1880
-L18B6           := $18B6
-L1ABF           := $1ABF
-L1AC7           := $1AC7
-L1ADA           := $1ADA        ; Carb heat indicator???
-L1B24           := $1B24
-L1B6D           := $1B6D
-
-
 ;;; Jump-table, which is patched at runtime
 L1EAD           := $1EAD
 L1EB0           := $1EB0
@@ -5003,7 +4991,7 @@ L8804:  lda     $2B
         bcs     L882D
         jsr     LA5E1
         jsr     L8A06
-        jsr     UpdateOilTempAndPressureGauges
+        jsr     UpdateFuelTankGauges::Left
         jsr     L8AFD
         lda     $2B
         and     #$04
@@ -5014,17 +5002,17 @@ L8804:  lda     $2B
         jsr     L8AFD
         jmp     L8863
 
-L882D:  jsr     UpdateFuelTankGauges
+L882D:  jsr     UpdateOilTempAndPressureGauges::Temp
         jsr     L9AA3
         jmp     L8863
 
 L8836:  lsr     a
         bcs     L8842
-        jsr     L1B24
+        jsr     UpdateFuelTankGauges::Right
         jsr     L8AFD
         jmp     L8848
 
-L8842:  jsr     L1B6D
+L8842:  jsr     UpdateOilTempAndPressureGauges::Pressure
         jsr     L8AFD
 L8848:  jsr     LA0D0
         jsr     LA139
@@ -6335,7 +6323,7 @@ L913A:  lda     #$50
         lsr     a
         lsr     a
         lsr     a
-        jsr     L1ABF
+        jsr     UpdateTrimIndicator
 
 L9147:  rts                     ; Used as no-op in `KeyTable`
 
@@ -8000,7 +7988,7 @@ L9FD2:  sec
         clc
         adc     #$58
 L9FE4:  sta     $28
-        jmp     L18B6
+        jmp     UpdateAltimeterIndicator::Init2
 
 L9FE9:  lda     $FB
         and     #$01
@@ -9380,19 +9368,19 @@ LACBA:  lda     #$01
         lda     #$00
         jsr     UpdateFlapsIndicator::Init
         lda     #$05
-        jsr     L1AC7
+        jsr     UpdateTrimIndicator::Init
         lda     #$00
-        jsr     L1ADA
+        jsr     UpdateMixtureControlIndicator::Init
         lda     #$00
         jsr     UpdateSlipSkidIndicator::Init
         lda     #$00
-        jsr     UpdateOilTempAndPressureGauges::Init
+        jsr     UpdateFuelTankGauges::InitLeft
         lda     #$00
-        jsr     UpdateOilTempAndPressureGauges::Init2
+        jsr     UpdateFuelTankGauges::InitRight
         lda     #$00
-        jsr     UpdateFuelTankGauges::Init
+        jsr     UpdateOilTempAndPressureGauges::InitTemp
         lda     #$00
-        jsr     UpdateFuelTankGauges::Init2
+        jsr     UpdateOilTempAndPressureGauges::InitPressure
         jsr     DrawVOR1
         .byte   $20
 LAD0F:  .byte   $7C
