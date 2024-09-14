@@ -401,7 +401,7 @@ L0810:  brk
         brk
         brk
         brk
-        brk
+L08AD:  .byte   0
         brk
         ora     ($00,x)
         brk
@@ -416,7 +416,9 @@ L0810:  brk
         brk
         brk
         ora     ($00,x)
-        brk
+
+WW1AceScore:    .byte   0
+
         brk
         brk
         brk
@@ -427,11 +429,13 @@ L0810:  brk
 
         ;; $8C9
         MESSAGE $9B, $68, "BOMBS: 5 " ; modified in chunk5
+        WW1AceBombsStr := *-3
         brk
         brk
 
         ;; $8D7
         MESSAGE $9B, $68, "SCORE:000" ; modified in chunk5
+        WW1AceScoreStr := *-4
 
         brk
         brk
@@ -791,16 +795,29 @@ L0A50:  brk
         ora     ($00,x)
         brk
         brk
+
+SlewRollRate:   .byte   0
+        brk
+SlewYawRate:    .byte   0
+        brk
+SlewPitchRate:  .byte   0
         brk
         brk
         brk
         brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
+
+ViewDirection:  .byte   0
+;;; $00 = front
+;;; $02 = front right
+;;; $04 = right
+;;; $06 = back right
+;;; $08 = back
+;;; $0A = back left
+;;; $0C = left
+;;; $0E = front left
+;;; $FF = down
+
+
         ora     ($00,x)
         .byte   $FF
         .byte   $FF
@@ -3590,19 +3607,19 @@ L1E0C:  ora     ($D9,x)
 
 ;;; Jump table, patched at runtime (48k vs 64k???)
 
-        jmp     $203A           ; becomes D3D0
-        jmp     $2015           ; becomes D3D3
-        jmp     $20AF           ; becomes D3D6
+L1EAD:  jmp     $203A           ; becomes D3D0
+L1EB0:  jmp     $2015           ; becomes D3D3
+L1EB3:  jmp     $20AF           ; becomes D3D6
         jmp     $2122           ; becomes D3D9
         jmp     $238A           ; becomes D3DC
-        jmp     $2000           ; becomes D3DF
+L1EBC:  jmp     $2000           ; becomes D3DF
 
         sec
         rts
 
         jmp     $2578           ; becomes D3E2
 
-        clc
+L1EC4:  clc
         rts
 
         jsr     L1EE9

@@ -225,17 +225,18 @@ L6D4B           := $6D4B
         ror     $4C,x
         .byte   $1F
         .byte   $D4
-        jmp     LD3FA
+
+LD3D3:  jmp     LD3FA
 
         jmp     LD494
 
-        jmp     LD507
+LD3D9:  jmp     LD507
 
         jmp     LD76F
 
         jmp     LD3E5
 
-        jmp     LD95D
+LD3E2:  jmp     LD95D
 
 LD3E5:  lda     #$00
         sta     $1E09
@@ -416,7 +417,7 @@ LD9E9:  .byte   $FF
 
 mD9EA:  MESSAGE $88, $67, " 287", sD9EA
 
-        lda     $097B
+LD9F1:  lda     $097B
         beq     LDA52
         lsr     LD9E5
         bcc     LD9FE
@@ -528,7 +529,7 @@ LDB28:
         CALLAX  DrawMessageOrange, mD9EA
         rts
 
-        lda     $08A9
+LDB48:  lda     $08A9
         beq     LDB94
         lda     #$00
         sta     $08A8
@@ -566,7 +567,7 @@ LDB28:
 LDB94:  lda     #$09
         jmp     L6018
 
-        lda     $08F1
+LDB99:  lda     $08F1
         beq     LDBAC
         lda     $FA
         cmp     #$0D
@@ -578,7 +579,7 @@ LDB94:  lda     #$09
 LDBAC:  lda     #$0D            ; ???
 LDBAE:  jmp     SetInputModeAndCounter
 
-        ldx     $097B
+LDBB1:  ldx     $097B
         beq     LDBD3
         lda     $FA
         cmp     #$0D
@@ -646,22 +647,25 @@ LDC18:  sta     sD9EA+1,x
         lda     sD9EA+1
         and     #$0F
         sta     LD9E8
-        ldx     #$00
+
+LDC3D:  ldx     #$00
         stx     LD9E6
         inx
         stx     $08A8
         jmp     LDC15
 
-LDC49:  .byte   $07
-LDC4A:  cmp     LDD10,x
-        ora     $1DDD,y
-        cmp     LDD21,x
-        and     $DD
-        and     #$DD
-        and     $ADDD
-        sec
-        ora     #$F0
-        .byte   $7C
+        ;; Jump table
+LDC49:  .addr   LDD07
+        .addr   LDD10
+        .addr   LDD19
+        .addr   LDD1D
+        .addr   LDD21
+        .addr   LDD25
+        .addr   LDD29
+        .addr   LDD2D
+
+LDC59:  lda     $0938
+        beq     $DCDA
         lda     $0937
         bne     LDC84
         lda     $0A5B
@@ -736,11 +740,11 @@ LDCE9:  jsr     ClearViewportsToBlack
         tax
         lda     LDC49,x
         sta     L00BA
-        lda     LDC4A,x
-        sta     $BB
+        lda     LDC49+1,x
+        sta     L00BA+1
         jmp     (L00BA)
 
-        lda     #$FE
+LDD07:  lda     #$FE
 LDD09:  and     $0914
         sta     $0914
         rts
@@ -750,26 +754,25 @@ LDD12:  ora     $0991
         sta     $0991
         rts
 
-        lda     #$FB
-        bne     LDD09
-        lda     #$F7
-        bne     LDD09
+LDD19:  lda     #$FB
+        bne     LDD09           ; always
+LDD1D:  lda     #$F7
+        bne     LDD09           ; always
 LDD21:  lda     #$0C
-        bne     LDD12
-        lda     #$DF
-        bne     LDD09
-        lda     #$BF
-        bne     LDD09
-        lda     #$7F
-        bne     LDD09
+        bne     LDD12           ; always
+LDD25:  lda     #$DF
+        bne     LDD09           ; always
+LDD29:  lda     #$BF
+        bne     LDD09           ; always
+LDD2D:  lda     #$7F
+        bne     LDD09           ; always
 
 msg_north:
         MESSAGE $02, $0A, " 00000 NORTH "
 msg_east:
         MESSAGE $02, $4C, " 00000 EAST "
 
-        .byte   $AD
-        ldy     $08,x
+LDD50:  lda     $08B4
         and     #$01
         beq     LDD79
         lda     $093C
@@ -790,7 +793,7 @@ msg_east:
 
 LDD79:  rts
 
-        lda     $083C
+LDD7A:  lda     $083C
         lsr     a
         bcs     LDD94
         lda     #$10
@@ -1058,7 +1061,8 @@ LDF19:  .byte   $14
         .byte   $03
         brk
         brk
-        lda     $0836
+
+LDF65:  lda     $0836
         beq     LDF6E
         ldx     #$2F
         bne     LDF7C
@@ -1387,6 +1391,8 @@ LE21E:  adc     #$64
         adc     #$00
 LE228:  sta     $099D
 LE22B:  lda     $31
+        LE22C := *-1
+
         and     #$1F
         bne     LE2AC
         lda     $099B
@@ -1450,7 +1456,7 @@ LE2AD:  lda     #$00
         sta     $099B
         rts
 
-        ldy     #$00
+LE2B3:  ldy     #$00
         sty     $FA
         lsr     a
         sta     LE047
@@ -1469,7 +1475,7 @@ LE2C7:
         .addr   mE097
         .addr   mE09B
 
-        jsr     DrawMessageWhite
+LE2D1:  jsr     DrawMessageWhite
         lda     $0A62
         asl     a
         tax
@@ -1492,7 +1498,7 @@ LE2F3:  ldx     #$02
         stx     $FA
 LE2F7:  jmp     L9100
 
-        lda     $FA
+LE2FA:  lda     $FA
         cmp     #$03
         bne     LE307
         lda     #$03
@@ -1545,8 +1551,7 @@ LE3D7:  .byte   " "
 LE3E9:  .byte   "00600 OVERCAST - ", 0
         .byte   "ON INITIAL CONTACT", 0
 
-        .byte   $AE
-        lsr     $09,x
+LE40E:  ldx     $0956
         lda     $090E,x
         clc
         adc     $0930
@@ -1837,7 +1842,7 @@ LE641:  rts
 
 LE642:  sta     $BC
         stx     $BD
-        lda     #$08
+LE646:  lda     #$08
         sta     $A2
 LE64A:  lda     $A0
         and     #$01
@@ -3546,8 +3551,10 @@ LF25C:  brk
 LF25D:  brk
 LF25E:  brk
 LF25F:  brk
-        ora     $B1C8,y
-        .byte   $8B
+        .byte   $19
+
+LF261:  iny
+        lda     ($8B),y
         clc
         adc     $0849
         clc
@@ -3718,7 +3725,7 @@ LF3A4:  lda     $8B
         lda     #$06
         jmp     L67FD
 
-        iny
+LF3CA:  iny
         lda     ($8B),y
         sta     $A5
         iny

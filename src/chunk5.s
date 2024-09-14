@@ -8,64 +8,12 @@ InputCounter    := $08F1
 
 ;;; Simulation State
 
-SlewRollRate  := $0A67
-SlewYawRate   := $0A69
-SlewPitchRate := $0A6B
-
-ViewDirection := $0A70
-;;; $00 = front
-;;; $02 = front right
-;;; $04 = right
-;;; $06 = back right
-;;; $08 = back
-;;; $0A = back left
-;;; $0C = left
-;;; $0E = front left
-;;; $FF = down
-
-;;; Possible chunk4 references
-L0300           := $0300
-L08AD           := $08AD
-
-WW1AceScore     := $08C0
-WW1AceBombsStr  := $08D2
-WW1AceScoreStr  := $08DF
-
-;;; Jump-table, which is patched at runtime
-L1EAD           := $1EAD
-L1EB0           := $1EB0
-L1EB3           := $1EB3
-L1EBC           := $1EBC
-
-L1EC4           := $1EC4
 
 ;;; Possible chunk5 references - overlays?
 LB808           := $B808
 LB849           := $B849
 LB9C3           := $B9C3
 LB9CE           := $B9CE
-
-;;; Possible chunk3 references
-LD3D3           := $D3D3
-LD3D9           := $D3D9
-LD3E2           := $D3E2
-LD9F1           := $D9F1
-LDB48           := $DB48
-LDB99           := $DB99
-LDBB1           := $DBB1
-LDC3D           := $DC3D
-LDC59           := $DC59
-LDD50           := $DD50
-LDD7A           := $DD7A
-LDF65           := $DF65
-LE22C           := $E22C
-LE2B3           := $E2B3
-LE2D1           := $E2D1
-LE2FA           := $E2FA
-LE40E           := $E40E
-LE646           := $E646
-LF261           := $F261
-LF3CA           := $F3CA
 
 ;;; Possible chunk2 references
 LF7E2           := $F7E2
@@ -9766,7 +9714,7 @@ LAF39:  .byte   $9E
         brk
         brk
         .byte   $FF
-        jsr     L0300
+        .byte   $20, $00, $03
         jmp     LE646
 
         brk
