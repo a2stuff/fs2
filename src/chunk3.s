@@ -205,9 +205,10 @@ LD55F:  lda     $A8
         sta     $3B5E
         rts
 
-        .res    83, 0
-LD5C8:
-        .res    423, 0
+ReadBlockDataBuffer:
+        .res    506, 0
+LD5C8 := ReadBlockDataBuffer + 83 ; executable!
+
 LD76F:
         .res    70, 0
 LD7B5:

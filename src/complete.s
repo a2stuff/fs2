@@ -4,7 +4,9 @@
 
 .include "macros.inc"
 
+;;; ============================================================
 ;;; Subset of ca65's opcodes.inc
+
 OPC_ADC_izy = $71
 OPC_AND_izy = $31
 OPC_CLC     = $18
@@ -16,7 +18,9 @@ OPC_ORA_izy = $11
 OPC_SBC_izy = $F1
 OPC_SEC     = $38
 
+;;; ============================================================
 ;;; Apple II I/O locations
+
 KBD             := $C000
 KBDSTRB         := $C010
 SPKR            := $C030
@@ -34,6 +38,7 @@ LCBANK2         := $C083
 RdROMWrRAM1     := $C089
 LCBANK1         := $C08B
 
+;;; ============================================================
 ;;; Zero Page
 
 HiresPageDelta  := $8D          ; Either +$20 or -$20
@@ -56,6 +61,14 @@ InputMode       := $FA
 ;;; $0C = VORS
 ;;; $0D = ???
 ;;; $10 = Fuel Tank Select
+
+;;; ============================================================
+;;; Other locations
+
+ZPSwapStorage := $FF40
+
+
+;;; ============================================================
 
 .include "chunk2.s"
 .include "chunk3.s"

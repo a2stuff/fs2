@@ -3627,7 +3627,7 @@ L1EBC:  jmp     $2000           ; becomes D3DF
 L1EC4:  clc
         rts
 
-L1EC6:  jsr     L1EE9
+L1EC6:  jsr     SwapZP
         lda     #$00
         sta     $53
         lda     $1E01
@@ -3650,20 +3650,27 @@ L1EC6:  jsr     L1EE9
         ror     a
         jsr     L1EFA
 
-L1EE9:  ldx     #$1F
-L1EEB:  lda     $40,x
-        ldy     $FF40,x
-        sta     $FF40,x
+;;; ============================================================
+;;; Zero page preservation code
+
+.proc SwapZP
+        ldx     #$1F
+:       lda     $40,x
+        ldy     ZPSwapStorage,x
+        sta     ZPSwapStorage,x
         sty     $40,x
         dex
-        bpl     L1EEB
+        bpl     :-
         clc
         rts
+.endproc
+
+;;; ============================================================
 
 L1EFA:  sta     $5E
-        lda     #$26
+        lda     #>$2600
         sta     $45
-        lda     #$00
+        lda     #<$2600
         sta     $44
         lda     #$10
         sta     $53
@@ -3679,11 +3686,9 @@ L1F08:  ldy     $5A
         lda     $44
         pha
         ldy     $5A
-        .byte   $BE
-        .byte   $75
-        .byte   $D7
-        lda     $D875,y
-        jsr     L1F5F
+        ldx     ReadBlockDataBuffer+512,y
+        lda     ReadBlockDataBuffer+768,y
+        jsr     DoReadBlockWithStandardDataBuffer
         pla
         sta     $44
         pla
@@ -3692,16 +3697,16 @@ L1F2C:  ldy     $5E
         inc     $5E
         bne     L1F34
         inc     $5A
-L1F34:  ldx     $D575,y
-        lda     $D675,y
+L1F34:  ldx     ReadBlockDataBuffer,y
+        lda     ReadBlockDataBuffer+256,y
         pha
-        ora     $D575,y
+        ora     ReadBlockDataBuffer,y
         tay
         pla
 L1F40:  dey
         iny
         beq     L1F52
-        jsr     L1F67
+        jsr     DoReadBlock
 L1F47:  inc     $45
         inc     $45
         dec     $53
@@ -3716,22 +3721,30 @@ L1F52:  sta     ($44),y
         iny
         bne     L1F52
         beq     L1F47
-L1F5F:  ldy     #$75
+
+DoReadBlockWithStandardDataBuffer:
+        ldy     #<ReadBlockDataBuffer
         sty     $44
-        ldy     #$D5
+        ldy     #>ReadBlockDataBuffer
         sty     $45
-L1F67:  ldy     #$01
-        sty     L1F82
-        stx     L1FB2
-        sta     L1FB3
+
+        ;; X,A = block number, $44-45 = data buffer
+DoReadBlock:
+        ldy     #$01            ; ReadBlock
+        sty     SPCommandNumber
+        stx     RBBlockNumber
+        sta     RBBlockNumber+1
         jsr     L1F85
         lda     $45
-        sta     L1FB1
+        sta     RBDataBuffer+1
         lda     $44
-        sta     L1FB0
-        jsr     $C70D
-L1F82:  ora     ($AE,x)
-        .byte   $1F
+        sta     RBDataBuffer
+
+        jsr     $C70D           ; SmartPort entry point (self-modified)
+SPCommandNumber:
+        .byte   1               ; command (ReadBlock)
+        .addr   RBParams        ; params
+
 L1F85:  lda     #$04
         sta     $49
 L1F89:  ldx     #$00
@@ -3756,13 +3769,15 @@ L1F91:  lda     ($48),y
         bne     L1F8F
         rts
 
-        .byte   $03
-        .byte   $01
-L1FB0:  .byte   $DF
-L1FB1:  .byte   $95
-L1FB2:  .byte   $02
-L1FB3:  brk
-        brk
+        ;; ReadBlock parameter list
+RBParams:
+        .byte   $03             ; parameter count
+        .byte   $01             ; unit number
+RBDataBuffer:
+        .addr   $95DF           ; data buffer (lo, hi)
+RBBlockNumber:
+        .byte   $02, $00, $00   ; block number (lo, mid, hi)
+
         brk
         brk
         brk
