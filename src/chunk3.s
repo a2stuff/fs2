@@ -4,218 +4,35 @@ L002D           := $002D
 L0045           := $0045
 L00BA           := $00BA
 
-;;; Possible chunk4 references
-L03F0           := $03F0
-L1EC6           := $1EC6
-L1FC4           := $1FC4
-L1FE0           := $1FE0
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $76
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $76
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $76
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $76
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $76
 
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        ror     $FF,x
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        ror     $FF,x
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        ror     $FF,x
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        ror     $FF,x
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        ror     $4C,x
-        .byte   $1F
-        .byte   $D4
+LD3D0:  jmp     LD41F
+        .refto LD3D0
 
 LD3D3:  jmp     LD3FA
 
@@ -257,7 +74,7 @@ LD402:  lda     ($A5),y
         sta     $1E09
 LD41E:  rts
 
-        jsr     LD459
+LD41F:  jsr     LD459
         bcs     LD458
         jsr     L1FC4
         stx     $A0
@@ -2996,13 +2813,13 @@ LED4A:  lda     LE813,x
         lda     LE817,y
         pha
         dey
-        lda     L03F0
+        lda     BRKVector
         sta     LE817,y
         iny
         lda     $03F1
         sta     LE817,y
         lda     #$98
-        sta     L03F0
+        sta     BRKVector
         lda     #$ED
         sta     $03F1
         ldx     LE80E
@@ -3020,7 +2837,7 @@ LED9C:  tsx
         stx     LE811
         dey
         lda     LE817,y
-        sta     L03F0
+        sta     BRKVector
         iny
         lda     LE817,y
         sta     $03F1
@@ -3328,7 +3145,7 @@ LEFA4:  lda     L0045
         sta     $3A
         pla
         sta     $3B
-        jmp     (L03F0)
+        jmp     (BRKVector)
 
         .byte   $FF
         brk

@@ -121,7 +121,7 @@ LF79F:  lda     $5A,x
         jsr     LF8BC
         jmp     LF71C
 
-        lda     LF717
+LF7E2:  lda     LF717
         bne     LF7E8
         rts
 
@@ -537,130 +537,22 @@ LFB74:  dex
 LFB78:  jsr     YokeCenter
 LFB7B:  rts
 
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        ror     $FF,x
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        ror     $FF,x
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        ror     $FF,x
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        ror     $FF,x
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        ror     $FF,x
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        ror     $FF,x
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        ror     $FF,x
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        .byte   $76
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $76, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $76, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $76, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $76, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $76, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $76, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $76, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $76
 
         .assert * = $FC00, error, "EOF mismatch"

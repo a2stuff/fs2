@@ -3,24 +3,11 @@
 L003C           := $003C
 L00A5           := $00A5
 
-InputCounter    := $08F1
-;;; ???
-
-;;; Simulation State
-
-
 ;;; Possible chunk5 references - overlays?
 LB808           := $B808
 LB849           := $B849
 LB9C3           := $B9C3
 LB9CE           := $B9CE
-
-;;; Possible chunk2 references
-LF7E2           := $F7E2
-LF97A           := $F97A
-LF9B5           := $F9B5
-LFA56           := $FA56
-LFAEC           := $FAEC
 
 L6000:  jmp     L610A
 
@@ -9001,7 +8988,8 @@ LA7D3:  rts
 
 LA7E0:  .word   LB000
 
-        ;; $A7E2 - Called from chunk4 - Reset/Interrupt handler
+        ;; Reset/Interrupt handler
+ResetInterruptHandler:
         jmp     LAB91
         jmp     LAB91
 
@@ -9399,7 +9387,7 @@ LAD68:  .byte   $C3
         jsr     LDF65
         .byte   $3C
         dey
-        jsr     LF97A
+        jsr     $F97A
         eor     $88
         jsr     LDC59
         sbc     $87
@@ -9463,11 +9451,11 @@ LADE5:  .byte   $73
         .byte   $4C
         .byte   $72
 LADF8:  dec     L87A5,x
-        jsr     LF9B5
+        jsr     $F9B5
         ora     $88,x
-        jsr     LFA56
+        jsr     $FA56
         ora     ($88,x)
-        jsr     LFAEC
+        jsr     $FAEC
         ldx     $2087,y
         .byte   $FC
         cmp     a:$00,x

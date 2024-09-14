@@ -1,7 +1,6 @@
         .org $200
 
 ;;; chunk5 references
-LA7E2           := $A7E2        ; reset (etc) handler)
 LA851           := $A851        ; into middle of message???
 
         sty     $C2
@@ -148,6 +147,8 @@ ND03A1: .byte   $00, $03, $00, $04, $00, $05, $01, $06, $03, $05, $04, $05, $06,
 ND03BC: .byte    $00, $03, $00, $04, $00, $05, $01, $05, $03, $04, $04, $04, $05, $04, $07, $03, $08, $03, $09, $03, $0b, $02, $0c, $02, $0d, $02, $0f, $01, $ff
 
 
+;;; Probably garbage until vectors
+
         jmp     $B7B5
 
         lda     $9D0F
@@ -158,19 +159,21 @@ ND03BC: .byte    $00, $03, $00, $04, $00, $05, $01, $05, $03, $04, $04, $04, $05
         ldy     $AAC1
         rts
 
-        jmp     LA851
+        jmp     LA851           ; ???
 
         nop
         nop
 
         .byte   $4c             ; JMP ???
+
+BRKVector:
         .addr   $ED98           ; BRK vector
-        .addr   LA7E2           ; Reset vector
+        .addr   ResetInterruptHandler ; Reset vector
         .byte   $02             ; PWRUP byte
         jmp     L1F89           ; Applesoft & vector
         jmp     L1F89           ; Monitor Ctrl-Y vector
-        jmp     LA7E2           ; NMI vector
-        .addr   LA7E2           ; IRQ vector
+        jmp     ResetInterruptHandler ; NMI vector
+        .addr   ResetInterruptHandler ; IRQ vector
 
 
         ;; Text page 1 - and screen holes!
@@ -451,7 +454,9 @@ WW1AceScore:    .byte   0
         .byte   $04
         brk
         brk
-        brk
+
+InputCounter:   .byte   0       ; ???
+
         ora     ($00,x)
         .byte   $03
         brk
@@ -3622,7 +3627,7 @@ L1EBC:  jmp     $2000           ; becomes D3DF
 L1EC4:  clc
         rts
 
-        jsr     L1EE9
+L1EC6:  jsr     L1EE9
         lda     #$00
         sta     $53
         lda     $1E01
@@ -3774,7 +3779,7 @@ L1FB3:  brk
         brk
         brk
 
-        lda     L1E03
+L1FC4:  lda     L1E03
         sta     $A5
         lda     L1E04
         sta     $A6
@@ -3789,7 +3794,7 @@ L1FB3:  brk
         ldy     #$00
         rts
 
-        lda     $1E01
+L1FE0:  lda     $1E01
         cmp     #$88
         bcs     L1FFB
         lsr     a
