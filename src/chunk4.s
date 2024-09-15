@@ -878,7 +878,7 @@ L0A9E:  cpy     #$E0
         .byte   $0C
         inc     $E0C0,x
         eor     ($0C,x)
-        inc     L1F40,x
+        inc     $1F40,x
         .byte   $FF
         .byte   $FF
         .byte   $FF
@@ -3648,7 +3648,7 @@ L1EC6:  jsr     SwapZP
         sta     $5A
         txa
         ror     a
-        jsr     L1EFA
+        jsr     ReadBlocks
 
 ;;; ============================================================
 ;;; Zero page preservation code
@@ -3667,7 +3667,8 @@ L1EC6:  jsr     SwapZP
 
 ;;; ============================================================
 
-L1EFA:  sta     $5E
+.proc ReadBlocks
+        sta     $5E
         lda     #>$2600
         sta     $45
         lda     #<$2600
@@ -3703,7 +3704,7 @@ L1F34:  ldx     ReadBlockDataBuffer,y
         ora     ReadBlockDataBuffer,y
         tay
         pla
-L1F40:  dey
+        dey
         iny
         beq     L1F52
         jsr     DoReadBlock
@@ -3747,6 +3748,9 @@ SPCommandNumber:
 
 L1F85:  lda     #$04
         sta     $49
+
+;;; Swap A bytes between page in $49 and stash at $FF00
+;;; But the ptr advances mysteriously. ???
 L1F89:  ldx     #$00
         stx     $48
         sta     $4A
@@ -3777,6 +3781,12 @@ RBDataBuffer:
         .addr   $95DF           ; data buffer (lo, hi)
 RBBlockNumber:
         .byte   $02, $00, $00   ; block number (lo, mid, hi)
+.endproc
+
+;;; Stash
+L1F89 := ReadBlocks::L1F89
+
+;;; ============================================================
 
         brk
         brk
