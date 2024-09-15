@@ -589,7 +589,7 @@ L64C0:  ldy     $EF
         sty     $F1
         dey
         sty     $E7
-        jsr     L6541
+        jsr     FillViewportRow
 L64CC:  lda     $E9
         bne     L64D9
         lda     $EC
@@ -625,7 +625,7 @@ L6509:  lda     #$63
         sec
         sbc     $F0
         sta     $F1
-        jsr     L6541
+        jsr     FillViewportRow
 L6515:  jsr     L8278
         rts
 
@@ -636,7 +636,7 @@ L6519:  ldx     $ED
         rts
 
 L6522:  stx     $F3             ; self-modified opcode (RTS / STX)
-        ldy     $12C8,x
+        ldy     AltColorPixelToByteTable,x
         lda     $1358,x
         tax
         lda     $149E,x
@@ -651,16 +651,21 @@ L6522:  stx     $F3             ; self-modified opcode (RTS / STX)
 L653E:  ldx     $F3
         rts
 
-L6541:  ldy     $E7
+;;; ============================================================
+
+.proc FillViewportRow
+        ldy     $E7
         lda     HiresTableLo,y
         sta     $8E
         lda     HiresTableHi,y
         sta     $8F
         lda     $ED
-        beq     L6555
+        beq     L6555           ; black, so use our optimized routine
         cmp     #$FF
-        bne     L6567
-L6555:  ldy     #$27
+        bne     L6567           ; not white, so use generic routine
+
+        ;; Optimized routine when fill is solid black or white
+L6555:  ldy     #39             ; columns
 L6557:  sta     ($8E),y
         dey
         sta     ($8E),y
@@ -670,21 +675,25 @@ L6557:  sta     ($8E),y
         sta     ($8E),y
         dey
         bpl     L6557
-        bmi     L656A
-L6567:  jsr     L663F
+        bmi     L656A           ; always
+
+L6567:  jsr     DrawSkyGroundRowUnrolledHelper
+
 L656A:  dec     $E7
         dec     $F1
-        bne     L6541
+        bne     FillViewportRow
         rts
+.endproc
+
+;;; ============================================================
 
 ;;; Used for edge-to-edge fills of sky/ground
 ;;; The EOR #$7F are modified to be LDA #$xx at the transition point
 ;;; e.g. from the inital blue to green
 
-L6571:  sta     ($8E),y
+DrawSkyGroundRowUnrolled:
+        sta     ($8E),y
         iny
-L6574:
-L6575 := *+1
         eor     #$7F            ; self-modified
         sta     ($8E),y
         iny
@@ -807,41 +816,45 @@ L6637:  lda     $ED
         beq     L669D
         cmp     #$FF
         beq     L669D
-L663F:  ldy     #$00
-        jmp     L6571
+DrawSkyGroundRowUnrolledHelper:
+        ldy     #$00
+        jmp     DrawSkyGroundRowUnrolled
 
 ;;; Modify the line fill to transition sky/ground at appropriate column
 
 PrepareGroundSkyLineRoutine:
-        ldy     $E7             ; self-modified; turned into JMP L8403
+        ldy     $E7             ; self-modified; turned into JMP AltPrepareGroundSkyLineRoutine
         lda     HiresTableLo,y
         sta     $8E
         lda     HiresTableHi,y
         sta     $8F
         stx     $B2
-        lda     $123C,x
+
+        ;; Compute transition point (sky->ground or ground->sky),
+        ;; and modify `DrawSkyGroundRowUnrolled` to switch colors.
+        lda     ColorPixelToByteTable,x
         cmp     #$27
         beq     L6637
         asl     a
         asl     a
-        adc     $123C,x
-        tay
+        adc     ColorPixelToByteTable,x
+        tay                     ; Y is offset into `DrawSkyGroundRowUnrolled`
         ror     a
         lda     $EE             ; color
         bcs     :+              ; even or odd column?
         eor     #$7F            ; flip if needed
-:       sta     L6575,y
+:       sta     DrawSkyGroundRowUnrolled+4,y
         lda     #OPC_LDA_imm
-        sta     L6574,y
-        sty     $F3
+        sta     DrawSkyGroundRowUnrolled+3,y
+        sty     $F3             ; stash for later
         ldy     #$00
         lda     $ED
-        jsr     L6571
+        jsr     DrawSkyGroundRowUnrolled
         ldy     $F3
         lda     #OPC_EOR_imm    ; flip even/odd
-        sta     L6574,y
+        sta     DrawSkyGroundRowUnrolled+3,y
         lda     #$7F            ; mask
-        sta     L6575,y
+        sta     DrawSkyGroundRowUnrolled+4,y
         lda     $EE
         beq     L668B
         cmp     #$FF
@@ -860,6 +873,8 @@ L669D:  lda     $B2
         jsr     L790E
 L66A4:  ldx     $B2
         rts
+
+;;; ============================================================
 
         brk
 
@@ -935,6 +950,8 @@ L66A8:
         .addr   L676C
         .addr   L676C
         .addr   L676C
+
+;;; ============================================================
 
         ;; Called by chunk3
 L6734:  lda     $08F2
@@ -3080,8 +3097,8 @@ L78F4:  lda     $C6
 L790E:  sta     $F1
         inc     $F1
         ldx     $27
-        ldy     $12C8,x
-        lda     $1354,x
+        ldy     AltColorPixelToByteTable,x
+        lda     PixelToBitNumberTable,x
         tax
         cmp     #$06
         beq     L7941
@@ -3131,8 +3148,8 @@ L7963:  lda     HiresTableHi,y
         sta     $8F
         lda     HiresTableLo,y
         sta     $8E
-        ldy     $12C8,x
-        lda     $1354,x
+        ldy     AltColorPixelToByteTable,x
+        lda     PixelToBitNumberTable,x
         tax
         lda     ($8E),y
 L7976:  .byte   OPC_ORA_abx     ; self-modified opcode
@@ -3146,6 +3163,8 @@ L7982:  .byte   OPC_AND_abx     ; self-modified opcode
 L7983:  .addr   L1404           ; self-modified operand
         sta     ($8E),y
         rts
+
+;;; ============================================================
 
 L7988:  lda     $E9
         sec
@@ -3180,7 +3199,6 @@ L79BF:  sta     $22
         bne     L79C6
         rts
 
-;;; Turn coordinator rendering
 L79C6:  lda     $22
         sty     L7A06
         sty     L7A74
@@ -3414,24 +3432,24 @@ L7BA9:  lda     ColorTableEven,x
         txa
         ldx     #OPC_ORA_abx
         bit     L13F6
-        bne     L7BBD
+        bne     :+
         ldx     #OPC_AND_abx
-L7BBD:  stx     L792D
+:       stx     L792D
         LDXY    #L13F6
         bit     L13F6
-        bne     L7BCD
+        bne     :+
         LDXY    #L1404
-L7BCD:  STXY    L792E
+:       STXY    L792E
         ldx     #OPC_ORA_abx
         bit     L13FA
-        bne     L7BDC
+        bne     :+
         ldx     #OPC_AND_abx
-L7BDC:  stx     L7921
+:       stx     L7921
         LDXY    #L13FA
         bit     L13FA
-        bne     L7BEC
+        bne     :+
         LDXY    #L1408
-L7BEC:  STXY    L7922
+:       STXY    L7922
         rts
 
 L7BF3:  lda     $CB
@@ -4372,9 +4390,9 @@ L830B:  jsr     L7BA9
 
         lda     #OPC_JMP_abs
         sta     PrepareGroundSkyLineRoutine
-        lda     #<L8403
+        lda     #<AltPrepareGroundSkyLineRoutine
         sta     PrepareGroundSkyLineRoutine+1
-        lda     #>L8403
+        lda     #>AltPrepareGroundSkyLineRoutine
         sta     PrepareGroundSkyLineRoutine+2
 
         jsr     L842B
@@ -4515,7 +4533,9 @@ MaskOpCode:
 
 ;;; ============================================================
 
-L8403:  stx     $B2
+;;; `PrepareGroundSkyLineRoutine` sometimes turned into JMP here
+.proc AltPrepareGroundSkyLineRoutine
+        stx     $B2
         ldy     $E7
         lda     HiresTableLo,y
         sta     $8E
@@ -4536,11 +4556,13 @@ L841F:  txa
 L8425:  jsr     L790E
         ldx     $B2
         rts
+.endproc
 
 .endproc
 
 ;;; ============================================================
 
+;;; Draw viewport lines that have mix of sky+ground???
 .proc L842B
         ldx     #$E8
         lda     $EB

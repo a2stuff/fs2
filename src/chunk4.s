@@ -1671,7 +1671,7 @@ HiresPixelToBitMaskTable:
         .byte   $01, $02, $04, $08, $10, $20, $40
         .endrepeat
 
-L123C:
+ColorPixelToByteTable:
         .byte   $00, $00, $00, $00
         .byte   $01, $01, $01
         .byte   $02, $02, $02, $02
@@ -1712,7 +1712,9 @@ L123C:
         .byte   $25, $25, $25
         .byte   $26, $26, $26, $26
         .byte   $27, $27, $27
+        .assert * - ColorPixelToByteTable = 140, error, "size"
 
+AltColorPixelToByteTable:
         .byte   $00, $00, $00
         .byte   $01, $01, $01, $01
         .byte   $02, $02, $02
@@ -1753,10 +1755,10 @@ L123C:
         .byte   $25, $25, $25, $25
         .byte   $26, $26, $26
         .byte   $27, $27, $27, $27
+        .assert * - AltColorPixelToByteTable = 140, error, "size"
 
-;;; Pre-shift tables for drawing text???
-
-L1354:  .byte   0, 1, 2, 3, 4, 5, 6
+PixelToBitNumberTable:
+        .byte   0, 1, 2, 3, 4, 5, 6
         .byte   0, 1, 2, 3, 4, 5, 6
         .byte   0, 1, 2, 3, 4, 5, 6
         .byte   0, 1, 2, 3, 4, 5, 6
@@ -3291,7 +3293,7 @@ DrawCharacter:
         sta     char_rows
 
         ldx     msg_col
-        ldy     L1354,x         ; pre-shift ???
+        ldy     PixelToBitNumberTable,x
         ldx     L13EE,y
         stx     $A9
         lda     LeftMaskTable,x
@@ -3299,7 +3301,7 @@ DrawCharacter:
         lda     RightMaskTable,x
         sta     $AE
         ldy     msg_col
-        lda     L123C,y
+        lda     ColorPixelToByteTable,y
         lsr     a
         lda     color_mask1
         ldy     color_mask2
@@ -3329,7 +3331,7 @@ L1D0A:
         lda     HiresTableLo,y
         sta     hires_ptr1
         sta     hires_ptr2
-        ldy     L123C,x
+        ldy     ColorPixelToByteTable,x
 
         ;; Shift 3 bits out
         lda     #$00
