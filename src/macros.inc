@@ -69,6 +69,27 @@ label:                          ; optional label
         stx     arg+1
 .endmacro
 
+;;; Load X,Y
+;;;    LDXY #$1234      ; immediate
+;;;    LDXY $1234       ; absolute
+;;;    LDXY $1234,y     ; absolute,y
+.macro LDXY arg, reg
+    .if .paramcount > 1
+        ldx    arg, reg
+        ldy    arg+1, reg
+    .else
+        _op_lo ldx, {arg}
+        _op_hi ldy, {arg}
+    .endif
+.endmacro
+
+;;; Store X,Y
+;;;    STXY $1234       ; absolute
+.macro STXY arg
+        stx     arg
+        sty     arg+1
+.endmacro
+
 .macro ADD16 arg1, arg2, result
         clc
         _op_lo  lda, {arg1}

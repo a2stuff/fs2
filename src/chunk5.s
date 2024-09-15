@@ -540,7 +540,7 @@ L6457:  sta     $EE
         cmp     #$FF
         bne     L646D
 L6467:  and     #$03
-        tax
+        tax                     ; hires color
         jsr     L7BA9
 L646D:  lda     #$00
         sta     $F0
@@ -967,6 +967,7 @@ L6771:  asl     a
         sta     L00A5+1
         jmp     (L00A5)
 
+;;; Turn coordinator?
 L6780:  lda     $8B
         clc
         adc     #$03
@@ -3080,17 +3081,15 @@ L790E:  sta     $F1
         cmp     #$06
         beq     L7941
 L791F:  lda     ($8E),y
-L7921:  .byte   $1D
-L7922:  .byte   $FA
-L7923:  .byte   $13
+L7921:  .byte   OPC_ORA_abx
+L7922:  .addr   L13FA
         cpx     #$03
         bne     L792D
         sta     ($8E),y
         dey
         lda     ($8E),y
-L792D:  .byte   $3D
-L792E:  .byte   $04
-L792F:  .byte   $14
+L792D:  .byte   OPC_AND_abx
+L792E:  .addr   L1404
         sta     ($8E),y
         dex
         bmi     L793A
@@ -3131,17 +3130,15 @@ L7963:  lda     HiresTableHi,y
         lda     $1354,x
         tax
         lda     ($8E),y
-L7976:  .byte   $1D
-L7977:  .byte   $FA
-L7978:  .byte   $13
+L7976:  .byte   OPC_ORA_abx     ; self-modified opcode
+L7977:  .addr   L13FA           ; self-modified operand
         cpx     #$03
         bne     L7982
         sta     ($8E),y
         dey
         lda     ($8E),y
-L7982:  .byte   $3D
-L7983:  .byte   $04
-L7984:  .byte   $14
+L7982:  .byte   OPC_AND_abx     ; self-modified opcode
+L7983:  .addr   L1404           ; self-modified operand
         sta     ($8E),y
         rts
 
@@ -3165,12 +3162,12 @@ L79A3:  sta     $21
         jsr     L7963
         stx     $B0
         sty     $B1
-        ldy     #$E6
+        ldy     #OPC_INC_zp
         lda     $EC
         sec
         sbc     $EA
         bcs     L79BF
-        ldy     #$C6
+        ldy     #OPC_DEC_zp
         eor     #$FF
         adc     #$01
 L79BF:  sta     $22
@@ -3178,6 +3175,7 @@ L79BF:  sta     $22
         bne     L79C6
         rts
 
+;;; Turn coordinator rendering
 L79C6:  lda     $22
         sty     L7A06
         sty     L7A74
@@ -3213,9 +3211,9 @@ L79FE:  dex
         ldx     #$06
         dey
 L7A04:  sta     $F2
-L7A06:  dec     $EA
-L7A08:  .byte   $84
-L7A09:  .byte   $B1
+L7A06:  dec     $EA             ; self-modified opcode
+L7A08:  .byte   OPC_STY_zp      ; self-modified opcode
+L7A09:  .byte   $B1             ; self-modified operand
 L7A0A:  ldy     $EA
         lda     HiresTableHi,y
         sta     $8F
@@ -3223,23 +3221,20 @@ L7A0A:  ldy     $EA
         sta     $8E
         ldy     $B1
         lda     ($8E),y
-L7A1A:  .byte   $1D
-L7A1B:  .byte   $FA
-L7A1C:  .byte   $13
+L7A1A:  .byte   OPC_ORA_abx     ; self-modified opcode
+L7A1B:  .addr   L13FA           ; self-modified operand
         cpx     #$03
         bne     L7A2E
         sta     ($8E),y
         dey
         lda     ($8E),y
-L7A26:  .byte   $3D
-L7A27:  .byte   $04
-L7A28:  .byte   $14
+L7A26:  .byte   OPC_AND_abx     ; self-modified opcode
+L7A27:  .addr   L1404           ; self-modified operand
         sta     ($8E),y
         iny
         bne     L7A33
-L7A2E:  .byte   $3D
-L7A2F:  .byte   $04
-L7A30:  .byte   $14
+L7A2E:  .byte   OPC_AND_abx     ; self-modified opcode
+L7A2F:  .addr   L1404           ; self-modified operand
         sta     ($8E),y
 L7A33:  dec     $F1
         bne     L79F0
@@ -3290,19 +3285,17 @@ L7A86:  dex
         bpl     L7A8C
         ldx     #$06
         dey
-L7A8C:  .byte   $B1
-L7A8D:  .byte   $8E
-L7A8E:  .byte   $1D
-L7A8F:  .byte   $FA
-L7A90:  .byte   $13
+L7A8C:  .byte   OPC_LDA_izy     ; self-modified opcode
+L7A8D:  .byte   $8E             ; self-modified operand
+L7A8E:  .byte   OPC_ORA_abx     ; self-modified opcode
+L7A8F:  .addr   L13FA           ; self-modified operand
         cpx     #$03
         bne     L7A9A
         sta     ($8E),y
         dey
         lda     ($8E),y
-L7A9A:  .byte   $3D
-L7A9B:  php
-L7A9C:  .byte   $14
+L7A9A:  .byte   OPC_AND_abx     ; self-modified opcode
+L7A9B:  .addr   $1408           ; self-modified opcode
         sta     ($8E),y
 L7A9F:  dec     $F1
         bne     L7A67
@@ -3318,13 +3311,13 @@ L7AAF:  cpx     #$03
         bne     L7A9F
         dey
         bpl     L7A9F
-L7AB6:  lda     #$84
+L7AB6:  lda     #OPC_STY_zp
         sta     L7A08
-        lda     #$B1
+        lda     #OPC_LDA_izy
         sta     L7A09
-        lda     #$B1
+        lda     #OPC_LDA_izy    ; TODO: redundant
         sta     L7A8C
-        lda     #$8E
+        lda     #$8E            ; operand
         sta     L7A8D
         lda     #$03
         jsr     L7B16
@@ -3334,7 +3327,7 @@ L7AB6:  lda     #$84
 L7AD4:  lda     $083C
         and     #$01
         bne     L7AF2
-        lda     #$10
+        lda     #OPC_BPL
         sta     L7A08
         sta     L7A8C
         lda     #$2E
@@ -3346,23 +3339,15 @@ L7AD4:  lda     $083C
 L7AF2:  lda     #$01
         jmp     L67FD
 
-L7AF7:  brk
-        .byte   $02
-        ora     ($02,x)
-        ora     ($00,x)
-        ora     ($01,x)
-        brk
-        .byte   $03
-        brk
-        .byte   $02
-        ora     ($03,x)
-        ora     ($03,x)
+;;; ??? to hires color mapping
 
+ToHiresColorTable:
+        .byte   0, 2, 1, 2, 1, 0, 1, 1, 0, 3, 0, 2, 1, 3, 1, 3
 
 L7B07:  iny
         lda     ($8B),y
         tay
-        lda     L7AF7,y
+        lda     ToHiresColorTable,y
         jsr     L7B16
         lda     #$02
         jmp     L67FD
@@ -3371,100 +3356,77 @@ L7B16:  tax
         bpl     L7B1D
         ldx     #$5D
         bne     L7B26
-L7B1D:  ldx     #$1D
-        bit     $13F6
+L7B1D:  ldx     #OPC_ORA_abx
+        bit     L13F6
         bne     L7B26
-        ldx     #$3D
+        ldx     #OPC_AND_abx
 L7B26:  stx     L7982
         stx     L7A2E
         stx     L7A9A
         stx     L7A26
-        ldx     #$F6
-        ldy     #$13
-        bit     $13F6
+        LDXY    #L13F6
+        bit     L13F6
         bne     L7B3F
-        ldx     #$04
-        ldy     #$14
-L7B3F:  stx     L7983
-        sty     L7984
-        stx     L7A2F
-        sty     L7A30
-        stx     L7A9B
-        sty     L7A9C
-        stx     L7A27
-        sty     L7A28
+        LDXY    #L1404
+L7B3F:  STXY    L7983
+        STXY    L7A2F
+        STXY    L7A9B
+        STXY    L7A27
         tax
         bpl     L7B5E
-        ldx     #$5D
+        ldx     #OPC_EOR_abx
         bne     L7B67
-L7B5E:  ldx     #$1D
-        bit     $13FA
+L7B5E:  ldx     #OPC_ORA_abx
+        bit     L13FA
         bne     L7B67
-        ldx     #$3D
+        ldx     #OPC_AND_abx
 L7B67:  stx     L7976
         stx     L7A1A
         stx     L7A8E
-        ldx     #$FA
-        ldy     #$13
-        bit     $13FA
+        LDXY    #L13FA
+        bit     L13FA
         bne     L7B7D
-        ldx     #$08
-        ldy     #$14
-L7B7D:  stx     L7977
-        sty     L7978
-        stx     L7A1B
-        sty     L7A1C
-        stx     L7A8F
-        sty     L7A90
+        LDXY    #L1408
+L7B7D:  STXY    L7977
+        STXY    L7A1B
+        STXY    L7A8F
         rts
 
-L7B90:  brk
-        rol     a
-        eor     $7F,x
-        .byte   $80
-        tax
-        cmp     $FF,x
-L7B98:  brk
-        eor     $2A,x
-        .byte   $7F
-        .byte   $80
-        cmp     $AA,x
-        .byte   $FF
+ColorTableEven:
+        .byte   $00, $2A, $55, $7F, $80, $AA, $D5, $FF
+
+ColorTableOdd:
+        .byte   $00, $55, $2A, $7F, $80, $D5, $AA, $FF
+
 L7BA0:  lda     $0876
         and     #$0F
         tay
-        ldx     L7AF7,y
-L7BA9:  lda     L7B90,x
+        ldx     ToHiresColorTable,y
+L7BA9:  lda     ColorTableEven,x
         sta     $23
-        lda     L7B98,x
+        lda     ColorTableOdd,x
         sta     $24
         txa
-        ldx     #$1D
-        bit     $13F6
+        ldx     #OPC_ORA_abx
+        bit     L13F6
         bne     L7BBD
-        ldx     #$3D
+        ldx     #OPC_AND_abx
 L7BBD:  stx     L792D
-        ldx     #$F6
-        ldy     #$13
-        bit     $13F6
+        LDXY    #L13F6
+        bit     L13F6
         bne     L7BCD
-        ldx     #$04
-        ldy     #$14
-L7BCD:  stx     L792E
-        sty     L792F
-        ldx     #$1D
-        bit     $13FA
+        LDXY    #L1404
+L7BCD:  STXY    L792E
+        ldx     #OPC_ORA_abx
+        bit     L13FA
         bne     L7BDC
-        ldx     #$3D
+        ldx     #OPC_AND_abx
 L7BDC:  stx     L7921
-        ldx     #$FA
-        ldy     #$13
-        bit     $13FA
+        LDXY    #L13FA
+        bit     L13FA
         bne     L7BEC
-        ldx     #$08
-        ldy     #$14
-L7BEC:  stx     L7922
-        sty     L7923
+        LDXY    #L1408
+L7BEC:  STXY    L7922
         rts
 
 L7BF3:  lda     $CB
@@ -4314,7 +4276,7 @@ L8256:  cmp     ($CF,x)
         ldx     #$06
         lda     $6D
         bpl     L8280
-        ldx     #$05
+        ldx     #$05            ; hires color
 L8280:  jsr     L7BA9
         lda     #$8D
         sta     $E7
@@ -4390,13 +4352,13 @@ L8298:  lsr     a
         lda     $6F
         bpl     L82FD
         dec     $8A
-L82FD:  ldx     #$05
+L82FD:  ldx     #$05            ; hires color
         lda     $6D
         bpl     L830B
         lda     $8A
         eor     #$FF
         sta     $8A
-        ldx     #$06
+        ldx     #$06            ; hires color
 L830B:  jsr     L7BA9
         lda     #$60
         sta     L6522

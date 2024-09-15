@@ -1780,21 +1780,17 @@ L1354:  .byte   0, 1, 2, 3, 4, 5, 6
         .byte   0, 1, 2, 3, 4, 5, 6
 
 L13EE:  .byte   0, 2, 4, 6, 1, 3, 5, 7
-        ora     ($04,x)
-        bpl     L143A
-        .byte   $02
-        php
-        jsr     $0401
-        bpl     L1441
-        .byte   $02
-        php
-        jsr     $FBFE
-        .byte   $EF
-        .byte   $BF
-        sbc     $DFF7,x
-        inc     $EFFB,x
-        .byte   $BF
-        sbc     $DFF7,x
+
+;;; Turn coordinator data
+
+L13F6:  .byte   $01, $04, $10, $40
+
+L13FA:  .byte   $02, $08, $20, $01, $04, $10, $40, $02, $08, $20
+
+L1404:  .byte   $FE, $FB, $EF, $BF
+
+L1408:  .byte   $FD, $F7, $DF, $FE, $FB, $EF, $BF, $FD, $F7, $DF
+
         brk
         rol     a
         eor     $7F,x
@@ -1823,13 +1819,13 @@ L141D:  .byte   $7F
         adc     $7883,y
         .byte   $6B
         .byte   $77
-L143A:  rti
+        rti
 
         ror     $03,x
         adc     $B5,x
         .byte   $73
         .byte   $54
-L1441:  .byte   $72
+        .byte   $72
         sbc     ($70,x)
         lsr     $C96F,x
         adc     $6C23

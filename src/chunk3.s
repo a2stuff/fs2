@@ -3264,7 +3264,7 @@ LF13D:  rts
         .byte   $FF
         .byte   $FF
         brk
-        ror     $FF,x
+        .byte   $76, $FF
         .byte   $FF
         brk
         brk
@@ -3550,7 +3550,7 @@ LF3CA:  iny
         .byte   $FF
         .byte   $FF
         brk
-        ror     $FF,x
+        .byte   $76, $FF
         .byte   $FF
         brk
         brk
@@ -3565,7 +3565,7 @@ LF3CA:  iny
         .byte   $FF
         .byte   $FF
         brk
-        ror     $FF,x
+        .byte   $76, $FF
         .byte   $FF
         brk
         brk

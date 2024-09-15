@@ -7,16 +7,22 @@
 ;;; ============================================================
 ;;; Subset of ca65's opcodes.inc
 
-OPC_ADC_izy = $71
-OPC_AND_izy = $31
+OPC_BPL     = $10
+OPC_ORA_izy = $11
 OPC_CLC     = $18
+OPC_ORA_abx = $1D
+OPC_AND_izy = $31
+OPC_SEC     = $38
+OPC_AND_abx = $3D
+OPC_EOR_abx = $5D
+OPC_ADC_izy = $71
+OPC_STY_zp  = $84
+OPC_LDA_izy = $B1
 OPC_DEC_zp  = $C6
 OPC_DEX     = $CA
 OPC_INC_zp  = $E6
 OPC_INX     = $E8
-OPC_ORA_izy = $11
 OPC_SBC_izy = $F1
-OPC_SEC     = $38
 
 ;;; ============================================================
 ;;; Apple II I/O locations
