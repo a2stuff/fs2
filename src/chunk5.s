@@ -455,23 +455,35 @@ L6379:  LDAX    $68
         sta     $C9
 L639C:  rts
 
-L639D:  txa
+;;; ============================================================
+
+;;; Flip pages and fill viewport with sky/ground. Also updates artificial horizon.
+
+.proc L639D
+        txa
         bne     L63BE
+
+        ;; Point `HiresTableHi` at "other" page
+
         ldx     #$C0
-L63A2:  lda     $0E99,x
+L63A2:  lda     HiresTableHi+1,x
         clc
         adc     HiresPageDelta
-        sta     $0E99,x
+        sta     HiresTableHi+1,x
         dex
         bne     L63A2
         lda     HiresPageDelta
         eor     #$C0
         sta     HiresPageDelta
+
+        ;; Flip displayed pages
         bpl     L63BB
         sta     LOWSCR
-        bmi     L63BE
+        bmi     L63BE           ; always
 L63BB:  sta     HISCR
-L63BE:  LDAX    $8B
+L63BE:
+
+        LDAX    $8B
         STAX    $35
         lda     #$0D
         sta     L6B2C
@@ -581,8 +593,23 @@ L6492:  lda     $EA
         bne     L64C0
         jmp     L64BD
 
+;;; Typical view:
+;;;
+;;; +----------------------------------------+
+;;; |                                        |\
+;;; |                                        | } solid sky
+;;; |. . . . . . . . . . . . . . . . . . . . |/
+;;; |                            ______,-----|\
+;;; |              ______,------'            | } mix of sky/ground
+;;; |______,------'                          |/
+;;; |. . . . . . . . . . . . . . . . . . . . |\
+;;; |                                        | } solid ground
+;;; |                                        |/
+;;; +----------------------------------------+
+;;;
+;;; NOTE: Depending on pitch/roll, this could be inverted!
 
-;;; Fill rows of viewport above the sky/ground diagonal
+;;; Fill rows of viewport *above* the sky/ground diagonal
 L64B9:  lda     $EB
         beq     L64C0
 L64BD:  jsr     SwapEDAndEE
@@ -592,6 +619,8 @@ L64C0:  ldy     $EF
         dey
         sty     $E7
         jsr     FillViewportRows
+
+;;; Fill rows of viewport with the sky/ground diagonal
 L64CC:  lda     $E9
         bne     L64D9
         lda     $EC
@@ -605,9 +634,11 @@ L64D9:  lda     $EB
         cmp     $EC
         bcc     L64E6
 L64E3:  jsr     SwapEDAndEE
-L64E6:  jsr     L842B
+L64E6:  jsr     FillMixedViewportRows
+
+;;; Fill rows of viewport *below* the sky/ground diagonal
         lda     $F0
-        cmp     #$63
+        cmp     #99             ; viewport rows
         beq     L6515
         lda     $E9
         bne     L64FC
@@ -616,7 +647,6 @@ L64E6:  jsr     L842B
         bcc     L6506
         jmp     L6509
 
-;;; Fill rows of viewport below the sky/ground diagonal
 L64FC:  lda     $EB
         bne     L6509
         lda     $EA
@@ -629,8 +659,12 @@ L6509:  lda     #$63
         sbc     $F0
         sta     $F1
         jsr     FillViewportRows
-L6515:  jsr     L8278
+
+;;; Finish up - update artificial horizon too
+L6515:
+        jsr     UpdateArtificialHorizon
         rts
+.endproc
 
 ;;; ============================================================
 
@@ -4341,7 +4375,7 @@ L8256:  cmp     ($CF,x)
 
 ;;; ============================================================
 
-.proc L8278
+.proc UpdateArtificialHorizon
         ldx     #$06
         lda     $6D
         bpl     L8280
@@ -4441,7 +4475,7 @@ L830B:  jsr     L7BA9
         lda     #>AltDrawSkyGroundRow
         sta     DrawSkyGroundRow+2
 
-        jsr     L842B
+        jsr     FillMixedViewportRows
 
         ;; Restore routines
         lda     #OPC_STX_zp
@@ -4609,8 +4643,9 @@ L8425:  jsr     L790E
 
 ;;; ============================================================
 
-;;; Draw viewport lines that have mix of sky+ground???
-.proc L842B
+;;; Draw viewport lines that have mix of sky+ground
+
+.proc FillMixedViewportRows
         ldx     #$E8
         lda     $EB
         sec
