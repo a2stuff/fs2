@@ -54,12 +54,19 @@ LCBANK1         := $C08B
 ;;; ============================================================
 ;;; Zero Page
 
+ColorByteEven   := $23
+ColorByteOdd    := $24
+
 HiresPageDelta  := $8D          ; Either +$20 or -$20
+
+HiresRowPtr     := $8E          ; $8E-$8F
 
 PixelListData   := $9C          ; For `DrawPixelList`
 
 ValueForString  := $B6     ; $B6-$B7
 ;;; Used by `Set3DigitString` and `DivideByAXAndSetDigitY`
+
+TmpStash        := $F3
 
 InputMode       := $FA
 ;;; $00 = Normal Flight
@@ -79,7 +86,6 @@ InputMode       := $FA
 ;;; Other locations
 
 ZPSwapStorage := $FF40
-
 
 ;;; ============================================================
 

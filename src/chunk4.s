@@ -1885,14 +1885,22 @@ L148D:  ora     $C7,x
         brk
         .byte   $DC
         .byte   $FC
+
+L149E:
         .byte   $3F
         .byte   $7C
-        bvs     $14E2
-        ror     $6078,x
-        brk
-        ora     ($07,x)
+        .byte   $70
+        .byte   $40
+        .byte   $7E
+        .byte   $78
+        .byte   $60
+
+L14A5:
+        .byte   $00
+        .byte   $01
+        .byte   $07
         .byte   $1F
-        brk
+        .byte   $00
         .byte   $03
         .byte   $0F
 
@@ -3368,15 +3376,15 @@ L1D49:  dex
         and     $BD
         sta     $AB
         lda     $AD
-        and     ($8E),y
+        and     (HiresRowPtr),y
         ora     $AC
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         sta     ($3C),y
         iny
         lda     $AE
-        and     ($8E),y
+        and     (HiresRowPtr),y
         ora     $AB
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         sta     ($3C),y
         inc     msg_row
         dec     $A7

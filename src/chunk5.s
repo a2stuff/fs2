@@ -551,7 +551,7 @@ L646D:  lda     #$00
         dec     $F0
         lda     $73
         bpl     L6482
-        jsr     L6519
+        jsr     SwapEDAndEE
 L6482:  jmp     L6509
 
 L6485:  cmp     $EF
@@ -581,15 +581,17 @@ L6492:  lda     $EA
         bne     L64C0
         jmp     L64BD
 
+
+;;; Fill rows of viewport above the sky/ground diagonal
 L64B9:  lda     $EB
         beq     L64C0
-L64BD:  jsr     L6519
+L64BD:  jsr     SwapEDAndEE
 L64C0:  ldy     $EF
         beq     L64CC
         sty     $F1
         dey
         sty     $E7
-        jsr     FillViewportRow
+        jsr     FillViewportRows
 L64CC:  lda     $E9
         bne     L64D9
         lda     $EC
@@ -602,7 +604,7 @@ L64D9:  lda     $EB
         lda     $EA
         cmp     $EC
         bcc     L64E6
-L64E3:  jsr     L6519
+L64E3:  jsr     SwapEDAndEE
 L64E6:  jsr     L842B
         lda     $F0
         cmp     #$63
@@ -614,51 +616,65 @@ L64E6:  jsr     L842B
         bcc     L6506
         jmp     L6509
 
+;;; Fill rows of viewport below the sky/ground diagonal
 L64FC:  lda     $EB
         bne     L6509
         lda     $EA
         cmp     $EC
         bcs     L6509
-L6506:  jsr     L6519
+L6506:  jsr     SwapEDAndEE
 L6509:  lda     #$63
         sta     $E7
         sec
         sbc     $F0
         sta     $F1
-        jsr     FillViewportRow
+        jsr     FillViewportRows
 L6515:  jsr     L8278
-        rts
-
-L6519:  ldx     $ED
-        ldy     $EE
-        stx     $EE
-        sty     $ED
-        rts
-
-L6522:  stx     $F3             ; self-modified opcode (RTS / STX)
-        ldy     AltColorPixelToByteTable,x
-        lda     $1358,x
-        tax
-        lda     $149E,x
-        ora     ($8E),y
-        sta     ($8E),y
-        cpy     #$27
-        bcs     L653E
-        iny
-        lda     $14A5,x
-        ora     ($8E),y
-        sta     ($8E),y
-L653E:  ldx     $F3
         rts
 
 ;;; ============================================================
 
-.proc FillViewportRow
+.proc SwapEDAndEE
+        ldx     $ED
+        ldy     $EE
+        stx     $EE
+        sty     $ED
+        rts
+.endproc
+
+;;; ============================================================
+
+;;; Make sky/ground edge white, to avoid color clash/black pixels
+.proc TidySkyGroundEdgeInRow
+        stx     TmpStash             ; self-modified opcode (RTS / STX)
+        ldy     AltColorPixelToByteTable,x
+        lda     PixelToBitNumberTable+4,x
+        tax
+        lda     L149E,x
+        ora     (HiresRowPtr),y
+        sta     (HiresRowPtr),y
+        cpy     #39             ; max col
+        bcs     :+
+        iny
+        lda     L14A5,x
+        ora     (HiresRowPtr),y
+        sta     (HiresRowPtr),y
+:
+        ldx     TmpStash
+        rts
+.endproc
+
+;;; ============================================================
+
+;;; Inputs:
+;;;    $E7 = bottom-most row (start)
+;;;    $F1 = number of rows
+.proc FillViewportRows
         ldy     $E7
         lda     HiresTableLo,y
-        sta     $8E
+        sta     HiresRowPtr
         lda     HiresTableHi,y
-        sta     $8F
+        sta     HiresRowPtr+1
         lda     $ED
         beq     L6555           ; black, so use our optimized routine
         cmp     #$FF
@@ -666,13 +682,13 @@ L653E:  ldx     $F3
 
         ;; Optimized routine when fill is solid black or white
 L6555:  ldy     #39             ; columns
-L6557:  sta     ($8E),y
+L6557:  sta     (HiresRowPtr),y
         dey
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         dey
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         dey
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         dey
         bpl     L6557
         bmi     L656A           ; always
@@ -681,7 +697,7 @@ L6567:  jsr     DrawSkyGroundRowUnrolledHelper
 
 L656A:  dec     $E7
         dec     $F1
-        bne     FillViewportRow
+        bne     FillViewportRows ; loop
         rts
 .endproc
 
@@ -692,124 +708,124 @@ L656A:  dec     $E7
 ;;; e.g. from the inital blue to green
 
 DrawSkyGroundRowUnrolled:
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F            ; self-modified
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         eor     #$7F
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         rts
 
 L6637:  lda     $ED
@@ -822,12 +838,12 @@ DrawSkyGroundRowUnrolledHelper:
 
 ;;; Modify the line fill to transition sky/ground at appropriate column
 
-PrepareGroundSkyLineRoutine:
-        ldy     $E7             ; self-modified; turned into JMP AltPrepareGroundSkyLineRoutine
+DrawSkyGroundRow:
+        ldy     $E7             ; self-modified; turned into JMP AltDrawSkyGroundRow
         lda     HiresTableLo,y
-        sta     $8E
+        sta     HiresRowPtr
         lda     HiresTableHi,y
-        sta     $8F
+        sta     HiresRowPtr+1
         stx     $B2
 
         ;; Compute transition point (sky->ground or ground->sky),
@@ -846,11 +862,13 @@ PrepareGroundSkyLineRoutine:
 :       sta     DrawSkyGroundRowUnrolled+4,y
         lda     #OPC_LDA_imm
         sta     DrawSkyGroundRowUnrolled+3,y
-        sty     $F3             ; stash for later
+        sty     TmpStash        ; stash for later
         ldy     #$00
         lda     $ED
+
         jsr     DrawSkyGroundRowUnrolled
-        ldy     $F3
+
+        ldy     TmpStash
         lda     #OPC_EOR_imm    ; flip even/odd
         sta     DrawSkyGroundRowUnrolled+3,y
         lda     #$7F            ; mask
@@ -1944,11 +1962,11 @@ L6EF1:  jsr     L6D56
         lda     ($8B),y
         sty     $B3
         ldy     #$01
-        and     ($8E),y
+        and     (HiresRowPtr),y
         bne     L6F16
         lda     $A9
         ldy     #$00
-        and     ($8E),y
+        and     (HiresRowPtr),y
         beq     L6EE6
 L6F16:  ldy     $B3
         lda     #$07
@@ -2999,9 +3017,9 @@ L784A:  ldx     $25
         sta     L7889
         ldy     $B1
         lda     HiresTableLo,y
-        sta     $8E
+        sta     HiresRowPtr
         lda     HiresTableHi,y
-        sta     $8F
+        sta     HiresRowPtr+1
 L785D:  lda     $B1
         cmp     $0AB8,x
         bne     L789B
@@ -3102,17 +3120,17 @@ L790E:  sta     $F1
         tax
         cmp     #$06
         beq     L7941
-L791F:  lda     ($8E),y
+L791F:  lda     (HiresRowPtr),y
 L7921:  .byte   OPC_ORA_abx
 L7922:  .addr   L13FA
         cpx     #$03
         bne     L792D
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         dey
-        lda     ($8E),y
+        lda     (HiresRowPtr),y
 L792D:  .byte   OPC_AND_abx
 L792E:  .addr   L1404
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         dex
         bmi     L793A
         dec     $F1
@@ -3129,39 +3147,39 @@ L7941:  lda     $F1
         bcc     L791F
         beq     L7959
         sta     $F1
-        lda     $23
-        sta     ($8E),y
+        lda     ColorByteEven
+        sta     (HiresRowPtr),y
         dey
-        lda     $24
-        sta     ($8E),y
+        lda     ColorByteOdd
+        sta     (HiresRowPtr),y
         dey
         jmp     L7941
 
-L7959:  lda     $23
-        sta     ($8E),y
+L7959:  lda     ColorByteEven
+        sta     (HiresRowPtr),y
         dey
-        lda     $24
-        sta     ($8E),y
+        lda     ColorByteOdd
+        sta     (HiresRowPtr),y
         rts
 
 L7963:  lda     HiresTableHi,y
-        sta     $8F
+        sta     HiresRowPtr+1
         lda     HiresTableLo,y
-        sta     $8E
+        sta     HiresRowPtr
         ldy     AltColorPixelToByteTable,x
         lda     PixelToBitNumberTable,x
         tax
-        lda     ($8E),y
+        lda     (HiresRowPtr),y
 L7976:  .byte   OPC_ORA_abx     ; self-modified opcode
 L7977:  .addr   L13FA           ; self-modified operand
         cpx     #$03
         bne     L7982
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         dey
-        lda     ($8E),y
+        lda     (HiresRowPtr),y
 L7982:  .byte   OPC_AND_abx     ; self-modified opcode
 L7983:  .addr   L1404           ; self-modified operand
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         rts
 
 ;;; ============================================================
@@ -3239,26 +3257,26 @@ L7A08:  .byte   OPC_STY_zp      ; self-modified opcode
 L7A09:  .byte   $B1             ; self-modified operand
 L7A0A:  ldy     $EA
         lda     HiresTableHi,y
-        sta     $8F
+        sta     HiresRowPtr+1
         lda     HiresTableLo,y
-        sta     $8E
+        sta     HiresRowPtr
         ldy     $B1
-        lda     ($8E),y
+        lda     (HiresRowPtr),y
 L7A1A:  .byte   OPC_ORA_abx     ; self-modified opcode
 L7A1B:  .addr   L13FA           ; self-modified operand
         cpx     #$03
         bne     L7A2E
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         dey
-        lda     ($8E),y
+        lda     (HiresRowPtr),y
 L7A26:  .byte   OPC_AND_abx     ; self-modified opcode
 L7A27:  .addr   L1404           ; self-modified operand
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         bne     L7A33
 L7A2E:  .byte   OPC_AND_abx     ; self-modified opcode
 L7A2F:  .addr   L1404           ; self-modified operand
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
 L7A33:  dec     $F1
         bne     L79F0
         rts
@@ -3300,9 +3318,9 @@ L7A74:  inc     $EA
         sty     $B1
         ldy     $EA
         lda     HiresTableHi,y
-        sta     $8F
+        sta     HiresRowPtr+1
         lda     HiresTableLo,y
-        sta     $8E
+        sta     HiresRowPtr
         ldy     $B1
 L7A86:  dex
         bpl     L7A8C
@@ -3314,12 +3332,12 @@ L7A8E:  .byte   OPC_ORA_abx     ; self-modified opcode
 L7A8F:  .addr   L13FA           ; self-modified operand
         cpx     #$03
         bne     L7A9A
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         dey
-        lda     ($8E),y
+        lda     (HiresRowPtr),y
 L7A9A:  .byte   OPC_AND_abx     ; self-modified opcode
 L7A9B:  .addr   $1408           ; self-modified opcode
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
 L7A9F:  dec     $F1
         bne     L7A67
         rts
@@ -3327,7 +3345,7 @@ L7A9F:  dec     $F1
         lda     $F1
         and     #$03
         bne     L7AAF
-        lda     ($8E),y
+        lda     (HiresRowPtr),y
         jmp     L7A8E
 
 L7AAF:  cpx     #$03
@@ -3364,8 +3382,34 @@ L7AF2:  lda     #$01
 
 ;;; ??? to hires color mapping
 
+;;; NOTE: These differ from the Applesoft Hires colors
+HIRES_BLACK1 = 0
+HIRES_VIOLET = 1
+HIRES_GREEN  = 2
+HIRES_WHITE1 = 3
+;;; HIRES_BLACK2 = 4
+HIRES_BLUE   = 5
+HIRES_ORANGE = 6
+;;; HIRES_WHITE2 = 7
+
+;;; Notes:
+;;; * land rendered as green (day)/black (night) separately
+;;; * radar and 3D view use different entries ???
+;;; * day/night use different entries???
+;;; * palette bit not set when rendering lines
+;;; 3D View:
+;;; * 1st entry used for "black" buildings (day/night) / water color (night)
+;;; * 3rd entry is used for water color (day)
+;;; * 10th entry used for airplane wing/tail (day/night)
+;;; * 16th entry used for "city" terrain (day/night)
+;;; Radar:
+;;; * third entry is used for water color
+;;; * last entry used for runways
 ToHiresColorTable:
-        .byte   0, 2, 1, 2, 1, 0, 1, 1, 0, 3, 0, 2, 1, 3, 1, 3
+        .byte   HIRES_BLACK1, HIRES_GREEN, HIRES_VIOLET, HIRES_GREEN
+        .byte   HIRES_VIOLET, HIRES_BLACK1, HIRES_VIOLET, HIRES_VIOLET
+        .byte   HIRES_BLACK1, HIRES_WHITE1, HIRES_BLACK1, HIRES_GREEN
+        .byte   HIRES_VIOLET, HIRES_WHITE1, HIRES_VIOLET, HIRES_WHITE1
 
 L7B07:  iny
         lda     ($8B),y
@@ -3378,7 +3422,8 @@ L7B07:  iny
 L7B16:  tax
         bpl     L7B1D
         ldx     #$5D
-        bne     L7B26
+        bne     L7B26           ; always
+
 L7B1D:  ldx     #OPC_ORA_abx
         bit     L13F6
         bne     L7B26
@@ -3426,9 +3471,9 @@ L7BA0:  lda     $0876
         tay
         ldx     ToHiresColorTable,y
 L7BA9:  lda     ColorTableEven,x
-        sta     $23
+        sta     ColorByteEven
         lda     ColorTableOdd,x
-        sta     $24
+        sta     ColorByteOdd
         txa
         ldx     #OPC_ORA_abx
         bit     L13F6
@@ -4294,12 +4339,13 @@ L8256:  cmp     ($CF,x)
         .byte   $2B
         and     ($40),y
 
+;;; ============================================================
 
 .proc L8278
         ldx     #$06
         lda     $6D
         bpl     L8280
-        ldx     #$05            ; hires color
+        ldx     #HIRES_BLUE
 L8280:  jsr     L7BA9
         lda     #$8D
         sta     $E7
@@ -4375,38 +4421,38 @@ L8298:  lsr     a
         lda     $6F
         bpl     L82FD
         dec     $8A
-L82FD:  ldx     #$05            ; hires color
+L82FD:  ldx     #HIRES_BLUE
         lda     $6D
         bpl     L830B
         lda     $8A
         eor     #$FF
         sta     $8A
-        ldx     #$06            ; hires color
+        ldx     #HIRES_ORANGE
 L830B:  jsr     L7BA9
 
         ;; Modify routines
         lda     #OPC_RTS
-        sta     L6522
+        sta     TidySkyGroundEdgeInRow
 
         lda     #OPC_JMP_abs
-        sta     PrepareGroundSkyLineRoutine
-        lda     #<AltPrepareGroundSkyLineRoutine
-        sta     PrepareGroundSkyLineRoutine+1
-        lda     #>AltPrepareGroundSkyLineRoutine
-        sta     PrepareGroundSkyLineRoutine+2
+        sta     DrawSkyGroundRow
+        lda     #<AltDrawSkyGroundRow
+        sta     DrawSkyGroundRow+1
+        lda     #>AltDrawSkyGroundRow
+        sta     DrawSkyGroundRow+2
 
         jsr     L842B
 
         ;; Restore routines
         lda     #OPC_STX_zp
-        sta     L6522
+        sta     TidySkyGroundEdgeInRow
 
         lda     #OPC_LDY_zp
-        sta     PrepareGroundSkyLineRoutine
+        sta     DrawSkyGroundRow
         lda     #$E7
-        sta     PrepareGroundSkyLineRoutine+1
+        sta     DrawSkyGroundRow+1
         lda     #OPC_LDA_aby
-        sta     PrepareGroundSkyLineRoutine+2
+        sta     DrawSkyGroundRow+2
 
         lda     $E9
         clc
@@ -4453,31 +4499,34 @@ L8384:  jmp     ApplyArtificialHorizonMasks
 L8387:  sta     $B5
         ldx     $E7
 L838B:  lda     HiresTableLo,x
-        sta     $8E
+        sta     HiresRowPtr
         lda     HiresTableHi,x
-        sta     $8F
+        sta     HiresRowPtr+1
         ldy     #$08
-        lda     $24
-        sta     ($8E),y
+        lda     ColorByteOdd
+        sta     (HiresRowPtr),y
         iny
         iny
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         iny
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         ldy     #$09
-        lda     $23
-        sta     ($8E),y
+        lda     ColorByteEven
+        sta     (HiresRowPtr),y
         iny
         iny
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         iny
         iny
-        sta     ($8E),y
+        sta     (HiresRowPtr),y
         dex
         dec     $B5
         bpl     L838B
         rts
+.endproc
+
+;;; ============================================================
 
 ;;; Apply AND / OR mask to artificial horizon
 
@@ -4485,17 +4534,17 @@ L838B:  lda     HiresTableLo,x
         ldx     #$6E
 row:
         lda     HiresTableLo,x
-        sta     $8E
+        sta     HiresRowPtr
         lda     HiresTableHi,x
-        sta     $8F
+        sta     HiresRowPtr+1
         stx     $B0
         ldx     #$00
         ldy     #$08
 col:
         lda     ($2D,x)
 MaskOpCode:
-        ora     ($8E),y         ; self-modified (AND/ORA)
-        sta     ($8E),y
+        ora     (HiresRowPtr),y ; self-modified (AND/ORA)
+        sta     (HiresRowPtr),y
         inc     $2D
         bne     :+
         inc     $2E
@@ -4533,14 +4582,14 @@ MaskOpCode:
 
 ;;; ============================================================
 
-;;; `PrepareGroundSkyLineRoutine` sometimes turned into JMP here
-.proc AltPrepareGroundSkyLineRoutine
+;;; `DrawSkyGroundRow` sometimes turned into JMP here
+.proc AltDrawSkyGroundRow
         stx     $B2
         ldy     $E7
         lda     HiresTableLo,y
-        sta     $8E
+        sta     HiresRowPtr
         lda     HiresTableHi,y
-        sta     $8F
+        sta     HiresRowPtr+1
         lda     $8A
         bne     L841F
         lda     #$2F
@@ -4556,8 +4605,6 @@ L841F:  txa
 L8425:  jsr     L790E
         ldx     $B2
         rts
-.endproc
-
 .endproc
 
 ;;; ============================================================
@@ -4589,8 +4636,8 @@ L8451:  sta     $22
         ldx     $E9
         ldy     $EA
         sty     $E7
-        jsr     PrepareGroundSkyLineRoutine
-        jsr     L6522
+        jsr     DrawSkyGroundRow
+        jsr     TidySkyGroundEdgeInRow
         lda     $22
         ora     $21
         bne     L846C
@@ -4610,8 +4657,8 @@ L8476:  lda     $F2
         sta     $F2
 L8483:  dex
 L8484:  dec     $E7
-        jsr     PrepareGroundSkyLineRoutine
-        jsr     L6522
+        jsr     DrawSkyGroundRow
+        jsr     TidySkyGroundEdgeInRow
         dec     $93
         bne     L8476
         rts
@@ -4630,8 +4677,8 @@ L849A:  inx
         adc     $21
         sta     $F2
 L84A8:  inc     $E7
-        jsr     PrepareGroundSkyLineRoutine
-        jsr     L6522
+        jsr     DrawSkyGroundRow
+        jsr     TidySkyGroundEdgeInRow
 L84B0:  dec     $93
         bne     L849A
         rts
