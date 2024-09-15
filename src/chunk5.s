@@ -635,7 +635,7 @@ L6519:  ldx     $ED
         sty     $ED
         rts
 
-L6522:  stx     $F3
+L6522:  stx     $F3             ; self-modified opcode (RTS / STX)
         ldy     $12C8,x
         lda     $1358,x
         tax
@@ -676,6 +676,10 @@ L656A:  dec     $E7
         dec     $F1
         bne     L6541
         rts
+
+;;; Used for edge-to-edge fills of sky/ground
+;;; The EOR #$7F are modified to be LDA #$xx at the transition point
+;;; e.g. from the inital blue to green
 
 L6571:  sta     ($8E),y
         iny
@@ -806,10 +810,11 @@ L6637:  lda     $ED
 L663F:  ldy     #$00
         jmp     L6571
 
-L6644:
-L6645 := *+1
-        ldy     $E7             ; self-modified
-L6646:  lda     HiresTableLo,y
+;;; Modify the line fill to transition sky/ground at appropriate column
+
+PrepareGroundSkyLineRoutine:
+        ldy     $E7             ; self-modified; turned into JMP L8403
+        lda     HiresTableLo,y
         sta     $8E
         lda     HiresTableHi,y
         sta     $8F
@@ -822,20 +827,20 @@ L6646:  lda     HiresTableLo,y
         adc     $123C,x
         tay
         ror     a
-        lda     $EE
-        bcs     L6666
-        eor     #$7F
-L6666:  sta     L6575,y
-        lda     #$A9
+        lda     $EE             ; color
+        bcs     :+              ; even or odd column?
+        eor     #$7F            ; flip if needed
+:       sta     L6575,y
+        lda     #OPC_LDA_imm
         sta     L6574,y
         sty     $F3
         ldy     #$00
         lda     $ED
         jsr     L6571
         ldy     $F3
-        lda     #$49
+        lda     #OPC_EOR_imm    ; flip even/odd
         sta     L6574,y
-        lda     #$7F
+        lda     #$7F            ; mask
         sta     L6575,y
         lda     $EE
         beq     L668B
@@ -4360,23 +4365,31 @@ L82FD:  ldx     #$05            ; hires color
         sta     $8A
         ldx     #$06            ; hires color
 L830B:  jsr     L7BA9
-        lda     #$60
+
+        ;; Modify routines
+        lda     #OPC_RTS
         sta     L6522
-        lda     #$4C
-        sta     L6644
-        lda     #$03
-        sta     L6645
-        lda     #$84
-        sta     L6646
+
+        lda     #OPC_JMP_abs
+        sta     PrepareGroundSkyLineRoutine
+        lda     #<L8403
+        sta     PrepareGroundSkyLineRoutine+1
+        lda     #>L8403
+        sta     PrepareGroundSkyLineRoutine+2
+
         jsr     L842B
-        lda     #$86
+
+        ;; Restore routines
+        lda     #OPC_STX_zp
         sta     L6522
-        lda     #$A4
-        sta     L6644
+
+        lda     #OPC_LDY_zp
+        sta     PrepareGroundSkyLineRoutine
         lda     #$E7
-        sta     L6645
-        lda     #$B9
-        sta     L6646
+        sta     PrepareGroundSkyLineRoutine+1
+        lda     #OPC_LDA_aby
+        sta     PrepareGroundSkyLineRoutine+2
+
         lda     $E9
         clc
         sbc     #$27
@@ -4502,7 +4515,7 @@ MaskOpCode:
 
 ;;; ============================================================
 
-        stx     $B2
+L8403:  stx     $B2
         ldy     $E7
         lda     HiresTableLo,y
         sta     $8E
@@ -4554,7 +4567,7 @@ L8451:  sta     $22
         ldx     $E9
         ldy     $EA
         sty     $E7
-        jsr     L6644
+        jsr     PrepareGroundSkyLineRoutine
         jsr     L6522
         lda     $22
         ora     $21
@@ -4575,7 +4588,7 @@ L8476:  lda     $F2
         sta     $F2
 L8483:  dex
 L8484:  dec     $E7
-        jsr     L6644
+        jsr     PrepareGroundSkyLineRoutine
         jsr     L6522
         dec     $93
         bne     L8476
@@ -4595,7 +4608,7 @@ L849A:  inx
         adc     $21
         sta     $F2
 L84A8:  inc     $E7
-        jsr     L6644
+        jsr     PrepareGroundSkyLineRoutine
         jsr     L6522
 L84B0:  dec     $93
         bne     L849A

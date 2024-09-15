@@ -1791,12 +1791,12 @@ L1404:  .byte   $FE, $FB, $EF, $BF
 
 L1408:  .byte   $FD, $F7, $DF, $FE, $FB, $EF, $BF, $FD, $F7, $DF
 
-        brk
-        rol     a
-        eor     $7F,x
-        brk
-        eor     $2A,x
-        .byte   $7F
+        ;; Hires color table
+L1412:  .byte   $00, $2A, $55, $7F
+        .refto L1412
+L1416:  .byte   $00, $55, $2A, $7F
+        .refto L1416
+
 L141A:  .byte   $FF
 L141B:  .byte   $7F
 L141C:  .byte   $F5
