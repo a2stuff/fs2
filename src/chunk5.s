@@ -1143,17 +1143,17 @@ L6806 := *+1
         bcs     L6843
         inc     $B5
         lda     $D4
-        sta     $0AB8,y
+        sta     L0AB8,y
         lda     $D5
-        sta     $0AF8,y
+        sta     L0AF8,y
         lda     $D6
-        sta     $0B38,y
+        sta     L0B38,y
         lda     $D7
-        sta     $0B78,y
+        sta     L0B78,y
         lda     $D8
-        sta     $0BB8,y
+        sta     L0BB8,y
         lda     $D9
-        sta     $0BF8,y
+        sta     L0BF8,y
         and     $D3
         sta     $D3
         jmp     L6843
@@ -1174,17 +1174,17 @@ L6847 := *+1
         ldy     $B5
         inc     $B5
         lda     $CB
-        sta     $0AB8,y
+        sta     L0AB8,y
         lda     $CC
-        sta     $0AF8,y
+        sta     L0AF8,y
         lda     $CD
-        sta     $0B38,y
+        sta     L0B38,y
         lda     $CE
-        sta     $0B78,y
+        sta     L0B78,y
         lda     $CF
-        sta     $0BB8,y
+        sta     L0BB8,y
         lda     $D0
-        sta     $0BF8,y
+        sta     L0BF8,y
         sta     $D3
         jmp     L6843
 
@@ -1273,22 +1273,22 @@ L6919:  ldy     #$00
         ldx     $B5
         inc     $B5
         lda     ($2D),y
-        sta     $0AB8,x
+        sta     L0AB8,x
         iny
         lda     ($2D),y
-        sta     $0AF8,x
+        sta     L0AF8,x
         iny
         lda     ($2D),y
-        sta     $0B38,x
+        sta     L0B38,x
         iny
         lda     ($2D),y
-        sta     $0B78,x
+        sta     L0B78,x
         iny
         lda     ($2D),y
-        sta     $0BB8,x
+        sta     L0BB8,x
         iny
         lda     ($2D),y
-        sta     $0BF8,x
+        sta     L0BF8,x
         and     $D3
         sta     $D3
         rts
@@ -2080,23 +2080,23 @@ L6F93:  lda     #$06
 
 L6F98:  inc     $B5
         ldx     $B5
-        lda     $0AB8
-        sta     $0AB8,x
-        lda     $0AF8
-        sta     $0AF8,x
-        lda     $0B38
-        sta     $0B38,x
-        lda     $0B78
-        sta     $0B78,x
-        lda     $0BB8
-        sta     $0BB8,x
-        lda     $0BF8
-        sta     $0BF8,x
-        lda     $0BB8
+        lda     L0AB8
+        sta     L0AB8,x
+        lda     L0AF8
+        sta     L0AF8,x
+        lda     L0B38
+        sta     L0B38,x
+        lda     L0B78
+        sta     L0B78,x
+        lda     L0BB8
+        sta     L0BB8,x
+        lda     L0BF8
+        sta     L0BF8,x
+        lda     L0BB8
         sec
-        sbc     $0AB8
-        lda     $0BF8
-        sbc     $0AF8
+        sbc     L0AB8
+        lda     L0BF8
+        sbc     L0AF8
         bmi     L6FD3
         lda     #$00
         beq     L6FD5
@@ -2104,11 +2104,11 @@ L6FD3:  lda     #$FF
 L6FD5:  sta     $B4
         dex
         ldy     #$00
-L6FDA:  lda     $0BB8,x
+L6FDA:  lda     L0BB8,x
         sec
-        sbc     $0AB8,x
-        lda     $0BF8,x
-        sbc     $0AF8,x
+        sbc     L0AB8,x
+        lda     L0BF8,x
+        sbc     L0AF8,x
         bmi     L6FED
         lda     #$00
         beq     L6FEF
@@ -2116,17 +2116,17 @@ L6FED:  lda     #$FF
 L6FEF:  cmp     $B4
         sta     $B4
         beq     L705F
-        lda     $0AB8,x
+        lda     L0AB8,x
         sta     $D4
-        lda     $0AF8,x
+        lda     L0AF8,x
         sta     $D5
-        lda     $0B38,x
+        lda     L0B38,x
         sta     $D6
-        lda     $0B78,x
+        lda     L0B78,x
         sta     $D7
-        lda     $0BB8,x
+        lda     L0BB8,x
         sta     $D8
-        lda     $0BF8,x
+        lda     L0BF8,x
         sta     $D9
         lda     $0AB9,x
         sta     $CB
@@ -2146,34 +2146,34 @@ L6FEF:  cmp     $B4
         ldx     $B0
         ldy     $B1
         lda     $D9
-        sta     $0D78,y
+        sta     L0D78,y
         ora     $D8
         beq     L705F
         lda     $D8
-        sta     $0D38,y
+        sta     L0D38,y
         lda     $D4
-        sta     $0C38,y
+        sta     L0C38,y
         lda     $D5
-        sta     $0C78,y
+        sta     L0C78,y
         lda     $D6
-        sta     $0CB8,y
+        sta     L0CB8,y
         lda     $D7
         sta     $0CF8,y
         iny
 L705F:  lda     $B4
         bne     L7088
-        lda     $0AB8,x
-        sta     $0C38,y
-        lda     $0AF8,x
-        sta     $0C78,y
-        lda     $0B38,x
-        sta     $0CB8,y
-        lda     $0B78,x
-        sta     $0CF8,y
-        lda     $0BB8,x
-        sta     $0D38,y
-        lda     $0BF8,x
-        sta     $0D78,y
+        lda     L0AB8,x
+        sta     L0C38,y
+        lda     L0AF8,x
+        sta     L0C78,y
+        lda     L0B38,x
+        sta     L0CB8,y
+        lda     L0B78,x
+        sta     L0CF8,y
+        lda     L0BB8,x
+        sta     L0D38,y
+        lda     L0BF8,x
+        sta     L0D78,y
         iny
 L7088:  dex
         bmi     L708E
@@ -2185,23 +2185,23 @@ L708E:  sty     $B5
         rts
 
 L7095:  ldx     $B5
-        lda     $0C38
-        sta     $0C38,x
-        lda     $0C78
-        sta     $0C78,x
-        lda     $0CB8
-        sta     $0CB8,x
-        lda     $0CF8
-        sta     $0CF8,x
-        lda     $0D38
-        sta     $0D38,x
-        lda     $0D78
-        sta     $0D78,x
-        lda     $0D38
+        lda     L0C38
+        sta     L0C38,x
+        lda     L0C78
+        sta     L0C78,x
+        lda     L0CB8
+        sta     L0CB8,x
+        lda     L0CF8
+        sta     L0CF8,x
+        lda     L0D38
+        sta     L0D38,x
+        lda     L0D78
+        sta     L0D78,x
+        lda     L0D38
         sec
-        sbc     $0CB8
-        lda     $0D78
-        sbc     $0CF8
+        sbc     L0CB8
+        lda     L0D78
+        sbc     L0CF8
         bmi     L70CE
         lda     #$00
         beq     L70D0
@@ -2209,11 +2209,11 @@ L70CE:  lda     #$FF
 L70D0:  sta     $B4
         dex
         ldy     #$00
-L70D5:  lda     $0D38,x
+L70D5:  lda     L0D38,x
         sec
-        sbc     $0CB8,x
-        lda     $0D78,x
-        sbc     $0CF8,x
+        sbc     L0CB8,x
+        lda     L0D78,x
+        sbc     L0CF8,x
         bmi     L70E8
         lda     #$00
         beq     L70EA
@@ -2221,17 +2221,17 @@ L70E8:  lda     #$FF
 L70EA:  cmp     $B4
         sta     $B4
         beq     L715A
-        lda     $0C38,x
+        lda     L0C38,x
         sta     $D4
-        lda     $0C78,x
+        lda     L0C78,x
         sta     $D5
-        lda     $0CB8,x
+        lda     L0CB8,x
         sta     $D6
-        lda     $0CF8,x
+        lda     L0CF8,x
         sta     $D7
-        lda     $0D38,x
+        lda     L0D38,x
         sta     $D8
-        lda     $0D78,x
+        lda     L0D78,x
         sta     $D9
         lda     $0C39,x
         sta     $CB
@@ -2251,34 +2251,34 @@ L70EA:  cmp     $B4
         ldx     $B0
         ldy     $B1
         lda     $D9
-        sta     $0BF8,y
+        sta     L0BF8,y
         ora     $D8
         beq     L715A
         lda     $D8
-        sta     $0BB8,y
+        sta     L0BB8,y
         lda     $D4
-        sta     $0AB8,y
+        sta     L0AB8,y
         lda     $D5
-        sta     $0AF8,y
+        sta     L0AF8,y
         lda     $D6
-        sta     $0B38,y
+        sta     L0B38,y
         lda     $D7
-        sta     $0B78,y
+        sta     L0B78,y
         iny
 L715A:  lda     $B4
         bne     L7183
-        lda     $0C38,x
-        sta     $0AB8,y
-        lda     $0C78,x
-        sta     $0AF8,y
-        lda     $0CB8,x
-        sta     $0B38,y
-        lda     $0CF8,x
-        sta     $0B78,y
-        lda     $0D38,x
-        sta     $0BB8,y
-        lda     $0D78,x
-        sta     $0BF8,y
+        lda     L0C38,x
+        sta     L0AB8,y
+        lda     L0C78,x
+        sta     L0AF8,y
+        lda     L0CB8,x
+        sta     L0B38,y
+        lda     L0CF8,x
+        sta     L0B78,y
+        lda     L0D38,x
+        sta     L0BB8,y
+        lda     L0D78,x
+        sta     L0BF8,y
         iny
 L7183:  dex
         bmi     L7189
@@ -2290,23 +2290,23 @@ L7189:  sty     $B5
         rts
 
 L7190:  ldx     $B5
-        lda     $0AB8
-        sta     $0AB8,x
-        lda     $0AF8
-        sta     $0AF8,x
-        lda     $0B38
-        sta     $0B38,x
-        lda     $0B78
-        sta     $0B78,x
-        lda     $0BB8
-        sta     $0BB8,x
-        lda     $0BF8
-        sta     $0BF8,x
-        lda     $0AB8
+        lda     L0AB8
+        sta     L0AB8,x
+        lda     L0AF8
+        sta     L0AF8,x
+        lda     L0B38
+        sta     L0B38,x
+        lda     L0B78
+        sta     L0B78,x
+        lda     L0BB8
+        sta     L0BB8,x
+        lda     L0BF8
+        sta     L0BF8,x
+        lda     L0AB8
         clc
-        adc     $0BB8
-        lda     $0AF8
-        adc     $0BF8
+        adc     L0BB8
+        lda     L0AF8
+        adc     L0BF8
         bpl     L71C9
         lda     #$FF
         bne     L71CB
@@ -2314,11 +2314,11 @@ L71C9:  lda     #$00
 L71CB:  sta     $B4
         dex
         ldy     #$00
-L71D0:  lda     $0AB8,x
+L71D0:  lda     L0AB8,x
         clc
-        adc     $0BB8,x
-        lda     $0AF8,x
-        adc     $0BF8,x
+        adc     L0BB8,x
+        lda     L0AF8,x
+        adc     L0BF8,x
         bpl     L71E3
         lda     #$FF
         bne     L71E5
@@ -2326,17 +2326,17 @@ L71E3:  lda     #$00
 L71E5:  cmp     $B4
         sta     $B4
         beq     L7255
-        lda     $0AB8,x
+        lda     L0AB8,x
         sta     $D4
-        lda     $0AF8,x
+        lda     L0AF8,x
         sta     $D5
-        lda     $0B38,x
+        lda     L0B38,x
         sta     $D6
-        lda     $0B78,x
+        lda     L0B78,x
         sta     $D7
-        lda     $0BB8,x
+        lda     L0BB8,x
         sta     $D8
-        lda     $0BF8,x
+        lda     L0BF8,x
         sta     $D9
         lda     $0AB9,x
         sta     $CB
@@ -2356,34 +2356,34 @@ L71E5:  cmp     $B4
         ldx     $B0
         ldy     $B1
         lda     $D9
-        sta     $0D78,y
+        sta     L0D78,y
         ora     $D8
         beq     L7255
         lda     $D8
-        sta     $0D38,y
+        sta     L0D38,y
         lda     $D4
-        sta     $0C38,y
+        sta     L0C38,y
         lda     $D5
-        sta     $0C78,y
+        sta     L0C78,y
         lda     $D6
-        sta     $0CB8,y
+        sta     L0CB8,y
         lda     $D7
-        sta     $0CF8,y
+        sta     L0CF8,y
         iny
 L7255:  lda     $B4
         bne     L727E
-        lda     $0AB8,x
-        sta     $0C38,y
-        lda     $0AF8,x
-        sta     $0C78,y
-        lda     $0B38,x
-        sta     $0CB8,y
-        lda     $0B78,x
-        sta     $0CF8,y
-        lda     $0BB8,x
-        sta     $0D38,y
-        lda     $0BF8,x
-        sta     $0D78,y
+        lda     L0AB8,x
+        sta     L0C38,y
+        lda     L0AF8,x
+        sta     L0C78,y
+        lda     L0B38,x
+        sta     L0CB8,y
+        lda     L0B78,x
+        sta     L0CF8,y
+        lda     L0BB8,x
+        sta     L0D38,y
+        lda     L0BF8,x
+        sta     L0D78,y
         iny
 L727E:  dex
         bmi     L7284
@@ -2395,23 +2395,23 @@ L7284:  sty     $B5
         rts
 
 L728B:  ldx     $B5
-        lda     $0C38
-        sta     $0C38,x
-        lda     $0C78
-        sta     $0C78,x
-        lda     $0CB8
-        sta     $0CB8,x
-        lda     $0CF8
-        sta     $0CF8,x
-        lda     $0D38
-        sta     $0D38,x
-        lda     $0D78
-        sta     $0D78,x
-        lda     $0CB8
+        lda     L0C38
+        sta     L0C38,x
+        lda     L0C78
+        sta     L0C78,x
+        lda     L0CB8
+        sta     L0CB8,x
+        lda     L0CF8
+        sta     L0CF8,x
+        lda     L0D38
+        sta     L0D38,x
+        lda     L0D78
+        sta     L0D78,x
+        lda     L0CB8
         clc
-        adc     $0D38
-        lda     $0CF8
-        adc     $0D78
+        adc     L0D38
+        lda     L0CF8
+        adc     L0D78
         bpl     L72C4
         lda     #$FF
         bne     L72C6
@@ -2419,11 +2419,11 @@ L72C4:  lda     #$00
 L72C6:  sta     $B4
         dex
         ldy     #$00
-L72CB:  lda     $0CB8,x
+L72CB:  lda     L0CB8,x
         clc
-        adc     $0D38,x
-        lda     $0CF8,x
-        adc     $0D78,x
+        adc     L0D38,x
+        lda     L0CF8,x
+        adc     L0D78,x
         bpl     L72DE
         lda     #$FF
         bne     L72E0
@@ -2431,17 +2431,17 @@ L72DE:  lda     #$00
 L72E0:  cmp     $B4
         sta     $B4
         beq     L7350
-        lda     $0C38,x
+        lda     L0C38,x
         sta     $D4
-        lda     $0C78,x
+        lda     L0C78,x
         sta     $D5
-        lda     $0CB8,x
+        lda     L0CB8,x
         sta     $D6
-        lda     $0CF8,x
+        lda     L0CF8,x
         sta     $D7
-        lda     $0D38,x
+        lda     L0D38,x
         sta     $D8
-        lda     $0D78,x
+        lda     L0D78,x
         sta     $D9
         lda     $0C39,x
         sta     $CB
@@ -2461,34 +2461,34 @@ L72E0:  cmp     $B4
         ldx     $B0
         ldy     $B1
         lda     $D9
-        sta     $0BF8,y
+        sta     L0BF8,y
         ora     $D8
         beq     L7350
         lda     $D8
-        sta     $0BB8,y
+        sta     L0BB8,y
         lda     $D4
-        sta     $0AB8,y
+        sta     L0AB8,y
         lda     $D5
-        sta     $0AF8,y
+        sta     L0AF8,y
         lda     $D6
-        sta     $0B38,y
+        sta     L0B38,y
         lda     $D7
-        sta     $0B78,y
+        sta     L0B78,y
         iny
 L7350:  lda     $B4
         bne     L7379
-        lda     $0C38,x
-        sta     $0AB8,y
-        lda     $0C78,x
-        sta     $0AF8,y
-        lda     $0CB8,x
-        sta     $0B38,y
-        lda     $0CF8,x
-        sta     $0B78,y
-        lda     $0D38,x
-        sta     $0BB8,y
-        lda     $0D78,x
-        sta     $0BF8,y
+        lda     L0C38,x
+        sta     L0AB8,y
+        lda     L0C78,x
+        sta     L0AF8,y
+        lda     L0CB8,x
+        sta     L0B38,y
+        lda     L0CF8,x
+        sta     L0B78,y
+        lda     L0D38,x
+        sta     L0BB8,y
+        lda     L0D78,x
+        sta     L0BF8,y
         iny
 L7379:  dex
         bmi     L737F
@@ -2851,20 +2851,20 @@ L7684:  dey
         sta     $F0
         tya
         tax
-L7699:  lda     $0AB8,x
+L7699:  lda     L0AB8,x
         sta     $C2
-        lda     $0AF8,x
+        lda     L0AF8,x
         sta     $C3
-        lda     $0BB8,x
+        lda     L0BB8,x
         sta     $C4
-        lda     $0BF8,x
+        lda     L0BF8,x
         sta     $C5
-        ldy     $0B38,x
-        lda     $0B78,x
+        ldy     L0B38,x
+        lda     L0B78,x
         stx     $B2
         jsr     L7E80
         ldx     $B2
-        sta     $0C78,x
+        sta     L0C78,x
         cmp     $53
         bcs     L76C3
         sta     $53
@@ -2872,7 +2872,7 @@ L76C3:  cmp     $54
         bcc     L76C9
         sta     $54
 L76C9:  tya
-        sta     $0CF8,x
+        sta     L0CF8,x
         cmp     $EF
         bcs     L76D3
         sta     $EF
@@ -2898,60 +2898,60 @@ L76D9:  dex
         adc     $33
         sta     $33
         ldx     $B5
-        lda     $0C78,x
+        lda     L0C78,x
         sta     $0C77
-        lda     $0CF8,x
+        lda     L0CF8,x
         sta     $0CF7
         inx
-        lda     $0C78
-        sta     $0C78,x
-        lda     $0CF8
-        sta     $0CF8,x
+        lda     L0C78
+        sta     L0C78,x
+        lda     L0CF8
+        sta     L0CF8,x
         inx
         lda     $0C79
-        sta     $0C78,x
+        sta     L0C78,x
         lda     $0CF9
-        sta     $0CF8,x
+        sta     L0CF8,x
         inc     $B5
         ldy     #$00
         ldx     #$00
 L7724:  lda     #$00
-        sta     $0B38,x
+        sta     L0B38,x
         lda     $0CF9,y
         sec
-        sbc     $0CF8,y
+        sbc     L0CF8,y
         bne     L7735
         jmp     L77EA
 
 L7735:  bcs     L775F
         eor     #$FF
         adc     #$01
-        sta     $0AF8,x
+        sta     L0AF8,x
         lda     $0CF9,y
-        sta     $0AB8,x
+        sta     L0AB8,x
         lda     $0CF7,y
-        cmp     $0CF8,y
+        cmp     L0CF8,y
         bcc     L774F
-        inc     $0B38,x
+        inc     L0B38,x
 L774F:  lda     $0C79,y
-        sta     $0B78,x
-        lda     $0C78,y
+        sta     L0B78,x
+        lda     L0C78,y
         sec
         sbc     $0C79,y
         jmp     L7780
 
-L775F:  sta     $0AF8,x
-        lda     $0CF8,y
-        sta     $0AB8,x
+L775F:  sta     L0AF8,x
+        lda     L0CF8,y
+        sta     L0AB8,x
         lda     $0CFA,y
         cmp     $0CF9,y
         bcc     L7773
-        inc     $0B38,x
-L7773:  lda     $0C78,y
-        sta     $0B78,x
+        inc     L0B38,x
+L7773:  lda     L0C78,y
+        sta     L0B78,x
         lda     $0C79,y
         sec
-        sbc     $0C78,y
+        sbc     L0C78,y
 L7780:  php
         bcs     L778A
         sta     $AF
@@ -2959,7 +2959,7 @@ L7780:  php
         sec
         sbc     $AF
 L778A:  sta     $F5
-        lda     $0AF8,x
+        lda     L0AF8,x
         sta     $F6
         stx     $B0
         sty     $B1
@@ -2986,44 +2986,44 @@ L77B9:  dex
         bne     L779F
         ldx     $B0
         ldy     $B1
-        lda     $0B38,x
+        lda     L0B38,x
         beq     L77C8
-        dec     $0AF8,x
+        dec     L0AF8,x
 L77C8:  plp
         bcs     L77DD
         lda     #$00
         sec
         sbc     $F4
-        sta     $0BB8,x
+        sta     L0BB8,x
         lda     #$00
         sbc     $F5
-        sta     $0BF8,x
+        sta     L0BF8,x
         jmp     L7831
 
 L77DD:  lda     $F4
-        sta     $0BB8,x
+        sta     L0BB8,x
         lda     $F5
-        sta     $0BF8,x
+        sta     L0BF8,x
         jmp     L7831
 
 L77EA:  lda     #$FF
-        sta     $0AF8,x
-        lda     $0CF8,y
-        sta     $0AB8,x
+        sta     L0AF8,x
+        lda     L0CF8,y
+        sta     L0AB8,x
         cmp     $0CF7,y
         php
-        lda     $0C78,y
-        sta     $0BF8,x
-        sta     $0B78,x
+        lda     L0C78,y
+        sta     L0BF8,x
+        sta     L0B78,x
 L7802:  iny
-        lda     $0C78,y
-        cmp     $0BF8,x
+        lda     L0C78,y
+        cmp     L0BF8,x
         bcs     L780E
-        sta     $0BF8,x
-L780E:  cmp     $0B78,x
+        sta     L0BF8,x
+L780E:  cmp     L0B78,x
         bcc     L7816
-        sta     $0B78,x
-L7816:  lda     $0AB8,x
+        sta     L0B78,x
+L7816:  lda     L0AB8,x
         cmp     $0CF9,y
         beq     L7802
         bcs     L7825
@@ -3031,10 +3031,10 @@ L7816:  lda     $0AB8,x
         bcc     L7833
         bcs     L7826
 L7825:  plp
-L7826:  lda     $0B78,x
+L7826:  lda     L0B78,x
         sec
-        sbc     $0BF8,x
-        sta     $0BF8,x
+        sbc     L0BF8,x
+        sta     L0BF8,x
         dey
 L7831:  inx
         iny
@@ -3059,31 +3059,31 @@ L784A:  ldx     $25
         lda     HiresTableHi,y
         sta     HiresRowPtr+1
 L785D:  lda     $B1
-        cmp     $0AB8,x
+        cmp     L0AB8,x
         bne     L789B
-        lda     $0AF8,x
+        lda     L0AF8,x
         bpl     L787B
-        lda     $0B78,x
+        lda     L0B78,x
         sta     $27
-        lda     $0BF8,x
+        lda     L0BF8,x
         stx     $B0
         jsr     L790E
         ldx     $B0
         jmp     L789B
 
-L787B:  lda     $0B38,x
+L787B:  lda     L0B38,x
         clc
-        adc     $0BB8,x
-        sta     $0B38,x
-        lda     $0B78,x
+        adc     L0BB8,x
+        sta     L0B38,x
+        lda     L0B78,x
 L7889 := *+1
         sta     $02             ; self-modified
         inc     L7889
-        adc     $0BF8,x
-        sta     $0B78,x
-        dec     $0AF8,x
+        adc     L0BF8,x
+        sta     L0B78,x
+        dec     L0AF8,x
         bmi     L789B
-        inc     $0AB8,x
+        inc     L0AB8,x
 L789B:  dex
         bpl     L785D
         lda     L7889
@@ -5012,7 +5012,7 @@ L8804:  lda     $2B
         lsr     a
         bcs     L882D
         jsr     LA5E1
-        jsr     L8A06
+        jsr     MaybeBootDOS
         jsr     UpdateFuelTankGauges::Left
         jsr     NoOp
         lda     $2B
@@ -5211,13 +5211,15 @@ L89F0:  lda     $08B1
         lsr     $08BB
 L8A05:  rts
 
-L8A06:  rts
-
-        ror     $08AF
-        bcs     L8A05
+;;; Course Plotter replaces this with a NOP...
+MaybeBootDOS:
+        rts
+;;; Which falls into this
+        ror     RebootFlag
+        bcs     L8A05           ; ignore!
         lda     RdROMWrRAM1
         lda     RdROMWrRAM1
-        jmp     (L08AD)         ; middle of a message???
+        jmp     (RebootVector)
 
 L8A15:  sbc     #$11
         sta     $33
@@ -5420,7 +5422,7 @@ KeyTable:
         .addr   FlapsDown       ; N
         .addr   Ignore          ; O
         .addr   TogglePause     ; P
-        .addr   L909B           ; Q
+        .addr   CoursePlotting  ; Q
         .addr   TrimDown        ; R
         .addr   SaveModeToLibrary ; S
         .addr   YokeDown        ; T
@@ -6230,7 +6232,8 @@ SaveModeToLibrary:
         bne     L9093           ; always
 
 ;;; Q key
-L909B:  jmp     NoOp
+CoursePlotting:                 ; patched for 64k
+        jmp     NoOp            ; points at CoursePlottingMenu
 
 ;;; Z key
 L909E:  lda     $0937
@@ -9517,7 +9520,7 @@ LAD68:  .byte   $C3
 
         .byte   $9B
         .byte   $90
-LADDD:  jmp     LF71C
+LADDD:  jmp     CoursePlottingMenu
 
         .byte   $C7
         .byte   $87

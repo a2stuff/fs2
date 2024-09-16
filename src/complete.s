@@ -29,6 +29,7 @@ OPC_DEC_zp  = $C6
 OPC_DEX     = $CA
 OPC_INC_zp  = $E6
 OPC_INX     = $E8
+OPC_NOP     = $EA
 OPC_SBC_izy = $F1
 
 ;;; ============================================================

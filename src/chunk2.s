@@ -1,5 +1,8 @@
         .org $f600
 
+;;; ============================================================
+;;; Course Plotting
+
 msg_courseplotter:
         MESSAGE $0C, $0A, "**** COURSE PLOTTER SYSTEM ****"
         MESSAGE $14, $2D, " "
@@ -13,60 +16,69 @@ msg_courseplotter:
         MESSAGE $5C, $0A, "MODE TO VIEW OR RECORD COURSE."
         .byte   $00, $00
 
-LF715:  asl     a
-LF716:  .byte   $01
-LF717:  brk
-LF718:  brk
-LF719:  brk
-LF71A:  brk
-LF71B:  brk
+LF715:  .byte   10
+LF716:  .byte   1
+LF717:  .byte   0
+LF718:  .byte   0
+LF719:  .byte   0
+LF71A:  .byte   0
+LF71B:  .byte   0
 
-LF71C:  jsr     ClearViewportsToBlack
+CoursePlottingMenu:
+        jsr     ClearViewportsToBlack
         CALLAX  DrawMultiMessage, msg_courseplotter
         jsr     TogglePause
         cmp     #'A'
-        beq     LF742
+        beq     BeginNormalCourseRecording
         cmp     #'B'
-        beq     LF748
+        beq     DisplayCoursePlot
         cmp     #'C'
-        beq     LF755
+        beq     BootDOS
         cmp     #'D'
-        beq     LF776
+        beq     BeginPrecisionRecording
         cmp     #'E'
-        beq     LF76E
+        beq     TurnOffCoursePlotter
         cmp     #$1B            ; Escape
-        bne     LF71C
+        bne     CoursePlottingMenu
         rts
 
-LF742:  ldx     #$06
+BeginNormalCourseRecording:
+        ldx     #$06
         lda     #$0A
-        bne     LF77A
-LF748:  lda     LF71B
-        beq     LF71C
+        bne     BeginRecordingCommon           ; always
+
+DisplayCoursePlot:
+        lda     LF71B
+        beq     CoursePlottingMenu
         lda     #$02
         sta     LF717
-        jmp     LF71C
+        jmp     CoursePlottingMenu
 
-LF755:  lda     $1E08
+BootDOS:
+        lda     BootSlot
         lsr     a
         lsr     a
         lsr     a
         lsr     a
         ora     #$C0
-        sta     $08AE
+        sta     RebootVector+1
         lda     #$00
-        sta     $08AD
-        lda     #$EA
-        sta     $8A06
-        jmp     LF71C
+        sta     RebootVector
+        lda     #OPC_NOP
+        sta     MaybeBootDOS    ; override RTS
+        jmp     CoursePlottingMenu ; ???
 
-LF76E:  lda     #$00
+TurnOffCoursePlotter:
+        lda     #$00
         sta     LF717
-        jmp     LF71C
+        jmp     CoursePlottingMenu
 
-LF776:  ldx     #$04
+BeginPrecisionRecording:
+        ldx     #$04
         lda     #$02
-LF77A:  stx     LF71A
+
+BeginRecordingCommon:
+        stx     LF71A
         sta     LF715
         lda     #$01
         sta     LF717
@@ -119,7 +131,9 @@ LF79F:  lda     $5A,x
         lda     #$01
         sta     LF71B
         jsr     LF8BC
-        jmp     LF71C
+        jmp     CoursePlottingMenu
+
+;;; ============================================================
 
 LF7E2:  lda     LF717
         bne     LF7E8

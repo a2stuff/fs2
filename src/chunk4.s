@@ -404,9 +404,12 @@ L0810:  brk
         brk
         brk
         brk
-L08AD:  .byte   0
+
+;;; Reboot vector (used for "Boot DOS" from Course Plotter)
+RebootVector:   .addr   0
+RebootFlag:     .byte   1
+
         brk
-        ora     ($00,x)
         brk
         txs
         ora     a:$01
@@ -885,671 +888,156 @@ L0A9E:  cpy     #$E0
         .byte   $FF
         .byte   $FF
         .byte   $FF
-        ldx     $AEAB,y
-        tsx
-        nop
-        tax
-        inc     $AEAA
-        .byte   $EB
-        ldx     $AEAA
-        .byte   $EB
-        .byte   $BB
-        tax
-        ldx     $BAEB
-        tax
-        ldx     $EAEA,y
-        inc     $BABB
-        tsx
-        inc     $EAAE,x
-        .byte   $AF
-        inc     $EAEF,x
-        .byte   $FA
-        .byte   $FB
-        .byte   $FA
-        inc     $BFAE
-        inc     $EAFE,x
-        inc     $FEAF,x
-        tax
-        nop
-        tax
-        ldx     $BEEE
-        ldx     $AAEA
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        tax
-        cmp     $DA,x
-        .byte   $EB
-        .byte   $97
-        .byte   $D7
-        .byte   $CB
-        .byte   $BF
-        .byte   $F3
-        .byte   $AB
-        ldx     $96B7
-        stx     $96,y
-        stx     $AE,y
-        sta     $BEEF,x
-        tax
-        tax
-        tsx
-        .byte   $AB
-        tax
-        .byte   $EF
-        .byte   $FF
-        tax
-        .byte   $FF
-        tax
-        tax
-L0B1F:  .byte   $FF
-        tax
-        .byte   $FF
-        .byte   $FF
-        tax
-        .byte   $FF
-        tax
-        tax
-        .byte   $FF
-        tax
-        .byte   $FF
-        .byte   $FF
-        tax
-        .byte   $FF
-        tax
-        tax
-        .byte   $FF
-        tax
-        .byte   $FF
-        .byte   $FF
-        ldx     $BFFA,y
-        inc     $FFEE
-        tax
-        .byte   $BB
-        tsx
-        ldx     $FEAF
-        .byte   $AB
-        inc     $BAAB,x
-        nop
-        nop
-        .byte   $AB
-        tax
-        .byte   $AF
-        .byte   $EB
-        .byte   $FA
-        .byte   $FA
-        .byte   $FB
-        nop
-        .byte   $FA
-        tsx
-        .byte   $AB
-        nop
-        .byte   $FB
-        tsx
-        .byte   $AB
-        .byte   $FF
-        ldx     $BEAA,y
-        tsx
-        nop
-        .byte   $AF
-        tax
-        .byte   $AF
-        tax
-        .byte   $AF
-        .byte   $FB
-        tsx
-        ldx     $BFFA,y
-        .byte   $FB
-        tax
-        .byte   $FA
-        tsx
-        .byte   $AB
-        .byte   $FA
-        tsx
-        .byte   $AF
-        .byte   $AB
-        .byte   $BF
-        inc     $FEFA,x
-        .byte   $FF
-        inc     $FABA,x
-        tsx
-        ldx     $FEFB,y
-        inc     $EEAB
-        .byte   $FB
-        .byte   $AB
-        .byte   $FA
-        tax
-        nop
-        ldx     $AEFE,y
-        inc     $EAAA,x
-        ldx     $AFFE,y
-        ldx     $ABAB,y
-        .byte   $AF
-        nop
-        .byte   $BB
-        .byte   $AF
-        .byte   $EB
-        .byte   $BB
-        .byte   $AF
-        .byte   $AB
-        tax
-        .byte   $AB
-        tsx
-        nop
-        tsx
-        .byte   $FF
-        nop
-        nop
-        .byte   $FA
-        tsx
-        tax
-        ldx     $BBBB,y
-        tax
-        .byte   $BF
-        .byte   $BB
-        .byte   $BB
-        tax
-        .byte   $BB
-        .byte   $BB
-        .byte   $BB
-        inc     $ABEA
-        .byte   $BB
-        ldx     $BFEA
-        tax
-        tsx
-        nop
-        .byte   $AB
-        ldx     $EEAA
-        .byte   $AB
-        .byte   $FB
-        ldx     $AAFE
-        tsx
-        tax
-        inc     $BAFF
-        tax
-        inc     $BAFF
-        tax
-        inc     $EEFF
-        tax
-        inc     $EAFA
-        nop
-        ldx     $FFAA
-        .byte   $AB
-        .byte   $AF
-        .byte   $AF
-        inc     $AFBB,x
-        .byte   $FA
-        ldx     $BABF
-        .byte   $BB
-        .byte   $AB
-        nop
-        .byte   $BF
-        .byte   $AF
-        inc     $FAAF
-        .byte   $EF
-        .byte   $AF
-        tsx
-        .byte   $EF
-        tsx
-        .byte   $FA
-        .byte   $AB
-        ldx     $97FA
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        tax
-        tax
-        .byte   $EB
-        .byte   $AF
-        .byte   $9B
-        .byte   $97
-        .byte   $9F
-        inc     $FA
-        .byte   $B3
-        txs
-        .byte   $F3
-        stx     $96,y
-        stx     $9B,y
-        stx     $9D,y
-        ldx     $AEFA
-        .byte   $AF
-        .byte   $AF
-        .byte   $AF
-        tax
-        tax
-        .byte   $FF
-        tax
-        .byte   $BF
-        .byte   $FF
-        tax
-        .byte   $FF
-        tax
-        tax
-        .byte   $FF
-        tax
-        .byte   $FF
-        .byte   $FF
-        tax
-        .byte   $FF
-        tax
-        tax
-        .byte   $FF
-        tax
-        .byte   $FF
-        tax
-        tax
-        .byte   $FF
-        tax
-        tax
-        .byte   $FF
-        .byte   $EF
-        ldx     $FEEF,y
-        inc     $AFFA,x
-        tax
-        tsx
-        inc     $BFAE
-        tsx
-        .byte   $FB
-        .byte   $AF
-        nop
-        tax
-        nop
-        nop
-        tax
-        inc     $FBBA,x
-        .byte   $FA
-        tsx
-        nop
-        .byte   $FA
-        .byte   $AF
-        nop
-        .byte   $AB
-        tsx
-        tax
-        .byte   $AF
-        .byte   $FF
-        inc     $AFAE,x
-        nop
-        inc     $AABE
-        ldx     $BFAF,y
-        .byte   $FB
-        tax
-        tsx
-        tax
-        .byte   $FA
-        inc     $AFEA
-        .byte   $BB
-        tax
-        tax
-        tax
-        ldx     $FEAA
-        .byte   $AB
-        .byte   $AB
-        tax
-        .byte   $FA
-        tax
-        nop
-        .byte   $AF
-        .byte   $BF
-        .byte   $EB
-        tsx
-        .byte   $AB
-        tax
-        .byte   $AB
-        .byte   $AF
-        ldx     $AFFF,y
-        .byte   $FB
-        tsx
-        .byte   $AF
-        .byte   $AB
-        .byte   $FA
-        .byte   $AB
-        nop
-        .byte   $FA
-        nop
-        nop
-        inc     $AAFF,x
-        inc     $BAFB,x
-        inc     $BBBE,x
-        .byte   $FA
-        inc     $AFFE,x
-        inc     $ABFB,x
-        inc     $FFFF,x
-        .byte   $FA
-        .byte   $BB
-        .byte   $FA
-        tsx
-        tax
-        tax
-        .byte   $AB
-        tsx
-        .byte   $AF
-        tax
-        .byte   $AB
-        tsx
-        ldx     $ABAA,y
-        nop
-        nop
-        inc     $EAAB,x
-        nop
-        tax
-        tax
-        inc     $AAFA,x
-        nop
-        .byte   $FA
-        .byte   $EB
-        tsx
-        .byte   $BF
-        inc     $FEBF,x
-        tax
-        .byte   $BB
-        .byte   $BB
-        tsx
-        tax
-        .byte   $BF
-        .byte   $BB
-        tsx
-        tax
-        tsx
-        .byte   $BB
-        tsx
-        nop
-        .byte   $BF
-        nop
-        .byte   $FB
-        .byte   $FA
-        tax
-        .byte   $EB
-        nop
-        .byte   $FB
-        tax
-        .byte   $FA
-        .byte   $FB
-        tsx
-        inc     $ABFA,x
-        tax
-        nop
-        ldx     $FFAB
-        .byte   $BF
-        .byte   $BB
-        .byte   $AF
-        .byte   $AF
-        .byte   $AF
-        .byte   $AF
-        .byte   $AF
-        ldx     $FEAB,y
-        tsx
-        .byte   $AF
-        .byte   $AB
-        tax
-        .byte   $AB
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        .byte   $97
-        tax
-        lda     $9EAE
-        .byte   $97
-        txs
-        ldy     $E9D7
-        .byte   $B2
-        ldx     $96FA
-        stx     $96,y
-        sta     $9D96,x
-        ldx     $AFBA
-        ldx     $BFEA,y
-        .byte   $FF
-        tax
-        .byte   $FF
-        tax
-        tax
-        .byte   $FF
-        tax
-        .byte   $FF
-        .byte   $FF
-        tax
-        .byte   $FF
-        tax
-        tax
-        .byte   $FF
-        tax
-        .byte   $FF
-        .byte   $FF
-        tax
-        .byte   $FF
-        tax
-        tax
-        tax
-        tax
-        .byte   $FF
-        tax
-        tax
-        .byte   $FF
-        .byte   $BF
-        .byte   $FA
-        .byte   $EB
-        inc     $FFEF
-        ldx     $AAAF,y
-        .byte   $EF
-        tsx
-        .byte   $EF
-        tax
-        .byte   $AF
-        ldx     $BAFB,y
-        inc     $EAEA
-        .byte   $AB
-        nop
-        .byte   $FB
-        tax
-        .byte   $AF
-        tax
-        .byte   $EB
-        .byte   $FB
-        .byte   $FA
-        nop
-        tax
-        ldx     $BABF
-        .byte   $BF
-        .byte   $AF
-        tax
-        inc     $FFAF,x
-        tax
-        inc     $BABE,x
-        inc     $EAFB
-        .byte   $FB
-        .byte   $AB
-        .byte   $FA
-        .byte   $FA
-        .byte   $FB
-        ldx     $AEEA
-        inc     $AFAB,x
-        .byte   $AB
-        .byte   $BF
-        tax
-        nop
-        .byte   $FA
-        ldx     $FBFA
-        tax
-        .byte   $AB
-        tax
-        tax
-        .byte   $AB
-        .byte   $AF
-        .byte   $BF
-        .byte   $FA
-        tax
-        ldx     $EAEE
-        nop
-        inc     $AABB,x
-        .byte   $FA
-        .byte   $FF
-        .byte   $AF
-        nop
-        .byte   $AB
-        .byte   $BB
-        tax
-        .byte   $BF
-        .byte   $BF
-        ldx     $EAAB
-        ldx     $BABB,y
-        .byte   $BF
-        inc     $FBBF
-        .byte   $FF
-        .byte   $BF
-        inc     $FEEA
-        .byte   $AB
-        .byte   $BB
-        inc     $AABA,x
-        inc     $BAFA,x
-        tax
-        inc     $BAFA,x
-        tax
-        inc     $AFEA,x
-        .byte   $AB
-        inc     $AEEA,x
-        .byte   $FF
-        nop
-        .byte   $AB
-        .byte   $FB
-        tax
-        tsx
-        tsx
-        brk
-        .byte   $37
-        bvc     L0DFD
-        .byte   $32
-        rol     a
-        asl     $191B,x
-        ora     $3264,y
-        asl     $12,x
-        .byte   $0F
-        .byte   $0F
-        .byte   $0F
-        .byte   $0F
-        .byte   $0F
-        .byte   $0F
-        sei
-        sei
-        .byte   $3C
-        .byte   $27
-        .byte   $0F
-        clc
-        ora     $12,x
-        .byte   $0F
-        .byte   $0F
-        brk
-        sei
-        lsr     L002D
-        .byte   $23
-        ora     $1214,y
-        ora     ($11),y
-        asl     $F8
-        .byte   $FF
-        sbc     $F906,x
-        .byte   $FF
-        sbc     $FA06,x
-        .byte   $FF
-        sbc     $FB06,x
-        .byte   $FF
-        sbc     $FC07,x
-        brk
-        .byte   $FC
-        .byte   $07
-        sbc     $FC00,x
-        .byte   $07
-        inc     $FC00,x
-        .byte   $07
-L0DFD:  .byte   $FF
-        brk
-        .byte   $FC
-        .byte   $07
-        brk
-        brk
-        .byte   $FC
-        .byte   $07
-        ora     ($00,x)
-        .byte   $FC
-        .byte   $07
-        .byte   $02
-        brk
-        .byte   $FC
-        .byte   $07
-        .byte   $03
-        brk
-        .byte   $FC
-        .byte   $07
-        .byte   $04
-        brk
-        .byte   $FC
-        .byte   $07
-        ora     $01
-        sbc     $0606,x
-        ora     ($FD,x)
-        asl     $07
-        ora     ($FD,x)
-        .byte   $FF
-        tax
-        .byte   $FF
-        .byte   $FF
-        tax
-        .byte   $FF
-        tax
-        tax
-        .byte   $FF
-        tax
-        .byte   $FF
-        tsx
-        tax
-        .byte   $FF
-        tax
-        tax
-        tax
-        tax
-        .byte   $FF
-        .byte   $FB
-        .byte   $BF
-        inc     $FFFF
+
+;;; ============================================================
+
+;;; Series of 64-byte buffers, 6 primary, 6 secondary???
+;;; Used in chunk5.
+
+L0AB8:
+        .byte   $BE, $AB, $AE, $BA, $EA, $AA, $EE, $AA
+        .byte   $AE, $EB, $AE, $AA, $AE, $EB, $BB, $AA
+        .byte   $AE, $EB, $BA, $AA, $BE, $EA, $EA, $EE
+        .byte   $BB, $BA, $BA, $FE, $AE, $EA, $AF, $FE
+        .byte   $EF, $EA, $FA, $FB, $FA, $EE, $AE, $BF
+        .byte   $FE, $FE, $EA, $FE, $AF, $FE, $AA, $EA
+        .byte   $AA, $AE, $EE, $BE, $AE, $EA, $AA, $97
+        .byte   $97, $97, $97, $97, $97, $97, $97, $97
+
+L0AF8:
+        .byte   $97, $97, $97, $97, $97, $97, $97, $97
+        .byte   $AA, $D5, $DA, $EB, $97, $D7, $CB, $BF
+        .byte   $F3, $AB, $AE, $B7, $96, $96, $96, $96
+        .byte   $AE, $9D, $EF, $BE, $AA, $AA, $BA, $AB
+        .byte   $AA, $EF, $FF, $AA, $FF, $AA, $AA, $FF
+        .byte   $AA, $FF, $FF, $AA, $FF, $AA, $AA, $FF
+        .byte   $AA, $FF, $FF, $AA, $FF, $AA, $AA, $FF
+        .byte   $AA, $FF, $FF, $BE, $FA, $BF, $EE, $EE
+
+L0B38:
+        .byte   $FF, $AA, $BB, $BA, $AE, $AF, $FE, $AB
+        .byte   $FE, $AB, $BA, $EA, $EA, $AB, $AA, $AF
+        .byte   $EB, $FA, $FA, $FB, $EA, $FA, $BA, $AB
+        .byte   $EA, $FB, $BA, $AB, $FF, $BE, $AA, $BE
+        .byte   $BA, $EA, $AF, $AA, $AF, $AA, $AF, $FB
+        .byte   $BA, $BE, $FA, $BF, $FB, $AA, $FA, $BA
+        .byte   $AB, $FA, $BA, $AF, $AB, $BF, $FE, $FA
+        .byte   $FE, $FF, $FE, $BA, $FA, $BA, $BE, $FB
+
+L0B78:
+        .byte   $FE, $EE, $AB, $EE, $FB, $AB, $FA, $AA
+        .byte   $EA, $BE, $FE, $AE, $FE, $AA, $EA, $BE
+        .byte   $FE, $AF, $BE, $AB, $AB, $AF, $EA, $BB
+        .byte   $AF, $EB, $BB, $AF, $AB, $AA, $AB, $BA
+        .byte   $EA, $BA, $FF, $EA, $EA, $FA, $BA, $AA
+        .byte   $BE, $BB, $BB, $AA, $BF, $BB, $BB, $AA
+        .byte   $BB, $BB, $BB, $EE, $EA, $AB, $BB, $AE
+        .byte   $EA, $BF, $AA, $BA, $EA, $AB, $AE, $AA
+
+L0BB8:
+        .byte   $EE, $AB, $FB, $AE, $FE, $AA, $BA, $AA
+        .byte   $EE, $FF, $BA, $AA, $EE, $FF, $BA, $AA
+        .byte   $EE, $FF, $EE, $AA, $EE, $FA, $EA, $EA
+        .byte   $AE, $AA, $FF, $AB, $AF, $AF, $FE, $BB
+        .byte   $AF, $FA, $AE, $BF, $BA, $BB, $AB, $EA
+        .byte   $BF, $AF, $EE, $AF, $FA, $EF, $AF, $BA
+        .byte   $EF, $BA, $FA, $AB, $AE, $FA, $97, $97
+        .byte   $97, $97, $97, $97, $97, $97, $97, $97
+
+L0BF8:
+        .byte   $97, $97, $97, $97, $97, $97, $97, $97
+        .byte   $AA, $AA, $EB, $AF, $9B, $97, $9F, $E6
+        .byte   $FA, $B3, $9A, $F3, $96, $96, $96, $9B
+        .byte   $96, $9D, $AE, $FA, $AE, $AF, $AF, $AF
+        .byte   $AA, $AA, $FF, $AA, $BF, $FF, $AA, $FF
+        .byte   $AA, $AA, $FF, $AA, $FF, $FF, $AA, $FF
+        .byte   $AA, $AA, $FF, $AA, $FF, $AA, $AA, $FF
+        .byte   $AA, $AA, $FF, $EF, $BE, $EF, $FE, $FE
+
+L0C38:
+        .byte   $FA, $AF, $AA, $BA, $EE, $AE, $BF, $BA
+        .byte   $FB, $AF, $EA, $AA, $EA, $EA, $AA, $FE
+        .byte   $BA, $FB, $FA, $BA, $EA, $FA, $AF, $EA
+        .byte   $AB, $BA, $AA, $AF, $FF, $FE, $AE, $AF
+        .byte   $EA, $EE, $BE, $AA, $BE, $AF, $BF, $FB
+        .byte   $AA, $BA, $AA, $FA, $EE, $EA, $AF, $BB
+        .byte   $AA, $AA, $AA, $AE, $AA, $FE, $AB, $AB
+        .byte   $AA, $FA, $AA, $EA, $AF, $BF, $EB, $BA
+
+L0C78:
+        .byte   $AB, $AA, $AB, $AF, $BE, $FF, $AF, $FB
+        .byte   $BA, $AF, $AB, $FA, $AB, $EA, $FA, $EA
+        .byte   $EA, $FE, $FF, $AA, $FE, $FB, $BA, $FE
+        .byte   $BE, $BB, $FA, $FE, $FE, $AF, $FE, $FB
+        .byte   $AB, $FE, $FF, $FF, $FA, $BB, $FA, $BA
+        .byte   $AA, $AA, $AB, $BA, $AF, $AA, $AB, $BA
+        .byte   $BE, $AA, $AB, $EA, $EA, $FE, $AB, $EA
+        .byte   $EA, $AA, $AA, $FE, $FA, $AA, $EA, $FA
+
+L0CB8:
+        .byte   $EB, $BA, $BF, $FE, $BF, $FE, $AA, $BB
+        .byte   $BB, $BA, $AA, $BF, $BB, $BA, $AA, $BA
+        .byte   $BB, $BA, $EA, $BF, $EA, $FB, $FA, $AA
+        .byte   $EB, $EA, $FB, $AA, $FA, $FB, $BA, $FE
+        .byte   $FA, $AB, $AA, $EA, $AE, $AB, $FF, $BF
+        .byte   $BB, $AF, $AF, $AF, $AF, $AF, $BE, $AB
+        .byte   $FE, $BA, $AF, $AB, $AA, $AB, $97, $97
+        .byte   $97, $97, $97, $97, $97, $97, $97, $97
+
+L0CF8:
+        .byte   $97, $97, $97, $97, $97, $97, $97, $97
+        .byte   $AA, $AD, $AE, $9E, $97, $9A, $AC, $D7
+        .byte   $E9, $B2, $AE, $FA, $96, $96, $96, $9D
+        .byte   $96, $9D, $AE, $BA, $AF, $BE, $EA, $BF
+        .byte   $FF, $AA, $FF, $AA, $AA, $FF, $AA, $FF
+        .byte   $FF, $AA, $FF, $AA, $AA, $FF, $AA, $FF
+        .byte   $FF, $AA, $FF, $AA, $AA, $AA, $AA, $FF
+        .byte   $AA, $AA, $FF, $BF, $FA, $EB, $EE, $EF
+
+L0D38:
+        .byte   $FF, $BE, $AF, $AA, $EF, $BA, $EF, $AA
+        .byte   $AF, $BE, $FB, $BA, $EE, $EA, $EA, $AB
+        .byte   $EA, $FB, $AA, $AF, $AA, $EB, $FB, $FA
+        .byte   $EA, $AA, $AE, $BF, $BA, $BF, $AF, $AA
+        .byte   $FE, $AF, $FF, $AA, $FE, $BE, $BA, $EE
+        .byte   $FB, $EA, $FB, $AB, $FA, $FA, $FB, $AE
+        .byte   $EA, $AE, $FE, $AB, $AF, $AB, $BF, $AA
+        .byte   $EA, $FA, $AE, $FA, $FB, $AA, $AB, $AA
+
+L0D78:
+        .byte   $AA, $AB, $AF, $BF, $FA, $AA, $AE, $EE
+        .byte   $EA, $EA, $FE, $BB, $AA, $FA, $FF, $AF
+        .byte   $EA, $AB, $BB, $AA, $BF, $BF, $AE, $AB
+        .byte   $EA, $BE, $BB, $BA, $BF, $EE, $BF, $FB
+        .byte   $FF, $BF, $EE, $EA, $FE, $AB, $BB, $FE
+        .byte   $BA, $AA, $FE, $FA, $BA, $AA, $FE, $FA
+        .byte   $BA, $AA, $FE, $EA, $AF, $AB, $FE, $EA
+        .byte   $AE, $FF, $EA, $AB, $FB, $AA, $BA, $BA
+
+;;; ============================================================
+
+;;; 0DB8:
+        .byte   $00, $37, $50, $41, $32, $2A, $1E, $1B
+        .byte   $19, $19, $64, $32, $16, $12, $0F, $0F
+        .byte   $0F, $0F, $0F, $0F, $78, $78, $3C, $27
+        .byte   $0F, $18, $15, $12, $0F, $0F, $00, $78
+        .byte   $46, $2D, $23, $19, $14, $12, $11, $11
+        .byte   $06, $F8, $FF, $FD, $06, $F9, $FF, $FD
+        .byte   $06, $FA, $FF, $FD, $06, $FB, $FF, $FD
+        .byte   $07, $FC, $00, $FC, $07, $FD, $00, $FC
+
+;;; 0DF8:
+        .byte   $07, $FE, $00, $FC, $07, $FF, $00, $FC
+        .byte   $07, $00, $00, $FC, $07, $01, $00, $FC
+        .byte   $07, $02, $00, $FC, $07, $03, $00, $FC
+        .byte   $07, $04, $00, $FC, $07, $05, $01, $FD
+        .byte   $06, $06, $01, $FD, $06, $07, $01, $FD
+        .byte   $FF, $AA, $FF, $FF, $AA, $FF, $AA, $AA
+        .byte   $FF, $AA, $FF, $BA, $AA, $FF, $AA, $AA
+        .byte   $AA, $AA, $FF, $FB, $BF, $EE, $FF, $FF
+
+;;; 0E38:
+
         .byte   $FB
         ldx     $AEBF
         tax
@@ -1562,6 +1050,8 @@ L0DFD:  .byte   $FF
         inc     $FBBB,x
         tsx
         ldx     $FEBE,y
+
+;;; ============================================================
 
 ;;; Dial needle pixel lists
 ND0E50: .byte   $01, $01, $01, $01, $01, $01, $01, $02, $01, $02, $01, $02, $01, $02, $00, $04, $00, $04, $00, $04, $00, $04, $00, $05, $00, $05, $00, $05, $01, $03, $01, $03, $02, $01, $02, $01, $ff
@@ -1870,7 +1360,7 @@ L141D:  .byte   $7F
         .byte   $27
         and     $23
         .byte   $22
-        ora     L0B1F,y
+        ora     $0B1F,y
         .byte   $1C
         sbc     $E118,y
 L148D:  ora     $C7,x
@@ -3509,7 +2999,9 @@ L1E04:  brk
         brk
         brk
         brk
-        rts
+
+BootSlot:
+        .byte   $60     ; high nibble = boot slot
 
         brk
         .byte   $20
