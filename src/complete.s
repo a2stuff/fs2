@@ -66,6 +66,9 @@ PixelListData   := $9C          ; For `DrawPixelList`
 ValueForString  := $B6     ; $B6-$B7
 ;;; Used by `Set3DigitString` and `DivideByAXAndSetDigitY`
 
+FillColor       := $ED          ; e.g. ground color
+AltFillColor    := $EE          ; e.g. sky color
+
 TmpStash        := $F3
 
 InputMode       := $FA

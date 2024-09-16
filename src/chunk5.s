@@ -33,7 +33,7 @@ L6018:  jmp     L67FD
 L601B:  jmp     L790E
 
         ;; Called by chunk3
-L601E:  jmp     L7BA0
+L601E:  jmp     MapColorAndPrepRowRoutine
 
 L6021:  lda     #$09
         jmp     L67FD
@@ -466,10 +466,10 @@ L639C:  rts
         ;; Point `HiresTableHi` at "other" page
 
         ldx     #$C0
-L63A2:  lda     HiresTableHi+1,x
+L63A2:  lda     HiresTableHi-1,x
         clc
         adc     HiresPageDelta
-        sta     HiresTableHi+1,x
+        sta     HiresTableHi-1,x
         dex
         bne     L63A2
         lda     HiresPageDelta
@@ -532,28 +532,32 @@ L63BE:
         STAX    $D1
         LDAX    $EB
         STAX    $DA
-        lda     $0882
-        beq     L644A
+
+        lda     $0882           ; override ground color ???
+        beq     L644A           ; black
         cmp     #$FF
-        beq     L644A
-        lda     #$2A
-L644A:  sta     $ED
-        lda     $0880
-        beq     L6457
+        beq     L644A           ; white
+        lda     #$2A            ; green (even col)
+L644A:  sta     FillColor
+
+        lda     $0880           ; override sky color ???
+        beq     L6457           ; black
         cmp     #$FF
-        beq     L6457
-        lda     #$D5
-L6457:  sta     $EE
-        beq     L6467
+        beq     L6457           ; white
+        lda     #$D5            ; blue (even col)
+L6457:  sta     AltFillColor
+        beq     L6467           ; black
         cmp     #$FF
-        beq     L6467
-        lda     $ED
-        beq     L6467
+        beq     L6467           ; white
+
+        lda     FillColor
+        beq     L6467           ; black
         cmp     #$FF
-        bne     L646D
+        bne     L646D           ; white
 L6467:  and     #$03
         tax                     ; hires color
-        jsr     L7BA9
+        jsr     SetEvenAndOddColorsAndPrepRowRoutine
+
 L646D:  lda     #$00
         sta     $F0
         lda     #$63
@@ -563,7 +567,7 @@ L646D:  lda     #$00
         dec     $F0
         lda     $73
         bpl     L6482
-        jsr     SwapEDAndEE
+        jsr     SwapFillColors
 L6482:  jmp     L6509
 
 L6485:  cmp     $EF
@@ -612,7 +616,7 @@ L6492:  lda     $EA
 ;;; Fill rows of viewport *above* the sky/ground diagonal
 L64B9:  lda     $EB
         beq     L64C0
-L64BD:  jsr     SwapEDAndEE
+L64BD:  jsr     SwapFillColors
 L64C0:  ldy     $EF
         beq     L64CC
         sty     $F1
@@ -633,7 +637,7 @@ L64D9:  lda     $EB
         lda     $EA
         cmp     $EC
         bcc     L64E6
-L64E3:  jsr     SwapEDAndEE
+L64E3:  jsr     SwapFillColors
 L64E6:  jsr     FillMixedViewportRows
 
 ;;; Fill rows of viewport *below* the sky/ground diagonal
@@ -652,8 +656,8 @@ L64FC:  lda     $EB
         lda     $EA
         cmp     $EC
         bcs     L6509
-L6506:  jsr     SwapEDAndEE
-L6509:  lda     #$63
+L6506:  jsr     SwapFillColors
+L6509:  lda     #99
         sta     $E7
         sec
         sbc     $F0
@@ -668,11 +672,11 @@ L6515:
 
 ;;; ============================================================
 
-.proc SwapEDAndEE
-        ldx     $ED
-        ldy     $EE
-        stx     $EE
-        sty     $ED
+.proc SwapFillColors
+        ldx     FillColor
+        ldy     AltFillColor
+        stx     AltFillColor
+        sty     FillColor
         rts
 .endproc
 
@@ -709,7 +713,7 @@ L6515:
         sta     HiresRowPtr
         lda     HiresTableHi,y
         sta     HiresRowPtr+1
-        lda     $ED
+        lda     FillColor
         beq     L6555           ; black, so use our optimized routine
         cmp     #$FF
         bne     L6567           ; not white, so use generic routine
@@ -862,7 +866,7 @@ DrawSkyGroundRowUnrolled:
         sta     (HiresRowPtr),y
         rts
 
-L6637:  lda     $ED
+L6637:  lda     FillColor
         beq     L669D
         cmp     #$FF
         beq     L669D
@@ -890,7 +894,7 @@ DrawSkyGroundRow:
         adc     ColorPixelToByteTable,x
         tay                     ; Y is offset into `DrawSkyGroundRowUnrolled`
         ror     a
-        lda     $EE             ; color
+        lda     AltFillColor
         bcs     :+              ; even or odd column?
         eor     #$7F            ; flip if needed
 :       sta     DrawSkyGroundRowUnrolled+4,y
@@ -898,7 +902,7 @@ DrawSkyGroundRow:
         sta     DrawSkyGroundRowUnrolled+3,y
         sty     TmpStash        ; stash for later
         ldy     #$00
-        lda     $ED
+        lda     FillColor
 
         jsr     DrawSkyGroundRowUnrolled
 
@@ -907,7 +911,7 @@ DrawSkyGroundRow:
         sta     DrawSkyGroundRowUnrolled+3,y
         lda     #$7F            ; mask
         sta     DrawSkyGroundRowUnrolled+4,y
-        lda     $EE
+        lda     AltFillColor
         beq     L668B
         cmp     #$FF
         bne     L6695
@@ -916,7 +920,7 @@ L668B:  lda     #$8B
         sec
         sbc     $B2
         jsr     L790E
-L6695:  lda     $ED
+L6695:  lda     FillColor
         beq     L669D
         cmp     #$FF
         bne     L66A4
@@ -3040,7 +3044,7 @@ L7833:  cpy     $B5
 
 L783A:  dex
         stx     $25
-        jsr     L7BA0
+        jsr     MapColorAndPrepRowRoutine
         lda     $EF
         sta     $B1
         lda     #$00
@@ -3500,11 +3504,14 @@ ColorTableEven:
 ColorTableOdd:
         .byte   $00, $55, $2A, $7F, $80, $D5, $AA, $FF
 
-L7BA0:  lda     $0876
+MapColorAndPrepRowRoutine:
+        lda     $0876
         and     #$0F
         tay
         ldx     ToHiresColorTable,y
-L7BA9:  lda     ColorTableEven,x
+
+SetEvenAndOddColorsAndPrepRowRoutine:
+        lda     ColorTableEven,x
         sta     ColorByteEven
         lda     ColorTableOdd,x
         sta     ColorByteOdd
@@ -4380,7 +4387,7 @@ L8256:  cmp     ($CF,x)
         lda     $6D
         bpl     L8280
         ldx     #HIRES_BLUE
-L8280:  jsr     L7BA9
+L8280:  jsr     SetEvenAndOddColorsAndPrepRowRoutine
         lda     #$8D
         sta     $E7
         lda     #$1F
@@ -4462,7 +4469,7 @@ L82FD:  ldx     #HIRES_BLUE
         eor     #$FF
         sta     $8A
         ldx     #HIRES_ORANGE
-L830B:  jsr     L7BA9
+L830B:  jsr     SetEvenAndOddColorsAndPrepRowRoutine
 
         ;; Modify routines
         lda     #OPC_RTS
