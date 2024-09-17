@@ -429,8 +429,11 @@ WW1AceScore:    .byte   0
         brk
         brk
         brk
-        ora     ($00,x)
-        brk
+
+Has64K:         .byte   1
+
+        .byte   0
+        .byte   0
 
         ;; $8C9
         MESSAGE $9B, $68, "BOMBS: 5 " ; modified in chunk5
@@ -3133,14 +3136,14 @@ L1E0C:  ora     ($D9,x)
 L1EAD:  jmp     $203A           ; becomes D3D0
 L1EB0:  jmp     $2015           ; becomes D3D3
 L1EB3:  jmp     $20AF           ; becomes D3D6
-        jmp     $2122           ; becomes D3D9
-        jmp     $238A           ; becomes D3DC
+L1EB6:  jmp     $2122           ; becomes D3D9
+L1EB9:  jmp     $238A           ; becomes D3DC
 L1EBC:  jmp     $2000           ; becomes D3DF
 
         sec
         rts
 
-        jmp     $2578           ; becomes D3E2
+L1EC1:  jmp     $2578           ; becomes D3E2
 
 L1EC4:  clc
         rts

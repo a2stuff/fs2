@@ -429,7 +429,7 @@ LFA4F:  sta     $08A1
         stx     $08A2
         rts
 
-        lda     $5F
+LFA56:  lda     $5F
         cmp     $095F
         lda     $60
         sbc     $0960
@@ -501,7 +501,7 @@ LFAB2:  pha
 LFAE9:  .byte   $01
 LFAEA:  .byte   $06
 LFAEB:  .byte   $02
-        lda     $0A5B
+LFAEC:  lda     $0A5B
         cmp     #$18
         bcs     LFAF6
         jsr     YokeUp

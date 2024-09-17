@@ -35,10 +35,10 @@ L601B:  jmp     L790E
         ;; Called by chunk3
 L601E:  jmp     MapColorAndPrepRowRoutine
 
-L6021:  lda     #$09
+L6021:  lda     #$09            ; 64k: Patched to JMP `LDB48`
         jmp     L67FD
 
-L6026:  rts
+L6026:  rts                     ; 64k: Patched to JMP `LE40E`
 
         rts
 
@@ -1075,7 +1075,7 @@ L6780:  lda     $8B
 L67AD:  lda     #$03
         jmp     L67FD
 
-L67B2:  lda     $08C6
+L67B2:  lda     Has64K
         beq     L67BA
         jmp     LF3CA
 
@@ -2071,7 +2071,7 @@ L6F84:  ldy     $B3
         lda     #$08
         jmp     L67FD
 
-L6F8B:  lda     $08C6
+L6F8B:  lda     Has64K
         beq     L6F93
         jmp     LF261
 
@@ -4972,7 +4972,7 @@ L8794:  jsr     LA7F4
         jmp     L87A8
 
 L87A2:  jsr     L97BF
-L87A5:  jsr     NoOp
+L87A5:  jsr     NoOp            ; 64k: Patched to JSR `LF9B5`
 L87A8:  jsr     LA60C
         jsr     LA61B
         jsr     L6000
@@ -4982,10 +4982,10 @@ L87A8:  jsr     LA60C
         lda     $0899
         bne     L87BE
         inx
-L87BE:  jsr     L89B6
+L87BE:  jsr     L89B6           ; 64k: Patched to JSR `LDDFC`
         jsr     L6003
         jsr     L6006
-        jsr     NoOp
+P64K_9: jsr     NoOp            ; 64k: Patched to JSR `LF7E2`
         jsr     LA1E2
         jsr     DrawRPM
         jsr     LA14D
@@ -4995,17 +4995,18 @@ L87BE:  jsr     L89B6
         jsr     L6012
         jsr     DrawHeading
         jsr     DrawMagCompass
-        jsr     NoOp
+P64K_6: jsr     NoOp            ; 64K: Patched to JSR `LDD7A`
         lda     WW1AceMode
         beq     :+
         jsr     LA7EE
-:       jsr     NoOp
+:
+P64K_3: jsr     NoOp            ; 64K: Patched to JSR `LDF65`
         jsr     L9F6B
         jsr     L9FE9
-        jsr     NoOp
+P64K_8: jsr     NoOp            ; 64k: Patched to JSR `LE5ED`
         lda     $092C
         beq     L8804
-        jsr     L8C6A
+P64K_C: jsr     L8C6A           ; 64k: Patched to JSR `LFAEC`
 L8804:  lda     $2B
         lsr     a
         bcs     L8836
@@ -5014,14 +5015,14 @@ L8804:  lda     $2B
         jsr     LA5E1
         jsr     MaybeBootDOS
         jsr     UpdateFuelTankGauges::Left
-        jsr     NoOp
+P64K_B: jsr     NoOp            ; 64k: Patched to JSR `LFA56`
         lda     $2B
         and     #$04
         beq     L8863
         jsr     DrawDME
         jsr     L9DDA
         jsr     L9DFB
-        jsr     NoOp
+P64K_1: jsr     NoOp            ; 64k: Patched to JSR `LDC3D`
         jmp     L8863
 
 L882D:  jsr     UpdateOilTempAndPressureGauges::Temp
@@ -5031,16 +5032,15 @@ L882D:  jsr     UpdateOilTempAndPressureGauges::Temp
 L8836:  lsr     a
         bcs     L8842
         jsr     UpdateFuelTankGauges::Right
-        jsr     NoOp           ; self-modified to LF97A ???
-        .refto UpdateAltimeter10K
+P64K_4: jsr     NoOp            ; 64k: Patched to JSR `UpdateAltimeter10K`
         jmp     L8848
 
 L8842:  jsr     UpdateOilTempAndPressureGauges::Pressure
-        jsr     NoOp
+P64K_5: jsr     NoOp            ; 64k: Patched to JSR `LDC59`
 L8848:  jsr     LA0D0
         jsr     LA139
         jsr     LA021
-        jsr     NoOp
+P64K_2: jsr     NoOp            ; 64k: Patched to JSR `UpdateADFIndicator`
         lda     $0832
         asl     a
         rol     $0833
@@ -5644,7 +5644,7 @@ L8CBE:  cmp     #$0C            ; VORS ?
         stx     $0A71
 L8CC5:  rts
 
-L8CC6:  ldy     #$00
+L8CC6:  ldy     #$00            ; 64k: Patched to JMP `LE2B3`
         sty     InputMode
         rts
 
@@ -5695,7 +5695,7 @@ SlewPitchDown:
 
 ;;; , key
 KeyDecrease:
-        lda     InputMode
+        lda     InputMode       ; 64k: patched to JSR `LDBB1`
         nop
         ldx     #$00
         stx     InputCounter
@@ -5867,7 +5867,7 @@ L8E0C:  sec
 .endproc
 
 ;;; . key
-KeyIncrease:
+KeyIncrease:                    ; 64K: Patched to JSR `LDBE3`
         lda     InputMode
         nop
         ldx     #$00
@@ -6089,7 +6089,7 @@ L8FBE:  lda     #$08            ; Transponder
 L8FC0:  jmp     SetInputModeAndCounter
 
 ;;; Ctrl+A / A key
-ADF:    nop                     ; self-modified (64k-only)
+ADF:    nop                     ; 64k: Patched to JMP `LDB99`
         nop
         nop
 
@@ -6235,8 +6235,8 @@ SaveModeToLibrary:
         bne     L9093           ; always
 
 ;;; Q key
-CoursePlotting:                 ; patched for 64k
-        jmp     NoOp            ; points at CoursePlottingMenu
+CoursePlotting:
+        jmp     NoOp            ; 64k: Patched to JMP `CoursePlottingSystem`
 
 ;;; Z key
 SlewResetAngles:
@@ -6302,7 +6302,7 @@ FuelTankSelect:
 ;;; 4 key
 ;;; Magnetos: Both
 ;;; Otherwise: Radar View
-SelectRadarView:
+SelectRadarView:                ; 64k: Patched to JMP `LE2E6`
         ldx     #$02            ; Radar View
         stx     InputMode
 L9100:  dex
@@ -6312,7 +6312,7 @@ L9100:  dex
 ;;; 5 key
 ;;; Magnetos: Start
 ;;; Otherwise: 3D View
-Select3DView:
+Select3DView:                   ; 64k: Patched to JMP `LE2FA`
         ldx     #$01            ; 3D View
         lda     $0836
         bne     L9100
@@ -7570,7 +7570,7 @@ L9C6D:  rts
 
 L9C6E:  lda     SlewMode
         beq     L9C76
-        nop
+P64K_A: nop                     ; 64k: Patched to JSR `LDD50`
         nop
         nop
 L9C76:  rts
@@ -7921,7 +7921,7 @@ L9EEE:  lda     #' '
         rts
 .endproc
 
-.proc DrawCarbHeatAndLights
+DrawCarbHeatAndLights:
         LDAX    #msg_carbheat_on
         ldy     $0A58
         bne     :+
@@ -7936,8 +7936,8 @@ DrawLights:
         ldy     PanelLights
         bne     :+
         LDAX    #msg_lights_off
-:       jmp     DrawMessageWhite    ; self-modified???
-.endproc
+:
+P64K_7: jmp     DrawMessageWhite    ; 64k: Patched to JMP `LE2D1`
 
 .proc DrawRPM
         lda     $0990
@@ -8774,7 +8774,7 @@ LA551:  sty     $5F
         sta     $61
         rts
 
-LA55A:  lda     $0A6F
+LA55A:  lda     $0A6F           ; 64k: Patched to JMP $E09F
         lsr     a
         tay
         ldx     $0997
@@ -8831,7 +8831,7 @@ LA5D8:  lda     #$05
         sta     $099D
         rts
 
-LA5E1:  ldx     #$01
+LA5E1:  ldx     #$01            ; 64k: Patched to JMP `LDE72`
         lda     $0954
         cmp     #$05
         bcc     LA5F6
@@ -8853,7 +8853,7 @@ LA604:  sta     $0884
         bne     LA604
         rts
 
-LA60C:  nop
+LA60C:  nop                     ; 64k: patched to JMP `LE4DD`
         nop
         rts
 
@@ -8918,10 +8918,12 @@ LA68F:  LDAX    LA617
         jmp     LA698
 
 LA698:  STAX    $9E
-        lda     #$E0
-        sta     $1E03
-        lda     #$A7
-        sta     $1E04
+
+        lda     #<$A7E0
+        sta     L1E03
+        lda     #>$A7E0
+        sta     L1E03+1
+
         jsr     LA6CD
         lda     #$00
         sta     $08EA
@@ -8931,7 +8933,7 @@ LA698:  STAX    $9E
         LDAX    LA619
         STAX    $9E
         LDAX    LA7E0
-        STAX    $1E03
+        STAX    L1E03
 LA6CD:  lda     HISCR
 LA6D0:  lda     $9E
         sta     $1E01
@@ -9244,7 +9246,7 @@ LAB91:  nop
         bcs     LABB4
         jsr     LAD15
         bcs     LABB4
-        jsr     LAE0F
+        jsr     ProbeLCMemory
         bcs     LABB4
         jsr     LA6F9
         bcs     LABB4
@@ -9258,7 +9260,7 @@ LAB91:  nop
 LABB4:  lda     $1E01
         jmp     L1F89
 
-LABBA:  jsr     LAE44
+LABBA:  jsr     Apply64KPatchTable
         jsr     LAD32
         jsr     LAC3A
         jsr     LACBA
@@ -9292,12 +9294,14 @@ LABEE:  lda     LA7E0,x
         sta     LABCC,x
         dex
         bpl     LABEE
-        lda     #$00
-        sta     $1E03
-        lda     #$02
-        sta     $1E04
+
+        lda     #<$0200
+        sta     L1E03
+        lda     #>$0200
+        sta     L1E03+1
         lda     #$00
         sta     $1E01
+
 LAC06:  jsr     L1EAD
         bcs     LAC39
         lda     $1E01
@@ -9375,7 +9379,7 @@ LAC98:  inc     $092C
 
         jsr     ClearViewportsToBlack
         CALLAX  DrawMultiMessage, msg_demo
-        lda     $08C6
+        lda     Has64K
         bne     LACB1
         CALLAX  DrawMultiMessage, msg_48k_demo
 LACB1:  jsr     TogglePause
@@ -9416,9 +9420,7 @@ LACBA:  lda     #$01
         lda     #$00
         jsr     UpdateOilTempAndPressureGauges::InitPressure
         jsr     DrawVOR1
-        .byte   $20
-LAD0F:  .byte   $7C
-        .byte   $9E
+        jsr     DrawVOR2
         jsr     L8933
         rts
 
@@ -9463,115 +9465,138 @@ LAD58:  sta     $C1
         bne     LAD42
         rts
 
-LAD68:  .byte   $C3
-        .byte   $8F
+;;; ============================================================
+
+;;; 64k Patch Table - each entry is 5 bytes
+;;;   .addr address-to-patch
+;;;   jsr (or jmp) ...
+
+
+        ;; Patch table
+PatchTable:
+        .addr   ADF
         jmp     LDB99
 
-        .byte   $27
-        dey
+        .addr   P64K_1
         jsr     LDC3D
-        and     ($60,x)
+
+        .addr   L6021
         jmp     LDB48
 
-        eor     ($88),y
-        jsr     LD9F1
-        ora     ($8D,x)
+        .addr   P64K_2
+        jsr     UpdateADFIndicator
+
+        .addr   KeyDecrease
         jsr     LDBB1
-        .byte   $27
-        stx     $E320
-        .byte   $DB
-        beq     LAD0F
+
+        .addr   KeyIncrease
+        jsr     LDBE3
+
+        .addr   P64K_3
         jsr     LDF65
-        .byte   $3C
-        dey
-        jsr     $F97A
-        eor     $88
+
+        .addr   P64K_4
+        jsr     UpdateAltimeter10K
+
+        .addr   P64K_5
         jsr     LDC59
-        sbc     $87
+
+        .addr   P64K_6
         jsr     LDD7A
-        .byte   $5A
-        lda     $4C
-        .byte   $9F
-        cpx     #$36
-        .byte   $9F
+
+        .addr   LA55A
+        jmp     $E09F
+
+        .addr   P64K_7
         jmp     LE2D1
 
-        dec     $8C
+        .addr   L8CC6
         jmp     LE2B3
 
-        .byte   $FC
-        bcc     LADF8
-        inc     $E2
-        ora     $91
+        .addr   SelectRadarView
+        jmp     LE2E6
+
+        .addr   Select3DView
         jmp     LE2FA
 
-        sbc     $2087,y
-        sbc     LADE5
-        asl     $D04C,x
-        .byte   $D3
-        bcs     LADDD
+        .addr   P64K_8
+        jsr     LE5ED
+
+        ;; Jump table in chunk4
+        .addr   L1EAD
+        jmp     LD3D0
+        .addr   L1EB0
         jmp     LD3D3
-
-        .byte   $B3
-        asl     $D64C,x
-        .byte   $D3
-        ldx     $1E,y
+        .addr   L1EB3
+        jmp     LD3D6
+        .addr   L1EB6
         jmp     LD3D9
+        .addr   L1EB9
+        jmp     LD3DC
+        .addr   L1EBC
+        jmp     LD3DF
 
-        lda     $4C1E,y
-        .byte   $DC
-        .byte   $D3
-        ldy     $4C1E,x
-        .byte   $DF
-        .byte   $D3
-        cmp     ($1E,x)
+        .addr   L1EC1
         jmp     LD3E2
 
-        .byte   $9B
-        .byte   $90
-LADDD:  jmp     CoursePlottingMenu
+        .addr   CoursePlotting
+        jmp     CoursePlottingMenu
 
-        .byte   $C7
-        .byte   $87
+        .addr   P64K_9
         jsr     LF7E2
-LADE5:  .byte   $73
-        .byte   $9C
-        jsr     LDD50
-        .byte   $0C
-        ldx     $4C
-        cmp     $26E4,x
-        rts
 
+        .addr   P64K_A
+        jsr     LDD50
+
+        .addr   LA60C
+        jmp     LE4DD
+
+        .addr   L6026
         jmp     LE40E
 
-        sbc     (L00A5,x)
-        .byte   $4C
-        .byte   $72
-LADF8:  dec     L87A5,x
-        jsr     LF9B5           ; ???
-        ora     $88,x
-        jsr     $FA56
-        ora     ($88,x)
-        jsr     $FAEC
-        ldx     $2087,y
-        .byte   $FC
-        cmp     a:$00,x
-LAE0F:  lda     LCBANK2
+        .addr   LA5E1
+        jmp     LDE72
+
+        .addr   L87A5
+        jsr     LF9B5
+
+        .addr   P64K_B
+        jsr     LFA56
+
+        .addr   P64K_C
+        jsr     LFAEC
+
+        .addr   L87BE
+        jsr     LDDFC
+
+        .word   $0000           ; sentinel
+
+;;; ============================================================
+
+;;; Detect 64K
+
+ProbeLCMemory:
+        lda     LCBANK2         ; turn on LCBANK2 for read/write
         lda     LCBANK2
-        ldx     #$00
-LAE17:  stx     $D000
+
+        ldx     #$00            ; try writing/reading all 256 values
+:       stx     $D000
         cpx     $D000
-        bne     LAE9E
+        bne     LAE9E           ; fail, just RTS
         dex
-        bne     LAE17
-        lda     #$00
-        sta     $1E03
-        lda     #$D0
-        sta     $1E04
+        bne     :-
+
+        lda     #<$D000
+        sta     L1E03
+        lda     #>$D000
+        sta     L1E03+1
         lda     #$00
         sta     $1E01
+
         jsr     L1EB3
+
         bcs     LAE43
+
         nop
         nop
         nop
@@ -9579,35 +9604,42 @@ LAE17:  stx     $D000
         nop
         nop
         nop
+
         lda     #$01
-        sta     $08C6
+        sta     Has64K
         clc
 LAE43:  rts
 
-LAE44:  lda     $08C6
+;;; ============================================================
+
+.proc Apply64KPatchTable
+        lda     Has64K
         beq     LAE9E
         ldx     #$00
 LAE4B:  ldy     #$00
-        lda     LAD68,x
+        lda     PatchTable,x
         inx
         sta     L00A5
-        lda     LAD68,x
+        lda     PatchTable,x
         inx
         sta     $A6
         ora     L00A5
         beq     LAE74
-        lda     LAD68,x
+        lda     PatchTable,x
         inx
         sta     (L00A5),y
         iny
-        lda     LAD68,x
+        lda     PatchTable,x
         inx
         sta     (L00A5),y
         iny
-        lda     LAD68,x
+        lda     PatchTable,x
         inx
         sta     (L00A5),y
         jmp     LAE4B
+.endproc
+
+;;; ============================================================
 
 LAE74:  lda     #$00
         ldx     #$D0
@@ -9617,14 +9649,12 @@ LAE74:  lda     #$00
         sta     $0931
         lda     #$01
         sta     $1E07
-        lda     #$E2
-        ldx     #$A7
-        sta     $FFFA
-        stx     $FFFB
-        sta     $FFFC
-        stx     $FFFD
-        sta     $FFFE
-        stx     $FFFF
+
+        ;; Patch interrupt vectors in LC bank
+        LDAX    #ResetInterruptHandler
+        STAX    $FFFA           ; NMI
+        STAX    $FFFC           ; Reset
+        STAX    $FFFE           ; IRQ
 LAE9E:  rts
 
 LAE9F:  ldx     #$00
@@ -10339,4 +10369,4 @@ LB3B3:  lda     ($3E),y
         asl     a
         rol     $C8
 
-        .assert * = $B3E0, error, "EOF mismatch"
+        .assert * = $B3E0, error, .sprintf("EOF mismatch, %04X", *)

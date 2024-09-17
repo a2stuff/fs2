@@ -42,13 +42,13 @@ LD3D0:  jmp     LD41F
 
 LD3D3:  jmp     LD3FA
 
-        jmp     LD494
+LD3D6:  jmp     LD494
 
 LD3D9:  jmp     LD507
 
-        jmp     LD76F
+LD3DC:  jmp     LD76F
 
-        jmp     LD3E5
+LD3DF:  jmp     LD3E5
 
 LD3E2:  jmp     LD95D
 
@@ -71,7 +71,7 @@ LD402:  lda     ($A5),y
         bne     LD402
         inc     $A6
         inc     $A8
-        inc     $1E04
+        inc     L1E03+1
         dex
         bne     LD402
         jsr     LD48B
@@ -103,9 +103,9 @@ LD443:  iny
         bne     LD42B
 LD44A:  jsr     LD48B
         lda     $A5
-        sta     $1E03
-        lda     $A6
-        sta     $1E04
+        sta     L1E03
+        lda     $A5+1
+        sta     L1E03+1
         clc
 LD458:  rts
 
@@ -168,9 +168,9 @@ LD507:  jsr     LD4F5
         bne     LD521
         inc     $1E02
 LD521:  lda     $A5
-        sta     $1E03
-        lda     $A6
-        sta     $1E04
+        sta     L1E03
+        lda     $A5+1
+        sta     L1E03+1
         clc
 LD52C:  rts
 
@@ -236,7 +236,9 @@ LD9E9:  .byte   $FF
 msg_adf_frequency:
         MESSAGE $88, $67, " 287", str_adf_frequency
 
-LD9F1:  lda     $097B
+;;; Update the ADF instrument on the panel
+.proc UpdateADFIndicator
+        lda     $097B
         beq     LDA52
         lsr     LD9E5
         bcc     LD9FE
@@ -293,6 +295,7 @@ LDA53:  lda     $BE
         STAX    ValueForString
         CALLAX  Set3DigitString, str_adf_heading
         JUMPAX  DrawMessageOrange, msg_adf_heading
+.endproc
 
 ;;; Used for drawing the ADF (turned on in Edit mode), like this:
 ;;; ┌----
@@ -305,7 +308,8 @@ LDA53:  lda     $BE
 ;;; |  |
 ;;;
 
-DrawADFPanel:  MESSAGE $93, $4B, "      " ; start erasing VOR2
+DrawADFPanel:
+        MESSAGE $93, $4B, "      " ; start erasing VOR2
         MESSAGE $98, $4B, "      " ; continue
         MESSAGE $9C, $55, "    "   ; continue (right bit under trim)
         MESSAGE $9D, $4D, "$     " ; start left edge, more erasing
@@ -419,6 +423,8 @@ LDBD3:  lda     InputMode
         cpx     #$08
         beq     LDC15
         bne     LDC11
+
+LDBE3:
         ldx     $097B
         beq     LDC05
         lda     InputMode
@@ -648,7 +654,7 @@ crash_msg_table:
         .addr   msg_building_crash
 
 LDDFB:  brk
-        lda     $0834
+LDDFC:  lda     $0834
         bne     LDE07
         lda     $09E3
         bne     LDE22
@@ -707,7 +713,10 @@ LDE59:  .byte   $13
         ora     $1E
         ora     $0000
         ora     $1E,x
-        ora     $AD,x
+        .byte   $15
+
+LDE72:
+        .byte   $AD
         lsr     $09,x
         and     #$03
         asl     a
@@ -1311,7 +1320,8 @@ LE2D1:  jsr     DrawMessageWhite
         jsr     DrawMessageWhite
         rts
 
-        lda     $FA
+;;; 64k replacement for `SelectRadarView`
+LE2E6:  lda     $FA
         cmp     #$03
         bne     LE2F3
         lda     #$03
@@ -1322,6 +1332,7 @@ LE2F3:  ldx     #$02
         stx     $FA
 LE2F7:  jmp     L9100
 
+;;; 64k replacement for `Select3DView`
 LE2FA:  lda     $FA
         cmp     #$03
         bne     LE307
@@ -1470,7 +1481,7 @@ LE4C7:  STAX    $B6
 
 LE4DC:  rts
 
-        lda     $0913
+LE4DD:  lda     $0913
         bne     LE4DC
         inc     $0913
         sta     $BB
@@ -1628,7 +1639,8 @@ LE572:  sta     $B9
         lsr     $95,x
         bmi     LE63A
         .byte   $FC
-        lda     $0977
+
+LE5ED:  lda     $0977
         and     $0914
         and     $0917
         cmp     $FB
