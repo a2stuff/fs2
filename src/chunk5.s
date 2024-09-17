@@ -38,7 +38,7 @@ L601E:  jmp     MapColorAndPrepRowRoutine
 L6021:  lda     #$09            ; 64k: Patched to JMP `LDB48`
         jmp     L67FD
 
-L6026:  rts                     ; 64k: Patched to JMP `LE40E`
+L6026:  rts                     ; 64k: Patched to JMP `UpdateCOMMessageChunks`
 
         rts
 
@@ -9487,10 +9487,10 @@ PatchTable:
         jsr     UpdateADFIndicator
 
         .addr   KeyDecrease
-        jsr     LDBB1
+        jsr     KeyDecreasePatch
 
         .addr   KeyIncrease
-        jsr     LDBE3
+        jsr     KeyIncreasePatch
 
         .addr   P64K_3
         jsr     LDF65
@@ -9514,10 +9514,10 @@ PatchTable:
         jmp     LE2B3
 
         .addr   SelectRadarView
-        jmp     LE2E6
+        jmp     SelectRadarViewPatch
 
         .addr   Select3DView
-        jmp     LE2FA
+        jmp     Select3DViewPatch
 
         .addr   P64K_8
         jsr     LE5ED
@@ -9552,7 +9552,7 @@ PatchTable:
         jmp     LE4DD
 
         .addr   L6026
-        jmp     LE40E
+        jmp     UpdateCOMMessageChunks
 
         .addr   LA5E1
         jmp     LDE72

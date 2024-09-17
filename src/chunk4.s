@@ -531,7 +531,8 @@ SlewMode:       .byte   $00
 
 WW1AceMode:     .byte   $00
 
-        iny
+ATISPacing:     .byte   $C8
+
         bit     $43
         .byte   $1F
         eor     ($00,x)

@@ -5,6 +5,7 @@
 ;;; * War Report
 ;;; * North and East readouts in slew mode
 ;;; * Automatic Direction Finder (ADF)
+;;; * COM Radio
 
 L002D           := $002D
 L0045           := $0045
@@ -398,7 +399,8 @@ LDB99:  lda     $08F1
 LDBAC:  lda     #$0D            ; ADF
 LDBAE:  jmp     SetInputModeAndCounter
 
-LDBB1:  ldx     $097B
+KeyDecreasePatch:
+        ldx     $097B
         beq     LDBD3
         lda     InputMode
         cmp     #$0D            ; ADF
@@ -422,9 +424,9 @@ LDBD3:  lda     InputMode
         inx
         cpx     #$08
         beq     LDC15
-        bne     LDC11
+        bne     LDC11           ; always
 
-LDBE3:
+KeyIncreasePatch:
         ldx     $097B
         beq     LDC05
         lda     InputMode
@@ -1275,10 +1277,8 @@ LE290:  lda     $18
         sta     $0995
         lda     $A6
         bpl     LE2AC
-        .byte   $6D
-        .byte   $96
-LE29E:  ora     #$8D
-        stx     $09,y
+        adc     $0996
+        sta     $0996
         lda     #$FF
         adc     $0997
         bmi     LE2AC
@@ -1320,8 +1320,11 @@ LE2D1:  jsr     DrawMessageWhite
         jsr     DrawMessageWhite
         rts
 
+;;; ============================================================
+
 ;;; 64k replacement for `SelectRadarView`
-LE2E6:  lda     $FA
+SelectRadarViewPatch:
+        lda     $FA
         cmp     #$03
         bne     LE2F3
         lda     #$03
@@ -1332,8 +1335,11 @@ LE2F3:  ldx     #$02
         stx     $FA
 LE2F7:  jmp     L9100
 
+;;; ============================================================
+
 ;;; 64k replacement for `Select3DView`
-LE2FA:  lda     $FA
+Select3DViewPatch:
+        lda     $FA
         cmp     #$03
         bne     LE307
         lda     #$03
@@ -1346,6 +1352,8 @@ LE307:  ldx     #$01
         stx     $FA
         rts
 
+;;; ============================================================
+
 LE311:  ldy     #$FF
 LE313:  inc     $A5
         dec     $A5
@@ -1355,67 +1363,114 @@ LE313:  inc     $A5
         bne     LE311
         rts
 
-        brk
-        .byte   $0B
-        .byte   $17
-        .byte   $22
-        .byte   $23
-        and     $41,x
-        .byte   $64
-        ror     $88,x
-        sta     $D0AB,y
+;;; ============================================================
+;;; COM Radio (ATIS Messages)
 
-        .byte   "WEATHER - ", 0
-        .byte   "OBSERVATION", 0
-LE342:  .byte   "12:00 ZULU", 0
-        .byte   0
-        .byte   "TEMPERATURE "
-LE35A:  .byte   "75 - ", 0
-        .byte   "INFORMATION", 0
-        .byte   "LANDING AND DEPARTING RUNWAY "
-LE389:  .byte   "31 - ", 0
-        .byte   "ADVISE CONTROLLER", 0
-        .byte   "ALTIMETER 29.95 -", 0
-        .byte   "VISIBILITY 10 - ", 0
-        .byte   "WIND "
-LE3C9:  .byte   "330 AT "
-LE3D0:  .byte   "27 - ", 0
-        .byte   " "
-LE3D7:  .byte   " "
-        .byte   "MEASURED CEILING "
-LE3E9:  .byte   "00600 OVERCAST - ", 0
-        .byte   "ON INITIAL CONTACT", 0
+;;; Full message example:
+;;;
+;;;  OHARE INTERNATIONAL AIRPORT
+;;;  INFORMATION BRAVO  13:00 ZULU
+;;;   WEATHER -      VISIBILITY
+;;;  10 -   TEMPERATURE 53 -
+;;;  WIND  00 AT  0 -   ALTIMETER
+;;;  29.95 -  LANDING AND DEPARTING
+;;;  RUNWAY 04 -   ADVISE CONTROLLER
+;;;   ON INITIAL CONTACT YOU HAVE
+;;;  BRAVO.....
+;;;
+;;; A byte $80+ encodes using a chunk via the `ChunkOffsetTable`
+;;; e.g. $41 $42 $20 $85 $20 $43 $44 $2E $2E $00 would emit
+;;; "AB INFORMATION CD..". So the above message is encoded as:
+;;; $4F $48 $41 $52 $45 $20 $49 $4E $54 $45 $52 $4E $41
+;;; $54 $49 $4F $4E $41 $4C $20 $41 $49 $52 $50 $4F $52
+;;; $54 $85 $42 $52 $41 $56 $4F $82 $80 $8B $89 $84 $8A
+;;; $88 $86 $87 $8C $59 $4F $55 $20 $48 $41 $56 $45 $20
+;;; $42 $52 $41 $56 $4F $2E $2E $2E $2E $2E $00
 
-LE40E:  ldx     $0956
+;;; Message fragment offsets from `MessageChunks`
+
+ChunkOffsetTable:
+        .byte   mc0 - MessageChunks
+        .byte   mc1 - MessageChunks
+        .byte   mc2 - MessageChunks
+        .byte   mc3 - MessageChunks
+        .byte   mc4 - MessageChunks
+        .byte   mc5 - MessageChunks
+        .byte   mc6 - MessageChunks
+        .byte   mc7 - MessageChunks
+        .byte   mc8 - MessageChunks
+        .byte   mc9 - MessageChunks
+        .byte   mcA - MessageChunks
+        .byte   mcB - MessageChunks
+        .byte   mcC - MessageChunks
+
+MessageChunks:
+
+mc0:                    .byte   "WEATHER - ", 0
+
+mc1:                    .byte   "OBSERVATION", 0
+
+mc2:
+str_time_digits:        .byte   "12:00 ZULU", 0
+
+mc3:                    .byte   0
+
+mc4:                    .byte   "TEMPERATURE "
+str_temp_digits:        .byte   "75 - ", 0
+
+mc5:                    .byte   "INFORMATION", 0
+
+mc6:                    .byte   "LANDING AND DEPARTING RUNWAY "
+str_runway_digits:      .byte   "31 - ", 0
+
+mc7:                    .byte   "ADVISE CONTROLLER", 0
+
+mc8:                    .byte   "ALTIMETER 29.95 -", 0
+
+mc9:                    .byte   "VISIBILITY 10 - ", 0
+
+mcA:                    .byte   "WIND "
+str_wind_dir_digits:    .byte   "330 AT "
+str_wind_speed_digits:  .byte   "27 - ", 0
+
+mcB:                    .byte   " "
+str_ceiling_include:    .byte   " " ; set to $0 to skip ceiling
+                        .byte   "MEASURED CEILING "
+str_ceiling_digits:     .byte   "00600 OVERCAST - ", 0
+
+mcC:                    .byte   "ON INITIAL CONTACT", 0
+
+.proc UpdateCOMMessageChunks
+        ldx     $0956
         lda     $090E,x
         clc
         adc     $0930
-        jsr     LE4C5
-        sta     LE35A
-        stx     LE35A+1
-        lda     #$68
+        jsr     ATo2Digits
+        sta     str_temp_digits   ; temperature 10s digit
+        stx     str_temp_digits+1 ; temperature 1s digit
+        lda     #<$0168
         sta     $C2
-        lda     #$01
-        sta     $C3
-        lda     $0973
-        ldx     $0974
+        lda     #>$0168
+        sta     $C2+1
+        LDAX    $0973
         jsr     MultiplyAXByC2
         txa
         ldx     $C9
-        jsr     LE4C7
-        sta     LE3C9+1
-        stx     LE3C9+2
+        jsr     AXTo3Digits
+        sta     str_wind_dir_digits+1 ; wind direction 10s digit
+        stx     str_wind_dir_digits+2 ; wind direction 1s digit
         cpy     #$30
         bne     LE444
         ldy     #$20
-LE444:  sty     LE3C9
+LE444:  sty     str_wind_dir_digits ; wind direction 100s digit
         lda     $0971
-        jsr     LE4C5
+        jsr     ATo2Digits
         cmp     #$30
         bne     LE453
         lda     #$20
-LE453:  sta     LE3D0
-        stx     LE3D0+1
+LE453:
+        sta     str_wind_speed_digits   ; wind speed 10s digit
+        stx     str_wind_speed_digits+1 ; wind speed 1s digit
         lda     $0954
         clc
         adc     $0854
@@ -1423,35 +1478,33 @@ LE453:  sta     LE3D0
         bcc     LE467
         sec
         sbc     #$18
-LE467:  jsr     LE4C5
-        sta     LE342
-        stx     LE342+1
+LE467:  jsr     ATo2Digits
+        STAX    str_time_digits ; start of "12:00 ZULU"
         lda     #$66
         sta     $C2
         lda     #$08
         sta     $C3
-        lda     $0856
-        ldx     $0857
+        LDAX    $0856
         jsr     MultiplyAXByC2
-        ldy     #$00
-        sty     LE3D7
+        ldy     #$00            ; exclude ceiling message
+        sty     str_ceiling_include
         txa
         ldx     $C9
         bne     LE48E
         tay
         beq     LE4AB
-LE48E:  ldy     #$20
-        sty     LE3D7
-        jsr     LE4C7
+LE48E:  ldy     #' '            ; include ceiling message
+        sty     str_ceiling_include
+        jsr     AXTo3Digits
         cpy     #$30
         bne     LE4A2
         ldy     #$20
         cmp     #$30
         bne     LE4A2
         lda     #$20
-LE4A2:  sty     LE3E9
-        sta     LE3E9+1
-        stx     LE3E9+2
+LE4A2:  sty     str_ceiling_digits   ; ceiling 10000s digit
+        sta     str_ceiling_digits+1 ; ceiling 1000s digit
+        stx     str_ceiling_digits+2 ; ceiling 100s digit
 LE4AB:  lda     $0974
         lsr     a
         lsr     a
@@ -1461,101 +1514,136 @@ LE4AB:  lda     $0974
         lsr     a
         tax
         lda     $090B,x
-        jsr     LE4C5
-        sta     LE389
-        stx     LE389+1
+        jsr     ATo2Digits
+        sta     str_runway_digits   ; runway 10s digit
+        stx     str_runway_digits+1 ; runway 1s digit
+        rts
+.endproc
+
+;;; ============================================================
+
+
+TmpStr: .res    3, 0
+
+ATo2Digits:
+        ldx     #$00
+AXTo3Digits:
+        STAX    $B6
+        CALLAX  Set3DigitString, TmpStr
+        ldy     TmpStr+0
+        lda     TmpStr+1
+        ldx     TmpStr+2
         rts
 
 ;;; ============================================================
 
-LE4C2:  brk
-LE4C3:  brk
-LE4C4:  brk
-LE4C5:  ldx     #$00
-LE4C7:  STAX    $B6
-        CALLAX  Set3DigitString, $E4C2
-        ldy     LE4C2
-        lda     LE4C3
-        ldx     LE4C4
-        rts
+;;; Output message 1 character at a time, constructing a temporary
+;;; MESSAGE at $B8 (row, col, character, null)
+
+        MsgPtr       := $B6
+
+        CharMsg      := $B8
+        CharMsgRow   := CharMsg+0
+        CharMsgCol   := CharMsg+1
+        CharMsgChar  := CharMsg+2
+        CharMsgNull  := CharMsg+3
 
 LE4DC:  rts
 
-LE4DD:  lda     $0913
+.proc LE4DD
+        lda     $0913
         bne     LE4DC
         inc     $0913
-        sta     $BB
+        sta     CharMsgNull     ; A = $00
         lda     #$03
-        sta     $B8
-        sta     $B9
+        sta     CharMsgRow
+        sta     CharMsgCol
         jsr     ClearViewportsToBlack
-        lda     $092A
-        ldx     $092B
-        sta     $B6
-        stx     $B7
-LE4FA:  ldy     #$00
-        lda     ($B6),y
-        inc     $B6
+        LDAX    $092A           ; points at airport name
+        STAX    MsgPtr
+IncPtr:
+        ldy     #$00
+        lda     (MsgPtr),y
+        inc     MsgPtr
         bne     LE504
-        inc     $B7
+        inc     MsgPtr+1
 LE504:  tay
-        bne     LE508
+        bne     :+
         rts
-
-LE508:  bpl     LE52E
-        lda     $B7
+:
+        bpl     DoChar          ; simple char
+        lda     MsgPtr+1
         pha
-        lda     $B6
+        lda     MsgPtr
         pha
-        lda     LE29E,y
+        lda     ChunkOffsetTable-$80,y ; ignore high bit
         clc
-        adc     #$2B
-        sta     $B6
-        lda     #$E3
+        adc     #<MessageChunks
+        sta     MsgPtr
+        lda     #>MessageChunks
         adc     #$00
-        sta     $B7
+        sta     MsgPtr+1
         lda     #$20
         jsr     LE504
-        jsr     LE554
+        jsr     AdvanceCursor
         pla
-        sta     $B6
+        sta     MsgPtr
         pla
-        sta     $B7
-LE52C:  bne     LE4FA
-LE52E:  cmp     #$20
-        beq     LE54F
-        sta     L00BA
-        CALLAX  DrawMessageWhite, $00B8
+        sta     MsgPtr+1
+IncRelay:
+        bne     IncPtr          ; always
+
+DoChar:
+        cmp     #' '
+        beq     SkipDraw
+
+        sta     CharMsgChar
+        CALLAX  DrawMessageWhite, CharMsg
+
+        ;; Delay for a few milliseconds
         lda     #$00
         sec
-        sbc     $093B
+        sbc     ATISPacing
         tax
-LE542:  ldy     #$78
-LE544:  dey
-        bne     LE544
+l1:     ldy     #$78
+l2:     dey
+        bne     l2
         dex
-        bne     LE542
-        jsr     LE56D
-        bne     LE52C
-LE54F:  jsr     LE554
-        bne     LE52C
-LE554:  lda     $B9
-        cmp     #$64
-        bcc     LE56D
-        lda     $B8
-        adc     #$07
-        cmp     #$5A
-        bcc     LE567
+        bne     l1
+
+        jsr     Advance
+        bne     IncRelay        ; always
+
+SkipDraw:
+        jsr     AdvanceCursor
+        bne     IncRelay        ; always
+
+AdvanceCursor:
+        lda     CharMsgCol
+        cmp     #100
+        bcc     Advance
+
+        lda     CharMsgRow      ; wrap, maybe clear
+        adc     #7
+        cmp     #90
+        bcc     SetRow
         jsr     ClearViewportsToBlack
         lda     #$03
-LE567:  sta     $B8
+SetRow:
+        sta     CharMsgRow
         lda     #$03
-        bne     LE572
-LE56D:  lda     $B9
+        bne     SetCol           ; always
+
+Advance:
+        lda     CharMsgCol
         clc
-        adc     #$04
-LE572:  sta     $B9
+        adc     #4
+SetCol:
+        sta     CharMsgCol
         rts
+.endproc
+
+;;; ============================================================
 
         brk
         .byte   $5A
@@ -3614,4 +3702,4 @@ LF3CA:  iny
         brk
         .byte   $76
 
-        .assert * = $F400, error, "EOF mismatch"
+        .assert * = $F400, error, .sprintf("EOF mismatch, %04X", *)
