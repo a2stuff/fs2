@@ -103,7 +103,7 @@ IndicatorDialNeedleX:
         .byte   $82
         .byte   $1A
         .byte   $82
-        .byte   $B4             ; ???
+        .byte   $B4
 
 ;;; Table used by `DrawIndicatorDialNeedle`, indexed by needle
 IndicatorDialNeedleY:
@@ -111,13 +111,12 @@ IndicatorDialNeedleY:
         .byte   $7E
         .byte   $7E
         .byte   $AA
-        .byte   $AF             ; ???
+        .byte   $AF
 
 ;;; Table used by `DrawIndicatorDialNeedle`, indexed by needle
 ;;; 0 = skinny, 1 = thick
 IndicatorDialNeedleStyle:
-        .byte   0, 1, 0, 1
-        .byte   1               ; ???
+        .byte   0, 1, 0, 1, 1
 
 ;;; Thin needle data - table of addrs indexed by needle pos
 IndicatorDialThinNeedleTable:
@@ -1464,6 +1463,9 @@ CharBitmapTable:
         .word $49ef, $1f6f, $5def, $73e7, $2497, $7b6d, $256d, $5f6d ; PQRSTUVW
         .word $5aad, $24ad, $788f                                    ; XYZ
 
+;;; NOTE: Some characters are repurposed for box drawing (e.g. ADF)
+;;;       < is ┌
+;;;       $ is │
 
 ;;; Inputs are 16-bit signed numbers; scales X by (Y / $7FFF)
 ;;; Input: ZP locations specified by X, Y
@@ -2156,7 +2158,7 @@ Init:   ldx     #$03            ; needle index
 ;;; Generic indicator logic
 ;;; Inputs:
 ;;;     A = ???
-;;;     X = needle index (0=alt1, 1=alt2, 2=airspeed, 3=vertical, 4=???)
+;;;     X = needle index (0=alt1, 1=alt2, 2=airspeed, 3=vertical, 4=ADF)
 
 .proc DrawIndicatorDialNeedle
         sta     IndicatorDialNeedlePos

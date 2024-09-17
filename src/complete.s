@@ -83,7 +83,9 @@ InputMode       := $FA
 ;;; $07 = Nav Radio (lower digits)
 ;;; $08 = Transponder
 ;;; $0C = VORS
-;;; $0D = ???
+;;; $0D = ADF (high digit)
+;;; $0E = ADF (mid digit)
+;;; $0F = ADF (low digit)
 ;;; $10 = Fuel Tank Select
 
 ;;; ============================================================

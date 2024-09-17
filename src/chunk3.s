@@ -4,7 +4,7 @@
 ;;; of the original FS2:
 ;;; * War Report
 ;;; * North and East readouts in slew mode
-
+;;; * Automatic Direction Finder (ADF)
 
 L002D           := $002D
 L0045           := $0045
@@ -224,13 +224,17 @@ LD95D:
 LD972:
         .res    115, 0
 
+;;; ============================================================
+;;; Automatic Direction Finder (ADF)
+
 LD9E5:  .byte   $01
 LD9E6:  brk
 LD9E7:  brk
 LD9E8:  brk
 LD9E9:  .byte   $FF
 
-mD9EA:  MESSAGE $88, $67, " 287", sD9EA
+msg_adf_frequency:
+        MESSAGE $88, $67, " 287", str_adf_frequency
 
 LD9F1:  lda     $097B
         beq     LDA52
@@ -269,10 +273,10 @@ LD9FE:  lda     LD9E6
         sta     LD9E9
         beq     LDA52
         txa
-        ldx     #$04            ; needle index
+        ldx     #4              ; needle index
         jsr     DrawIndicatorDialNeedle
         lda     LD9E9
-        ldx     #$04            ; needle index
+        ldx     #4              ; needle index
         jsr     DrawIndicatorDialNeedle
         jsr     LDA53
 LDA52:  rts
@@ -287,61 +291,57 @@ LDA53:  lda     $BE
         LDAX    #$168
         jsr     ScaleC2ByAX
         STAX    ValueForString
-        CALLAX  Set3DigitString, $DB24
-        JUMPAX  DrawMessageOrange, mDB22
+        CALLAX  Set3DigitString, str_adf_heading
+        JUMPAX  DrawMessageOrange, msg_adf_heading
 
-mDA79:  MESSAGE $93, $4B, "      "
-        MESSAGE $98, $4B, "      "
-        MESSAGE $9C, $55, "    "
-        MESSAGE $9D, $4D, "$     "
-        MESSAGE $A2, $4E, "      "
-        MESSAGE $A7, $4E, "      "
-        MESSAGE $AC, $4D, "$     "
-        MESSAGE $B1, $4D, "$     "
-        MESSAGE $B6, $4D, "$     "
+;;; Used for drawing the ADF (turned on in Edit mode), like this:
+;;; ┌----
+;;; | ADF
+;;; | 237
+;;; |  |
+;;; |
+;;; |-   -
+;;; |
+;;; |  |
+;;;
+
+DrawADFPanel:  MESSAGE $93, $4B, "      " ; start erasing VOR2
+        MESSAGE $98, $4B, "      " ; continue
+        MESSAGE $9C, $55, "    "   ; continue (right bit under trim)
+        MESSAGE $9D, $4D, "$     " ; start left edge, more erasing
+        MESSAGE $A2, $4E, "      " ; more erasing
+        MESSAGE $A7, $4E, "      " ; more erasing
+        MESSAGE $AC, $4D, "$     " ; restart left edge, more erasing
+        MESSAGE $B1, $4D, "$     " ; more left edge, more erasing
+        MESSAGE $B6, $4D, "$     " ; more left edge, more erasing
         MESSAGE $BB, $4B, "      "
 
-        MESSAGE $93, $4D, "<----"
-        MESSAGE $98, $4D, "$    "
-        MESSAGE $A2, $4D, "$"
-        MESSAGE $A7, $4D, "$"
+        MESSAGE $93, $4D, "<----" ; back up to draw top row
+        MESSAGE $98, $4D, "$    " ; more left edge
+        MESSAGE $A2, $4D, "$"     ; more left edge
+        MESSAGE $A7, $4D, "$"     ; more left edge
 
-        MESSAGE $97, $4D, "$ ADF"
-        MESSAGE $A3, $4D, "$  $  "
+        MESSAGE $97, $4D, "$ ADF" ; back up for the label
+        MESSAGE $A3, $4D, "$  $  " ; left edge, top marker
+        MESSAGE $AF, $4D, "$-   -" ; left edge, left/right markers
+        MESSAGE $BB, $4D, "$  $ "  ; left edge, bottom marker
 
-        .byte   $AF
-        eor     $2D24
-        jsr     $2020
-        and     $BB00
-        eor     $2024
-        jsr     $2024
-        brk
-        .byte   $82
-        pla
-        eor     ($44,x)
-        lsr     $0020
-        brk
-        .byte   $89
-        adc     #$20
-        jsr     $2020
-        brk
-        dey
-        adc     #$20
-        jsr     $2020
-        brk
-        brk
-        brk
+        MESSAGE $82, $68, "ADF " ; replace NAV2 label in radio panel
+        MESSAGE $89, $69, "    " ; clear out NAV2 numbers
+        MESSAGE $88, $69, "    " ; more for good measure?
+        .byte   0, 0             ; sentinel
 
-mDB22:  MESSAGE $9D, $55, "237"
+msg_adf_heading:
+        MESSAGE $9D, $55, "237", str_adf_heading
 
 LDB28:
-        CALLAX  DrawMultiMessage, mDA79
+        CALLAX  DrawMultiMessage, DrawADFPanel
         lda     #$0A
         sta     LD9E9
         ldx     #$04            ; needle index
         jsr     DrawIndicatorDialNeedle
-        CALLAX  DrawMessageOrange, mDB22
-        CALLAX  DrawMessageOrange, mD9EA
+        CALLAX  DrawMessageOrange, msg_adf_heading
+        CALLAX  DrawMessageOrange, msg_adf_frequency
         rts
 
 LDB48:  lda     $08A9
@@ -391,27 +391,27 @@ LDB99:  lda     $08F1
         bcs     LDBAC
         adc     #$01
         bne     LDBAE           ; always
-LDBAC:  lda     #$0D            ; ???
+LDBAC:  lda     #$0D            ; ADF
 LDBAE:  jmp     SetInputModeAndCounter
 
 LDBB1:  ldx     $097B
         beq     LDBD3
-        lda     $FA
-        cmp     #$0D
+        lda     InputMode
+        cmp     #$0D            ; ADF
         bcc     LDBD3
         cmp     #$10
         bcs     LDBD3
         sec
         sbc     #$0D
         tax
-        lda     sD9EA+1,x
-        cmp     #$30
+        lda     str_adf_frequency+1,x
+        cmp     #'0'
         bne     LDBCD
-        lda     #$3A
+        lda     #'9'+1
 LDBCD:  sec
         sbc     #$01
         jsr     LDC18
-LDBD3:  lda     $FA
+LDBD3:  lda     InputMode
         cmp     #$03
         bne     LDC15
         ldx     $0A49
@@ -421,18 +421,18 @@ LDBD3:  lda     $FA
         bne     LDC11
         ldx     $097B
         beq     LDC05
-        lda     $FA
-        cmp     #$0D
+        lda     InputMode
+        cmp     #$0D            ; ADF
         bcc     LDC05
         cmp     #$10
         bcs     LDC05
         sec
         sbc     #$0D
         tax
-        lda     sD9EA+1,x
-        cmp     #$39
+        lda     str_adf_frequency+1,x
+        cmp     #'9'
         bne     LDBFF
-        lda     #$2F
+        lda     #'0'-1
 LDBFF:  clc
         adc     #$01
         jsr     LDC18
@@ -443,24 +443,24 @@ LDC05:  lda     $FA
         dex
         bmi     LDC15
 LDC11:  txa
-        jsr     UpdateMixtureControlIndicator
+        jsr     UpdateMixtureControlIndicator ; ???
 LDC15:  lda     $FA
         rts
 
-LDC18:  sta     sD9EA+1,x
-        CALLAX  DrawMessageOrange, mD9EA
-        lda     sD9EA+2
+LDC18:  sta     str_adf_frequency+1,x
+        CALLAX  DrawMessageOrange, msg_adf_frequency
+        lda     str_adf_frequency+2
         asl     a
         asl     a
         asl     a
         asl     a
-        sta     $B7
-        lda     sD9EA+3
-        and     #$0F
+        sta     $B7             ; mid nibble
+        lda     str_adf_frequency+3
+        and     #$0F            ; low nibble
         ora     $B7
         sta     LD9E7
-        lda     sD9EA+1
-        and     #$0F
+        lda     str_adf_frequency+1
+        and     #$0F            ; high nibble
         sta     LD9E8
 
 LDC3D:  ldx     #$00
@@ -468,6 +468,8 @@ LDC3D:  ldx     #$00
         inx
         stx     $08A8
         jmp     LDC15
+
+;;; ============================================================
 
         ;; Jump table
 LDC49:  .addr   LDD07

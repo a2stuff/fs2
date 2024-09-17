@@ -6089,7 +6089,7 @@ L8FBE:  lda     #$08            ; Transponder
 L8FC0:  jmp     SetInputModeAndCounter
 
 ;;; Ctrl+A / A key
-ADF:    nop                     ; self-modified???
+ADF:    nop                     ; self-modified (64k-only)
         nop
         nop
 
