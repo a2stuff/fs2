@@ -3358,4 +3358,6 @@ L1FFB:  rts
         brk
 
         .assert * = $2000, error, "EOF mismatch"
-        .incbin "../res/c4_hires.bin"
+
+        .byte   $80
+        .incbin "../res/loading_panel.bin", 1, 1535
