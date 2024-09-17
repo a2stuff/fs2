@@ -622,7 +622,7 @@ LDD7A:  lda     $083C
         sta     $0918
         lda     #$01
         sta     $0919
-        lda     $0A61
+        lda     PanelLights
         beq     LDDA6
 LDD94:  lda     $089B
         ldx     $089C
@@ -889,7 +889,7 @@ LDF65:  lda     $0836
 LDF6E:  lda     $0A70
         bpl     LDFA4
         lda     #$10
-        ldx     $093A
+        ldx     WW1AceMode
         beq     LDFA4
         ldx     #$00
 LDF7C:  ldy     #$00
@@ -1040,7 +1040,7 @@ mE093:  MESSAGE $9A, $76, "R"
 mE097:  MESSAGE $9A, $76, "B"
 mE09B:  MESSAGE $9A, $76, "S"
 
-        lda     $093A
+        lda     WW1AceMode
         bne     LE0C8
         lda     $0938
         beq     LE0C8
@@ -1220,7 +1220,7 @@ LE22B:  lda     $31
         lda     $099B
         beq     LE2AC
         ldx     #$F2
-        lda     $093A
+        lda     WW1AceMode
         beq     LE241
         txa
         asl     a

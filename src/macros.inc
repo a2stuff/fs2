@@ -17,7 +17,10 @@
     .endif
 .endmacro
 
+;;; Allow specifying negative constants
 
+.define AS_BYTE(arg)        (arg) & $FF
+.define AS_WORD(arg)        (arg) & $FFFF
 
 ;;; Emit a null-terminated string, prepended by `row`/`col` position
 ;;; An optional `label` parameter can be supplied, which will point

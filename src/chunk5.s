@@ -1565,15 +1565,15 @@ L6BC3:  lda     $5C
         iny
         sbc     ($8B),y
         sta     $1B
-        lda     $0A74
+        lda     ZoomLevel
         iny
         sbc     ($8B),y
         sta     $1C
-L6BEB:  lda     $0A75
+L6BEB:  lda     ZoomLevel+1
         iny
         sbc     ($8B),y
         sta     $68
-        lda     $0A76
+        lda     ZoomLevel+2
         iny
         sbc     ($8B),y
         sta     $69
@@ -1855,9 +1855,9 @@ L6DF3:  jsr     L6E17
         sec
         lda     $0836
         beq     L6E07
-        lda     $0A75
+        lda     ZoomLevel+1
         sbc     $98
-        lda     $0A76
+        lda     ZoomLevel+2
         jmp     L6E0D
 
 L6E07:  lda     $60
@@ -4966,7 +4966,7 @@ L8782:  lda     $33
         beq     L8794
         jsr     LA7E8
 L8794:  jsr     LA7F4
-        lda     $0937
+        lda     SlewMode
         beq     L87A2
         jsr     L9B47
         jmp     L87A8
@@ -4996,10 +4996,10 @@ L87BE:  jsr     L89B6
         jsr     DrawHeading
         jsr     DrawMagCompass
         jsr     NoOp
-        lda     $093A
-        beq     L87F0
+        lda     WW1AceMode
+        beq     :+
         jsr     LA7EE
-L87F0:  jsr     NoOp
+:       jsr     NoOp
         jsr     L9F6B
         jsr     L9FE9
         jsr     NoOp
@@ -5373,7 +5373,7 @@ KeyTable:
         .addr   Ignore          ; Ctrl+]
         .addr   Ignore          ; Ctrl+^
         .addr   Ignore          ; Ctrl+_
-        .addr   Brakes          ; Space
+        .addr   BrakesOrGuns    ; Space
         .addr   Ignore          ; !
         .addr   Ignore          ; "
         .addr   Ignore          ; #
@@ -5428,10 +5428,10 @@ KeyTable:
         .addr   YokeDown        ; T
         .addr   Ignore          ; U
         .addr   TrimUp          ; V
-        .addr   L8F73           ; W
+        .addr   DeclareWar      ; W
         .addr   DropBomb        ; X
         .addr   FlapsUp         ; Y
-        .addr   L909E           ; Z
+        .addr   SlewResetAngles ; Z
         .addr   Ignore          ; [
         .addr   Ignore          ; \
         .addr   Ignore          ; ]
@@ -5581,7 +5581,7 @@ L8C69:  rts
 
 ;;; ============================================================
 
-L8C6A:  lda     $0A5B
+L8C6A:  lda     YokeVertPos
         cmp     #$18
         bcs     L8C74
         jsr     YokeUp
@@ -5705,15 +5705,15 @@ KeyDecrease:
 
         ;; Radar View - Zoom Out
         sec
-        rol     $0A74
-        rol     $0A75
-        rol     $0A76
-        rol     $0A76
+        rol     ZoomLevel
+        rol     ZoomLevel+1
+        rol     ZoomLevel+2
+        rol     ZoomLevel+2
         clc
-        ror     $0A76
+        ror     ZoomLevel+2
         rts
 
-L8D20:  ldx     $093A
+L8D20:  ldx     WW1AceMode
         beq     L8D28
         jmp     L8DEA
 
@@ -5878,15 +5878,16 @@ KeyIncrease:
 
         ;; Radar View - Zoom In
         clc
-        ror     $0A76
-        ror     $0A75
-        ror     $0A74
+        ror     ZoomLevel+2
+        ror     ZoomLevel+1
+        ror     ZoomLevel
+
         lda     #$1F
-        ora     $0A74
-        sta     $0A74
+        ora     ZoomLevel
+        sta     ZoomLevel
         rts
 
-L8E47:  ldx     $093A
+L8E47:  ldx     WW1AceMode
         beq     L8E4F
         jmp     L8F35
 
@@ -5964,9 +5965,9 @@ L8EED:  dex
         cpx     #$04
         bcs     L8F04
         lda     str_xpndr,x
-        cmp     #$37
+        cmp     #'7'
         bne     L8EFB
-        lda     #$2F
+        lda     #'0'-1
 L8EFB:  clc
         adc     #$01
         sta     str_xpndr,x
@@ -6044,15 +6045,16 @@ L8F56:  ldx     #'0'
 .endproc
 
 ;;; W key
-L8F73:  lda     #$01
-        ora     $0A72
-        sta     $0A72
+DeclareWar:
+        lda     #$01
+        ora     WarDeclared
+        sta     WarDeclared
         rts
 
-        rts
+        rts                     ; ???
 
 Transponder:
-        lda     $0937
+        lda     SlewMode
         beq     ReadModeFromDisk
         lda     #$00
         sec
@@ -6141,43 +6143,43 @@ L900C:  lsr     $092C
 
 ;;; Ctrl+L / L key
 ToggleLights:
-        lda     $0A61
+        lda     PanelLights
         eor     #$FF
-        sta     $0A61
+        sta     PanelLights
         jmp     DrawCarbHeatAndLights
 
 ;;; X key
 DropBomb:
-        lda     $093A
+        lda     WW1AceMode
         cmp     #$01
-        bne     L9040
+        bne     :+
         lda     WW1AceBombsStr
         cmp     #'0'
-        beq     L9040
+        beq     :+
         lda     $0A56
         ora     $0A57
-        bne     L9040
+        bne     :+
         dec     WW1AceBombsStr
         LDAX    $0A39
         STAX    $0A56
-L9040:  rts
+:       rts
 
 
 ;;; Ctrl+C
 ComRadio:
         lda     #$01            ; ???
         lda     InputCounter
-        beq     L9051
+        beq     :+
         lda     InputMode
         cmp     #$04            ; Com Radio (upper digits)
-        bne     L9051
+        bne     :+
         inc     InputMode       ; set to lower digits
         rts
-
-L9051:  cmp     #$05            ; lower digits?
-        bne     L9058
+:
+        cmp     #$05            ; lower digits?
+        bne     :+
         inc     $0909
-L9058:  lda     #$04            ; upper digits
+:       lda     #$04            ; upper digits
         bne     SetInputModeAndCounter
 
 ;;; Ctrl+V
@@ -6211,7 +6213,8 @@ MagsAndMixture:
         rts
 
 ;;; Space
-Brakes: lda     $09E3
+BrakesOrGuns:
+        lda     $09E3
         beq     L90B2
         dec     $0A12
         bpl     L9090
@@ -6236,8 +6239,9 @@ CoursePlotting:                 ; patched for 64k
         jmp     NoOp            ; points at CoursePlottingMenu
 
 ;;; Z key
-L909E:  lda     $0937
-        beq     L90B1
+SlewResetAngles:
+        lda     SlewMode
+        beq     :+
         lda     #$00
         sta     $6E
         sta     $6F
@@ -6245,7 +6249,7 @@ L909E:  lda     $0937
         sta     $71
         sta     $6C
         sta     $6D
-L90B1:  rts
+:       rts
 
 L90B2:  lda     $0A54
         ora     $0A55
@@ -6256,7 +6260,7 @@ L90BF:  rts
 
 ;;; Ctrl+U
 MoreThrottle:
-        inc     $0A6D
+        inc     SlewAltRate
         lda     #$78
         lsr     $08C5
         bcs     L90E5
@@ -6268,7 +6272,7 @@ L90D2:  rts
 
 ;;; Ctrl+H
 LessThrottle:
-        dec     $0A6D
+        dec     SlewAltRate
         lda     #$00
         lsr     $08C5
         bcs     L90E5
@@ -6321,10 +6325,10 @@ TrimUp:
         jsr     MaybeSetViewDirectionAndAbort
 
         inc     SlewYawRate
-        lda     $0A5D
+        lda     ElevatorTrim
         clc
-        adc     #$04
-        cmp     #$54
+        adc     #4
+        cmp     #84
         jmp     L9135
 
 ;;; R key
@@ -6334,15 +6338,15 @@ TrimDown:
 
         inc     $08C8
         inc     SlewRollRate
-        lda     $0A5D
+        lda     ElevatorTrim
         sec
-        sbc     #$04
-        cmp     #$AC
+        sbc     #4
+        cmp     #AS_BYTE(-84)
 L9135:  beq     L913A
-        sta     $0A5D
+        sta     ElevatorTrim
 L913A:  lda     #$50
         sec
-        sbc     $0A5D
+        sbc     ElevatorTrim
         lsr     a
         lsr     a
         lsr     a
@@ -6387,7 +6391,7 @@ FlapsDown:
         jsr     MaybeSetViewDirectionAndAbort
 
         dec     SlewYawRate
-        lda     $0937
+        lda     SlewMode
         bne     L91B0
         lda     $0A5F
         clc
@@ -6402,27 +6406,27 @@ YokeDown:
         ldx     #$00            ; front
         jsr     MaybeSetViewDirectionAndAbort
 
-        lda     $0A5B
+        lda     YokeVertPos
         sec
-        sbc     #$04
-        ldx     $0937
+        sbc     #4
+        ldx     SlewMode
         bne     L91C9
         ldx     InputCounter
         beq     L91C9
         sec
         sbc     #$0C
-L91C9:  sta     $0A5B
+L91C9:  sta     YokeVertPos
         ora     #$00
         bpl     L91D6
         cmp     #$B0
         bcs     L91D6
         lda     #$B0
-L91D6:  sta     $0A5B
+L91D6:  sta     YokeVertPos
         lda     #$03
         sta     InputCounter
 L91DE:  lda     #$50
         sec
-        sbc     $0A5B
+        sbc     YokeVertPos
         lsr     a
         lsr     a
         lsr     a
@@ -6441,12 +6445,12 @@ YokeLeft:
         ldx     #$0C            ; left
         jsr     MaybeSetViewDirectionAndAbort
 
-        lda     $0A53
+        lda     YokeHorizPos
         sec
-        sbc     #$04
-        cmp     #$80
+        sbc     #4
+        cmp     #AS_BYTE(-128)
         beq     L91F2
-        sta     $0A53
+        sta     YokeHorizPos
         jmp     L925C
 
 ;;; G key
@@ -6455,15 +6459,16 @@ YokeCenter:
         jsr     MaybeSetViewDirectionAndAbort
 
 L9211:  lda     #$00
-        ldx     $0937
-        beq     L9227
-        sta     $0A5B
+        ldx     SlewMode
+        beq     :+
+        sta     YokeVertPos
         sta     SlewPitchRate
         sta     SlewRollRate
         sta     SlewYawRate
-        sta     $0A6D
-L9227:  sta     $0A53
-        sta     $0A65
+        sta     SlewAltRate
+:
+        sta     YokeHorizPos
+        sta     RudderPos
         lda     $097C
         lsr     a
         clc
@@ -6480,19 +6485,19 @@ YokeRight:
         ldx     #$04            ; right
         jsr     MaybeSetViewDirectionAndAbort
 
-        lda     $0A53
+        lda     YokeHorizPos
         clc
         adc     #$04
         bvs     L92A0
-L9259:  sta     $0A53
+L9259:  sta     YokeHorizPos
 L925C:  lda     $0936
         beq     L9270
-        LDAX    $0A52
-        STAX    $0A64
+        LDAX    $0A52           ; includes `YokeHorizPos`
+        STAX    $0A64           ; includes `RudderPos`
         jsr     L92CB
-L9270:  lda     $0A53
+L9270:  lda     YokeHorizPos
         clc
-        adc     #$7F
+        adc     #$7F            ; map -$80...$7F to 0...255
         lsr     a
         lsr     a
         lsr     a
@@ -6500,7 +6505,7 @@ L9270:  lda     $0A53
         sta     LastAileronPosition
         beq     L9284
         jsr     UpdateAileronPositionIndicator
-L9284:  LDAX    $0A52
+L9284:  LDAX    $0A52           ; includes `YokeHorizPos`
         STAX    $C2
         LDAX    $0A2F
         jsr     ScaleC2ByAX
@@ -6510,28 +6515,30 @@ L92A0:  rts
 
 ;;; C key
 RudderLeft:
-        lda     $0A65
+        lda     RudderPos
         sec
-        sbc     #$04
-        cmp     #$80
+        sbc     #4
+        cmp     #AS_BYTE(-128)
         bne     L92B4
         rts
 
 ;;; M key
 RudderRight:
-        lda     $0A65
+        lda     RudderPos
         clc
-        adc     #$04
+        adc     #4
         bvs     L92DA
-L92B4:  sta     $0A65
+
+L92B4:
+        sta     RudderPos
 L92B7:  lda     $0936
         beq     L92CB
-        LDAX    $0A64
-        STAX    $0A52
+        LDAX    $0A64           ; includes `RudderPos`
+        STAX    $0A52           ; includes `YokeHorizPos`
         jsr     L9270
-L92CB:  lda     $0A65
+L92CB:  lda     RudderPos
         clc
-        adc     #$7F
+        adc     #$7F            ; map -$80...$7F to 0...255
         lsr     a
         lsr     a
         lsr     a
@@ -6544,16 +6551,16 @@ YokeUp:
         ldx     #$08            ; back
         jsr     MaybeSetViewDirectionAndAbort
 
-        lda     $0A5B
+        lda     YokeVertPos
         clc
         adc     #$04
-        ldx     $0937
+        ldx     SlewMode
         bne     L92F3
         ldx     InputCounter
         beq     L92F3
         clc
         adc     #$0C
-L92F3:  sta     $0A5B
+L92F3:  sta     YokeVertPos
         ora     #$00
         bmi     L9300
         cmp     #$50
@@ -6581,10 +6588,10 @@ L9300:  jmp     L91D6
 
 ;;; ============================================================
 
-L9311:  ldx     $0A65
+L9311:  ldx     RudderPos
         jsr     AXDiv2
         stx     $B7
-        ldx     $0A53
+        ldx     YokeHorizPos
         jsr     AXDiv2
         txa
         sec
@@ -6651,7 +6658,7 @@ L9386:  lda     $09F0
         .byte   $19
 L93C9:  rts
 
-L93CA:  lda     $0937
+L93CA:  lda     SlewMode
         bne     L93C9
         ldx     $09AD
         lda     $09AE
@@ -6679,7 +6686,7 @@ L93CA:  lda     $0937
         sta     $B9
         jsr     UpdateAltimeterIndicator
         tax
-        ldy     $0A65
+        ldy     RudderPos
         jsr     L180C
         sty     $09D4
         sta     $09D3
@@ -7269,7 +7276,7 @@ L9A0D:  stx     $09E3
         sta     $09AE
 L9A2C:  lda     $089E
         beq     L9A37
-        jsr     Brakes
+        jsr     BrakesOrGuns
         jmp     L9A57
 
 L9A37:  ldx     #$04
@@ -7316,7 +7323,7 @@ L9A85:  LDAX    $09DE
         STAX    $0A15
 L9AA2:  rts
 
-L9AA3:  lda     $0937
+L9AA3:  lda     SlewMode
         bne     L9AA2
         lda     $0830
         tax
@@ -7341,7 +7348,7 @@ L9AA3:  lda     $0937
         lda     #$7F
         sbc     $C3
         sta     $09AA
-        lda     $0A65
+        lda     RudderPos
         bne     L9AFB
         LDAX    $09AF
         bmi     L9AE9
@@ -7398,7 +7405,8 @@ L9B1F:  lda     #$19
 L9B47:  lsr     $08C2
         bcc     L9B4F
         jsr     L9211
-L9B4F:  lda     $0A53
+
+L9B4F:  lda     YokeHorizPos
         jsr     L9C13
         clc
         adc     $5B
@@ -7409,9 +7417,10 @@ L9B4F:  lda     $0A53
         lda     $BC
         adc     $5D
         sta     $5D
+
         lda     #$00
         sec
-        sbc     $0A5B
+        sbc     YokeVertPos
         jsr     L9C13
         clc
         adc     $63
@@ -7423,7 +7432,7 @@ L9B4F:  lda     $0A53
         adc     $65
         sta     $65
         ldx     #$FF
-        lda     $0A6D
+        lda     SlewAltRate
         bmi     L9B86
         inx
 L9B86:  clc
@@ -7559,7 +7568,7 @@ L9C68:  lda     #$06
         sta     $0899
 L9C6D:  rts
 
-L9C6E:  lda     $0937
+L9C6E:  lda     SlewMode
         beq     L9C76
         nop
         nop
@@ -7924,7 +7933,7 @@ L9EEE:  lda     #' '
 DrawLights:
         jsr     CheckForAbort
         LDAX    #msg_lights_on
-        ldy     $0A61
+        ldy     PanelLights
         bne     :+
         LDAX    #msg_lights_off
 :       jmp     DrawMessageWhite    ; self-modified???
@@ -7939,18 +7948,18 @@ DrawLights:
         txa
         lsr     a
         tax
-        lda     #$30
+        lda     #'0'
         bcc     L9F4E
-        lda     #$35
+        lda     #'5'
 L9F4E:  sta     str_rpm+2
         txa
-        ldx     #$2F
+        ldx     #'0'-1
 L9F54:  inx
         sec
-        sbc     #$0A
+        sbc     #10
         bcs     L9F54
         clc
-        adc     #$3A
+        adc     #'0' + 10
         stx     str_rpm
         sta     str_rpm+1
         CALLAX  DrawMessageOrange, msg_rpm
@@ -8092,9 +8101,9 @@ LA065:  lda     #$00
         ldy     $0A12
         beq     LA070
         sec
-        sbc     $0A65
+        sbc     RudderPos
 LA070:  clc
-        adc     #$7F
+        adc     #$7F            ; map -$80...$7F to 0...255
         lsr     a
         lsr     a
         sec
@@ -9648,11 +9657,11 @@ LAECC:  pla
 
         tay
         jsr     DrawMultiMessage
-        lda     $0A72
+        lda     WarDeclared
         cmp     #$01
         bne     LAEF4
         lda     #$03
-        sta     $0A72
+        sta     WarDeclared
         CALLAX  DrawMultiMessage, $A83B ; In middle of another MESSAGE ???
         ldx     #$00
         ldy     #$00

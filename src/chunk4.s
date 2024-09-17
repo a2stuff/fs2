@@ -520,10 +520,15 @@ L08FA:  brk
         .byte   $0C, $50, $A7
         brk
         brk
-        ora     ($00,x)
+        .byte   $01
+
+SlewMode:       .byte   $00
+
         brk
         brk
-        brk
+
+WW1AceMode:     .byte   $00
+
         iny
         bit     $43
         .byte   $1F
@@ -764,7 +769,7 @@ IndicatorDialNeedleIndex:       .byte   0
 
 L0A3D:  brk
         brk
-PixelListXHi:  brk
+PixelListXHi:   .byte   0
         php
         php
 L0A42:  brk
@@ -784,7 +789,9 @@ L0A4F:  brk
 L0A50:  brk
         brk
         brk
-        brk
+
+YokeHorizPos:   .byte   0
+
         .byte   $64
         brk
         brk
@@ -792,16 +799,24 @@ L0A50:  brk
         brk
         brk
         brk
+
+YokeVertPos:    .byte   0
+
+        brk
+
+ElevatorTrim:   .byte   0
+
         brk
         brk
         brk
-        brk
-        brk
-        brk
-        .byte   $FF
+
+PanelLights:    .byte   $FF
+
         .byte   $03
         ora     ($00,x)
-        brk
+
+RudderPos:      .byte   0
+
         brk
 
 SlewRollRate:   .byte   0
@@ -810,7 +825,7 @@ SlewYawRate:    .byte   0
         brk
 SlewPitchRate:  .byte   0
         brk
-        brk
+SlewAltRate:    .byte   0
         brk
         brk
 
@@ -825,12 +840,15 @@ ViewDirection:  .byte   0
 ;;; $0E = front left
 ;;; $FF = down
 
+        .byte   $01
 
-        ora     ($00,x)
+WarDeclared:
+        .byte   $00
+
         .byte   $FF
-        .byte   $FF
-        .byte   $03
-        brk
+
+ZoomLevel:      .faraddr        $0003FF
+
         rts
 
         rti
