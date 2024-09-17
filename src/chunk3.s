@@ -1,5 +1,11 @@
         .org $d300
 
+;;; Some functionality that is only present in the "64k" mode
+;;; of the original FS2:
+;;; * War Report
+;;; * North and East readouts in slew mode
+
+
 L002D           := $002D
 L0045           := $0045
 L00BA           := $00BA
@@ -576,6 +582,9 @@ LDD29:  lda     #$BF
 LDD2D:  lda     #$7F
         bne     LDD09           ; always
 
+;;; ============================================================
+;;; North and East readouts in slew mode
+
 msg_north:
         MESSAGE $02, $0A, " 00000 NORTH "
 msg_east:
@@ -601,6 +610,8 @@ LDD50:  lda     $08B4
         CALLAX  DrawMessage, msg_east
 
 LDD79:  rts
+
+;;; ============================================================
 
 LDD7A:  lda     $083C
         lsr     a
@@ -1021,6 +1032,8 @@ LE06B:  brk
         eor     ($43,x)
         .byte   $46
 
+;;; ADF???
+
 mE08B:  MESSAGE $9A, $76, "O"
 mE08F:  MESSAGE $9A, $76, "L"
 mE093:  MESSAGE $9A, $76, "R"
@@ -1439,6 +1452,8 @@ LE4AB:  lda     $0974
         sta     LE389
         stx     LE389+1
         rts
+
+;;; ============================================================
 
 LE4C2:  brk
 LE4C3:  brk
@@ -3165,6 +3180,7 @@ LEFA4:  lda     L0045
         inc     $FFFF,x
         .byte   0, 0
 
+;;; ============================================================
 ;;; "War Report" for "World War 1 Ace" mode
 ;;; The whole display is rendered, then the stats are re-rendered
 ;;; in orange.
@@ -3253,6 +3269,8 @@ LF13D:  rts
         CALLAX  DrawMessageOrange, msg_wr10
         jsr     TogglePauseRelay
         rts
+
+;;; ============================================================
 
         .byte   $FF
         brk

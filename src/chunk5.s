@@ -9539,7 +9539,7 @@ LADE5:  .byte   $73
         .byte   $4C
         .byte   $72
 LADF8:  dec     L87A5,x
-        jsr     $F9B5
+        jsr     LF9B5           ; ???
         ora     $88,x
         jsr     $FA56
         ora     ($88,x)

@@ -1,5 +1,10 @@
         .org $f600
 
+;;; Some functionality that is only present in the "64k" mode
+;;; of the original FS2:
+;;; * Course Plotter
+;;; * Altimeter 3rd Hand
+
 ;;; ============================================================
 ;;; Course Plotting
 
@@ -18,7 +23,8 @@ msg_courseplotter:
 
 LF715:  .byte   10
 LF716:  .byte   1
-LF717:  .byte   0
+CoursePlotterState:
+        .byte   0               ; 0 = off; 1 = record; 2 = display
 LF718:  .byte   0
 LF719:  .byte   0
 LF71A:  .byte   0
@@ -51,7 +57,7 @@ DisplayCoursePlot:
         lda     LF71B
         beq     CoursePlottingMenu
         lda     #$02
-        sta     LF717
+        sta     CoursePlotterState
         jmp     CoursePlottingMenu
 
 BootDOS:
@@ -70,7 +76,7 @@ BootDOS:
 
 TurnOffCoursePlotter:
         lda     #$00
-        sta     LF717
+        sta     CoursePlotterState
         jmp     CoursePlottingMenu
 
 BeginPrecisionRecording:
@@ -81,7 +87,7 @@ BeginRecordingCommon:
         stx     LF71A
         sta     LF715
         lda     #$01
-        sta     LF717
+        sta     CoursePlotterState
         jsr     LF8B0
         lda     #$00
         ldx     #$D0
@@ -134,8 +140,9 @@ LF79F:  lda     $5A,x
         jmp     CoursePlottingMenu
 
 ;;; ============================================================
+;;; Course Plotting - Record State
 
-LF7E2:  lda     LF717
+LF7E2:  lda     CoursePlotterState
         bne     LF7E8
         rts
 
@@ -268,6 +275,9 @@ LF8C6:  lda     LF71A
         ror     $B7
 LF8E5:  rts
 
+;;; ============================================================
+;;; Altimeter - Third Hand (10k)
+
 LF8E6:  .byte   $FF
 
         ;; Table of PixelLists for altimeter's "third hand"
@@ -336,10 +346,14 @@ LF9A2:  asl     a
         jmp     DrawPixelListHelper
 .endproc
 
+;;; ============================================================
+;;; ???
+
 LF9B3:  brk
+
 LF9B4:  rts
 
-        lda     $09E3
+LF9B5:  lda     $09E3
         bne     LF9B4
         ldx     #$00
         lda     $09A3
