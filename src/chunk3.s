@@ -6,8 +6,8 @@
 ;;; * North and East readouts in slew mode
 ;;; * Automatic Direction Finder (ADF)
 ;;; * COM Radio
+;;; * Instrument lights function at night (hidden if lights off)
 
-L002D           := $002D
 L0045           := $0045
 L00BA           := $00BA
 
@@ -977,9 +977,9 @@ LDFFF:  lda     LDFB1
         sta     $27
         ldy     LDFB8
         lda     HiresTableLo,y
-        sta     $8E
+        sta     HiresRowPtr
         lda     HiresTableHi,y
-        sta     $8F
+        sta     HiresRowPtr+1
         lda     LDFB5
         jsr     L601B
         lda     LDFB0
@@ -1645,286 +1645,307 @@ SetCol:
 
 ;;; ============================================================
 
-        brk
-        .byte   $5A
-        pla
-        .byte   $33
-        brk
-        inx
-        .byte   $03
-        .byte   $52
-        stx     L002D,y
-        .byte   $1F
-        sbc     #$35
-        .byte   $52
-        stx     L002D,y
-        asl     $EA
-        pla
-        .byte   $5A
-        pla
-        .byte   $33
-        sbc     $34EA
-        .byte   $5A
-        pla
-        .byte   $33
-        .byte   $0C
-        cpx     $529C
-        ror     a
-        .byte   $2F
-        .byte   $2B
-        sbc     $0ADC
-        .byte   $B3
-        ora     $1C,x
-        inc     $526B
-        stx     L002D,y
-        rol     a
-        inc     $0ECE
-        .byte   $8F
-        asl     $11,x
-        .byte   $EF
-        .byte   $F3
-        asl     a
-        .byte   $82
-        .byte   $22
-        and     $EF
-        .byte   $CF
-        asl     a
-        .byte   $74
-        .byte   $1C
-        .byte   $3B
-        .byte   $EF
-        .byte   $CF
-        asl     a
-        ror     $1A
-        eor     $31EF
-        .byte   $0C
-        .byte   $64
-        .byte   $03
-        lsr     $D0EF,x
-        asl     $45A2
-        adc     ($EF,x)
-        dec     $0E,x
-        tax
-        rol     LEF9E,x
-        dec     $6504
-        .byte   $02
-        brk
-        .byte   $FC
-        .byte   $DA
-        .byte   $0C
-        tsx
-        .byte   $3B
-        ora     ($FC,x)
-        .byte   $CF
-        asl     a
-        .byte   $82
-        ora     $FC2E,x
-        inc     $0A,x
-        .byte   $74
-        .byte   $14
-        eor     ($FC,x)
-        .byte   $9C
-        lsr     $95,x
-        bmi     LE63A
-        .byte   $FC
+;;; Instrument Save Record:
+;;;   byte 0 = XStart
+;;;   byte 1 = bit0   = XStart high byte low bit
+;;;            bit1-7 = YSize
+;;;   byte 2 = YStart
+;;;   byte 3 = XSize
+;;;   byte 4/5 = storage buffer
+
+.macro SAVE_RECORD xstart, ystart, xsize, ysize, bufptr
+        .byte   xstart & $FF, (ysize << 1) | (xstart >> 8), ystart, xsize
+        .addr   bufptr
+.endmacro
+
+LE575:
+        SAVE_RECORD $00, $68, $33, $2D, LE800
+        SAVE_RECORD $03, $96, $2D, $29, $E91F
+        SAVE_RECORD $35, $96, $2D, $29, $EA06
+        SAVE_RECORD $68, $68, $33, $2D, $EAED
+        SAVE_RECORD $34, $68, $33, $2D, $EC0C
+        SAVE_RECORD $9C, $6A, $2F, $29, $ED2B
+        SAVE_RECORD $DC, $B3, $15, $05, $EE1C
+        SAVE_RECORD $6B, $96, $2D, $29, $EE2A
+
+LE5A5:
+        SAVE_RECORD $CE, $8F, $16, $07, $EF11
+        SAVE_RECORD $F3, $82, $22, $05, $EF25
+        SAVE_RECORD $CF, $74, $1C, $05, $EF3B
+        SAVE_RECORD $CF, $66, $1A, $05, $EF4D
+        SAVE_RECORD $31, $64, $03, $06, $EF5E
+        SAVE_RECORD $D0, $A2, $45, $07, $EF61
+        SAVE_RECORD $D6, $AA, $3E, $07, $EF9E
+        SAVE_RECORD $CE, $65, $02, $02, $FC00
+LE5D5:
+        SAVE_RECORD $DA, $BA, $3B, $06, $FC01
+        SAVE_RECORD $CF, $82, $1D, $05, $FC2E
+        SAVE_RECORD $F6, $74, $14, $05, $FC41
+        SAVE_RECORD $9C, $95, $30, $2B, $FC4E
 
 LE5ED:  lda     $0977
         and     $0914
         and     $0917
         cmp     $FB
-        beq     LE609
+        beq     :+
         sta     $9E
         ldx     $FB
         stx     $A0
         sta     $FB
-        lda     #$75
-        ldx     #$E5
-        jsr     LE642
-LE609:  lda     $0978
+        CALLAX  HideOrShow8Instruments, LE575
+:
+        lda     $0978
         and     $0915
         and     $0918
         cmp     $FC
-        beq     LE625
-        sta     $9E
+        beq     :+
+        sta     $9E             ; flags
         ldx     $FC
-        stx     $A0
+        stx     $A0             ; alt flags
         sta     $FC
-        lda     #$A5
-        ldx     #$E5
-        jsr     LE642
-LE625:  lda     $0979
+        CALLAX  HideOrShow8Instruments, LE5A5
+:
+        lda     $0979
         and     $0916
         and     $0919
         cmp     $FD
-        beq     LE641
-        sta     $9E
+        beq     :+
+        sta     $9E             ; flags
         ldx     $FD
-        stx     $A0
+        stx     $A0             ; alt flags
         sta     $FD
-LE63A:  lda     #$D5
-        ldx     #$E5
-        jsr     LE642
-LE641:  rts
+        CALLAX  HideOrShow8Instruments, LE5D5
+:
+        rts
 
-LE642:  sta     $BC
-        stx     $BD
-LE646:  lda     #$08
-        sta     $A2
-LE64A:  lda     $A0
+;;; Hide/Show 8 instruments
+;;; Inputs:
+;;;   $BC = record list ptr (see above)
+;;;   $9E = flags for hide show
+;;;   $A0 = alt flags for hide/show
+
+.proc HideOrShow8Instruments
+        RecPtr := $BC
+        Count := $A2
+        Flags := $9E
+        AltFlags := $A0
+
+        STAX    RecPtr          ; record ptr
+LE646:  lda     #8              ; number of instruments
+        sta     Count
+Loop:
+        lda     AltFlags
         and     #$01
-        sta     $B6
-        lda     $9E
+        sta     $B6             ; pass alt flag
+        lda     Flags
         and     #$01
-        sta     $B7
-        lda     $BC
-        ldx     $BD
-        sta     $B8
-        stx     $B9
-        jsr     LE67F
-        lsr     $9E
-        lsr     $A0
-        lda     $BC
+        sta     $B7             ; pass flag
+        LDAX    RecPtr
+        STAX    $B8             ; pass record ptr
+
+        jsr     HideOrShowInstrument
+
+        lsr     Flags           ; next bits
+        lsr     AltFlags
+
+        lda     RecPtr
         clc
-        adc     #$06
-        sta     $BC
-        bcc     LE670
-        inc     $BD
-LE670:  dec     $A2
-        bne     LE64A
+        adc     #6              ; next record
+        sta     RecPtr
+        bcc     :+
+        inc     RecPtr+1
+:
+        dec     Count
+        bne     Loop
         rts
+.endproc
 
-LE675:  brk
-LE676:  brk
-LE677:  brk
-LE678:  brk
-LE679:  brk
-LE67A:  brk
-LE67B:  brk
-LE67C:  brk
-LE67D:  brk
-LE67E:  brk
-LE67F:  lda     $B7
+;;; ============================================================
+
+;;; Inputs:
+;;;   $B6 = no-op if equal to $B7
+;;;   $B7 = hide (zero) or show (non-zero)
+;;;   $B8-B9 = pointer to save info record (see above)
+
+HideOrShow:     .byte   0       ; passed in $B7
+XStart:         .word   0       ; passed in ($B8) record
+YStart:         .byte   0       ; passed in ($B8) record
+YSize:          .byte   0       ; passed in ($B8) record
+XSize:          .byte   0       ; passed in ($B8) record
+XCoord:         .word   0       ; temp
+XCount:         .byte   0       ; temp
+BitNumber:      .byte   0       ; temp
+
+BufPtr := L00BA
+
+.proc HideOrShowInstrument
+
+        lda     $B7
         cmp     $B6
-        bne     LE686
+        bne     :+
         rts
-
-LE686:  sta     LE675
+:
+        sta     HideOrShow
         ldy     #$00
         lda     ($B8),y
-        sta     LE676
+        sta     XStart
         iny
         lda     ($B8),y
-        sta     LE679
-        lsr     LE679
+        sta     YSize
+        lsr     YSize           ; YSize is in bits 1-7
         and     #$01
-        sta     LE677
+        sta     XStart+1
         iny
         lda     ($B8),y
-        sta     LE678
+        sta     YStart
         iny
         lda     ($B8),y
-        sta     LE67A
+        sta     XSize
         iny
         lda     ($B8),y
-        sta     L00BA
+        sta     BufPtr
         iny
         lda     ($B8),y
-        sta     $BB
-        lda     #$00
-        sta     LE67E
-LE6B9:  lda     LE67A
-        sta     LE67D
-        lda     LE676
-        ldx     LE677
-        sta     LE67B
-        stx     LE67C
-LE6CB:  lda     LE675
-        beq     LE6E4
-        jsr     LE7BD
-        ldx     LE67C
-        stx     $A5
-        ldx     LE67B
-        ldy     LE678
-        jsr     LE74A
-        jmp     LE6F5
+        sta     BufPtr+1
 
-LE6E4:  lda     LE67C
+        lda     #0
+        sta     BitNumber
+
+        YCoord := YStart
+
+YLoop:  lda     XSize
+        sta     XCount
+        LDAX    XStart
+        STAX    XCoord
+
+XLoop:  lda     HideOrShow
+        beq     DoHide
+
+        ;; Show
+        jsr     LoadPixelState
+        ldx     XCoord+1
+        stx     $A5             ; x coord hi
+        ldx     XCoord          ; x coord lo
+        ldy     YCoord          ; y coord
+        jsr     MaybeXORPixel
+        jmp     Next
+
+        ;; Hide
+DoHide: lda     XCoord+1
         sta     $A5
-        ldx     LE67B
-        ldy     LE678
-        jsr     LE722
-        jsr     LE79B
-LE6F5:  inc     LE67B
-        bne     LE6FD
-        inc     LE67C
-LE6FD:  dec     LE67D
-        bne     LE6CB
-        inc     LE678
-        dec     LE679
-        bne     LE6B9
-        lda     LE675
-        bne     LE721
-        ldx     LE67E
-        ldy     #$00
-        lda     (L00BA),y
-LE716:  inx
-        cpx     #$09
-        beq     LE71F
+        ldx     XCoord
+        ldy     YCoord
+        jsr     ErasePixelReturnIfSet
+        jsr     SavePixelState
+
+Next:   inc     XCoord
+        bne     :+
+        inc     XCoord+1
+:       dec     XCount
+        bne     XLoop
+
+        inc     YCoord
+        dec     YSize
+        bne     YLoop
+        lda     HideOrShow
+        bne     Done
+
+        ;; Pad to 8 bits
+        ldx     BitNumber
+        ldy     #0
+        lda     (BufPtr),y
+PadLoop:
+        inx
+        cpx     #9
+        beq     :+
         rol     a
-        jmp     LE716
+        jmp     PadLoop
+:
+        sta     (BufPtr),y
+Done:   rts
+.endproc
 
-LE71F:  sta     (L00BA),y
-LE721:  rts
+;;; ============================================================
 
-LE722:  jsr     LE770
+;;; Clear a pixel, but return whether or not it was set
+;;; Inputs:
+;;;   Y = y coord
+;;;   X = x coord lo
+;;;   $A5 = x coord hi
+;;; Output:
+;;;   A = 1 if pixel was set, 0 otherwise
+.proc ErasePixelReturnIfSet
+        jsr     CalcPixelAddrAndMask
         and     ($B8),y
         beq     LE72A
-        iny
-LE72A:  sty     $A7
+        iny                     ; pixel is set
+LE72A:  sty     $A7             ; stash ("pixel was set")
         txa
-        eor     #$FF
+        eor     #$FF            ; invert mask
         ldy     #$00
-        and     ($B8),y
+        and     ($B8),y         ; clear the pixel
         sta     ($B8),y
-        tax
+        tax                     ; TODO: Use two pointers!
         lda     $B9
         clc
         adc     #$20
         cmp     #$60
-        bcc     LE742
+        bcc     :+
         sec
         sbc     #$40
-LE742:  sta     $B9
+:       sta     $B9
         txa
-        sta     ($B8),y
-        lda     $A7
+        sta     ($B8),y         ; update the other graphics page
+        lda     $A7             ; unstash ("pixel was set")
         rts
+.endproc
 
-LE74A:  pha
-        jsr     LE770
+;;; ============================================================
+
+;;; XOR pixel on both hires screens
+;;;   A = toggle pixel?
+;;;   Y = y coord
+;;;   X = x coord lo
+;;;   $A5 = x coord hi
+.proc MaybeXORPixel
+        pha
+        jsr     CalcPixelAddrAndMask
         pla
-        ora     #$00
-        beq     LE759
-        txa
-        eor     ($B8),y
-        jmp     LE75B
+        ora     #$00            ; TODO: Skip this???
+        beq     LE759           ; no-op
+        txa                     ; A = bit mask
+        eor     ($B8),y         ; invert
+        jmp     LE75B           ; ... and store
 
 LE759:  lda     ($B8),y
 LE75B:  sta     ($B8),y
-        tax
-        lda     $B9
+        tax                     ; stash...
+        lda     $B9             ; TODO: Use two pointers!
         clc
         adc     #$20
         cmp     #$60
-        bcc     LE76A
+        bcc     :+
         sec
         sbc     #$40
-LE76A:  sta     $B9
-        txa
-        sta     ($B8),y
+:       sta     $B9
+        txa                     ; unstash...
+        sta     ($B8),y         ; and update other graphics page
         rts
+.endproc
 
-LE770:  lda     HiresTableHi,y
+;;; ============================================================
+
+;;; Map pixel to row/byte/mask
+;;; Input:
+;;;   Y = y coord
+;;;   X = x coord lo
+;;;   $A5 = x coord hi
+;;; Output:
+;;;   $B8-B9 = byte ptr (NOTE: not row ptr!)
+;;;   Y = 0
+;;;   X = A = bit mask
+.proc CalcPixelAddrAndMask
+        lda     HiresTableHi,y
         sta     $B9
         lda     HiresTableLo,y
         sta     $B8
@@ -1944,41 +1965,55 @@ LE78D:  lda     HiresPixelToBitMaskTable,x
 LE797:  tax
         ldy     #$00
         rts
+.endproc
 
-LE79B:  sta     $A5
-        inc     LE67E
-        lda     LE67E
-        cmp     #$09
-        bne     LE7B2
-        lda     #$01
-        sta     LE67E
-        inc     L00BA
-        bne     LE7B2
-        inc     $BB
-LE7B2:  lda     $A5
-        ldy     #$00
+;;; ============================================================
+
+.proc SavePixelState
+        sta     $A5             ; pixel was set
+
+        inc     BitNumber
+        lda     BitNumber
+        cmp     #9
+        bne     :+
+        lda     #1
+        sta     BitNumber
+        inc     BufPtr
+        bne     :+
+        inc     BufPtr+1
+:
+        lda     $A5
+        ldy     #$00            ; Pixel was set
         ror     a
-        lda     (L00BA),y
+        lda     (BufPtr),y
         rol     a
-        sta     (L00BA),y
+        sta     (BufPtr),y
         rts
+.endproc
 
-LE7BD:  inc     LE67E
-        lda     LE67E
-        cmp     #$09
-        bne     LE7D2
-        lda     #$01
-        sta     LE67E
-        inc     L00BA
-        bne     LE7D2
-        inc     $BB
-LE7D2:  ldy     #$00
-        lda     (L00BA),y
+;;; ============================================================
+
+.proc LoadPixelState
+        inc     BitNumber
+        lda     BitNumber
+        cmp     #9
+        bne     :+
+        lda     #1
+        sta     BitNumber
+        inc     BufPtr
+        bne     :+
+        inc     BufPtr+1
+:
+        ldy     #$00
+        lda     (BufPtr),y
         rol     a
-        sta     (L00BA),y
+        sta     (BufPtr),y
         rol     a
         and     #$01
         rts
+.endproc
+
+;;; ============================================================
 
         .byte   $FF
         brk
@@ -2013,6 +2048,14 @@ LE7ED:  .byte   $FF
         inc     $FFFF,x
         brk
         brk
+
+;;; ============================================================
+
+;;; Save buffer for instrument bitmaps
+;;; $E800 through $F000
+
+LE800:
+
         lda     #$D5
         sta     $FFFE
         lda     #$EF
@@ -3220,8 +3263,8 @@ LEF92:  lda     $C0B1
 LEF97:  pha
         lda     #$02
         bit     $C0B0
-        .byte   $F0
-LEF9E:  .byte   $FB
+        .byte   $F0             ; TODO: disasm
+        .byte   $FB
         pla
         sta     $C0B1
         rts

@@ -9831,7 +9831,7 @@ LAF39:  .byte   $9E
         brk
         .byte   $FF
         .byte   $20, $00, $03
-        jmp     LE646
+        jmp     HideOrShow8Instruments::LE646
 
         brk
         brk
