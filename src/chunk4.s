@@ -165,7 +165,6 @@ ND03BC: .byte    $00, $03, $00, $04, $00, $05, $01, $05, $03, $04, $04, $04, $05
 
         .byte   $4c             ; JMP ???
 
-BRKVector:
         .addr   $ED98           ; BRK vector
         .addr   ResetInterruptHandler ; Reset vector
         .byte   $02             ; PWRUP byte

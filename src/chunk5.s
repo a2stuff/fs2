@@ -5003,7 +5003,7 @@ P64K_6: jsr     NoOp            ; 64K: Patched to JSR `LDD7A`
 P64K_3: jsr     NoOp            ; 64K: Patched to JSR `LDF65`
         jsr     L9F6B
         jsr     L9FE9
-P64K_8: jsr     NoOp            ; 64k: Patched to JSR `LE5ED`
+P64K_8: jsr     NoOp            ; 64k: Patched to JSR `HideOrShowInstruments`
         lda     $092C
         beq     L8804
 P64K_C: jsr     L8C6A           ; 64k: Patched to JSR `LFAEC`
@@ -9471,7 +9471,6 @@ LAD58:  sta     $C1
 ;;;   .addr address-to-patch
 ;;;   jsr (or jmp) ...
 
-
         ;; Patch table
 PatchTable:
         .addr   ADF
@@ -9520,7 +9519,7 @@ PatchTable:
         jmp     Select3DViewPatch
 
         .addr   P64K_8
-        jsr     LE5ED
+        jsr     HideOrShowInstruments
 
         ;; Jump table in chunk4
         .addr   L1EAD

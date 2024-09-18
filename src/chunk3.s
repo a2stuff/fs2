@@ -8,7 +8,6 @@
 ;;; * COM Radio
 ;;; * Instrument lights function at night (hidden if lights off)
 
-L0045           := $0045
 L00BA           := $00BA
 
         .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
@@ -1271,8 +1270,8 @@ LE27B:  lda     $0991
         inc     $0997
 LE28A:  lda     $0998
         beq     LE2AC
-        .byte   $A5
-LE290:  lda     $18
+        .byte   $A5             ; TODO: disasm
+        lda     $18
         adc     $0995
         sta     $0995
         lda     $A6
@@ -1683,7 +1682,8 @@ LE5D5:
         SAVE_RECORD $F6, $74, $14, $05, $FC41
         SAVE_RECORD $9C, $95, $30, $2B, $FC4E
 
-LE5ED:  lda     $0977
+.proc HideOrShowInstruments
+        lda     $0977
         and     $0914
         and     $0917
         cmp     $FB
@@ -1717,6 +1717,7 @@ LE5ED:  lda     $0977
         CALLAX  HideOrShow8Instruments, LE5D5
 :
         rts
+.endproc
 
 ;;; Hide/Show 8 instruments
 ;;; Inputs:
@@ -2031,7 +2032,7 @@ LE797:  tax
         brk
         .byte   $FE
         .byte   $FF
-LE7ED:  .byte   $FF
+        .byte   $FF
         brk
         brk
         .byte   $FF
@@ -2051,1284 +2052,273 @@ LE7ED:  .byte   $FF
 
 ;;; ============================================================
 
-;;; Save buffer for instrument bitmaps
-;;; $E800 through $F000
+;;; Save buffer for instrument bitmaps - $E800 through $F000
+;;; Any data here is assumed to be garbage
 
 LE800:
-
-        lda     #$D5
-        sta     $FFFE
-        lda     #$EF
-        sta     $FFFF
-        jmp     LEA31
-
-LE80D:  brk
-LE80E:  rts
-
-LE80F:  brk
-LE810:  .byte   $36
-LE811:  .byte   $30
-LE812:  .byte   $05
-LE813:  .byte   $FF
-        .byte   $FF
-        ora     #$0A
-LE817:  .byte   $04
-        .byte   $0B
-        .byte   $89
-        .byte   $1F
-        .byte   $43
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-LE82D:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $D3
-        tax
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        cpy     #$9B
-        sty     $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        ldy     #$D8
-        sta     ($80,x)
-LE85A:  .byte   $80
-        .byte   $80
-LE85C:  .byte   $80
-        .byte   $80
-        bne     LE82D
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        cpx     $86
-        .byte   $80
-        .byte   $80
-        stx     $80
-        bcc     LE7ED
-        .byte   $80
-        cpy     #$81
-        ldy     #$80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        cpy     #$FF
-        .byte   $FF
-        .byte   $FF
-        .byte   $87
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        cpx     #$88
-        .byte   $B2
-        cld
-LE890:  sbc     ($B6),y
-        .byte   $DB
-        .byte   $87
-        .byte   $DB
-        cmp     $AA,x
-        cmp     $AA,x
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-LE89D:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-LE8AA:  .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $82
-        cmp     $80,x
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        beq     LE85C
-        dey
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        bcc     LE85A
-        cmp     ($8D,x)
-        .byte   $80
-        .byte   $80
-        .byte   $80
-        cpx     #$C6
-        tya
-        sty     $80
-        .byte   $80
-        .byte   $80
-        cpy     #$B0
-        ldx     $E7,y
-        .byte   $E7
-        .byte   $83
-        .byte   $83
-        bcc     LE89D
-        .byte   $C3
-        sta     $A080,y
-        .byte   $80
-        dec     $80
-        cpy     $80
-        cpy     $81
-        bcs     LE8AA
-        .byte   $83
-        .byte   $80
-        .byte   $80
-        ldy     #$83
-        .byte   $80
-        .byte   $80
-        .byte   $93
-        .byte   $80
-        .byte   $DB
-        sta     ($E4,x)
-        .byte   $80
-        tya
-        dey
-        sta     $A2,x
-        .byte   $D4
-        cpy     #$81
-        .byte   $C2
-        cpx     #$D8
-        sta     $8386
-        .byte   $D4
-        .byte   $80
-        cmp     ($A2),y
-        lda     $80
-        .byte   $80
-        brk
-LE916:  .byte   $04
-        .byte   $0B
-        brk
-        lda     #$02
-        brk
-        lda     #$01
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-LEA15:  nop
-        .byte   $7A
-        nop
-        .byte   $9E
-        nop
-        cpx     $EA
-        pha
-        nop
-        inc     $41EB,x
-        .byte   $EB
-        adc     $EB,x
-        sta     $20EC,x
-        cpx     LEC71
-        lda     $47ED,y
-        sbc     LEEB3
-        .byte   $FD
-LEA31:  php
-        sta     LE80D
-        pla
-        sta     LE810
-        stx     LE80E
-        sty     LE80F
-        tsx
-        stx     LE811
-        jsr     LEF67
-        jsr     LEF74
-LEA49:  ldy     #$00
-        jsr     LEF7F
-        sta     LE817,y
-        tax
-LEA52:  dex
-        beq     LEA63
-        iny
-        cpy     #$FF
-        bcs     LEA63
-        jsr     LEF7F
-        sta     LE817,y
-        jmp     LEA52
-
-LEA63:  ldy     #$01
-        lda     LE817,y
-        cmp     #$0E
-        bcc     LEA6F
-        jmp     LEA49
-
-LEA6F:  asl     a
-        tax
-        lda     LEA15,x
-        pha
-        inx
-        lda     LEA15,x
-        pha
-        rts
-
-        ldy     #$00
-        lda     #$04
-        sta     LE916,y
-        iny
-        lda     LE817,y
-        sta     LE916,y
-        iny
-        pla
-        sta     LE916,y
-        iny
-        pla
-        pha
-        sta     LE916,y
-        dey
-        lda     LE916,y
-        pha
-        jsr     LEF4F
-        jmp     LEA49
-
-        ldy     #$00
-        lda     #$03
-        sta     LE916,y
-        iny
-        lda     LE817,y
-        sta     LE916,y
-        iny
-        lda     LE817,y
-        cmp     #$41
-        bne     LEABB
-        lda     LE80D
-        jmp     LEADC
-
-LEABB:  cmp     #$58
-        bne     LEAC5
-        lda     LE80E
-        jmp     LEADC
-
-LEAC5:  cmp     #$59
-        bne     LEACF
-        lda     LE80F
-        jmp     LEADC
-
-LEACF:  cmp     #$53
-        bne     LEAD9
-        lda     LE811
-        jmp     LEADC
-
-LEAD9:  lda     LE810
-LEADC:  sta     LE916,y
-        jsr     LEF4F
-        jmp     LEA49
-
-        ldy     #$00
-        lda     #$03
-        sta     LE916,y
-        iny
-        lda     LE817,y
-        sta     LE916,y
-        iny
-        lda     #$00
-        sta     LE916,y
-        jsr     LEF4F
-        jmp     LEA49
-
-        ldy     #$02
-        lda     LE817,y
-        iny
-        cmp     #$41
-        bne     LEB12
-        lda     LE817,y
-        sta     LE80D
-        jmp     LEA49
-
-LEB12:  cmp     #$58
-        bne     LEB1F
-        lda     LE817,y
-        sta     LE80E
-        jmp     LEA49
-
-LEB1F:  cmp     #$59
-        bne     LEB2C
-        lda     LE817,y
-        sta     LE80F
-        jmp     LEA49
-
-LEB2C:  cmp     #$53
-        bne     LEB39
-        lda     LE817,y
-        sta     LE811
-        jmp     LEA49
-
-LEB39:  lda     LE817,y
-        sta     LE810
-        jmp     LEA49
-
-        ldy     #$02
-        lda     LE817,y
-        sta     $57
-        iny
-        lda     LE817,y
-        sta     $56
-        iny
-        lda     LE817,y
-        tax
-        clc
-        adc     #$02
-        ldy     #$00
-        sta     LE916,y
-        iny
-        lda     LE817,y
-        sta     LE916,y
-        ldy     #$00
-LEB65:  lda     ($56),y
-        iny
-        iny
-        sta     LE916,y
-        dey
-        dex
-        bne     LEB65
-        jsr     LEF4F
-        jmp     LEA49
-
-        ldy     #$02
-        lda     LE817,y
-        sta     $57
-        iny
-        lda     LE817,y
-        sta     $56
-        ldy     #$00
-        lda     LE817,y
-        sta     LE812
-        ldx     #$04
-        ldy     #$00
-LEB8F:  lda     LE817,x
-        sta     ($56),y
-        iny
-        inx
-        cpx     LE812
-        bcc     LEB8F
-        jmp     LEA49
-
-        ldx     #$02
-        lda     LE817,x
-        sta     $57
-        lda     #$00
-        sta     $56
-        inx
-        lda     LE817,x
-        tay
-        inx
-        lda     LE817,x
-        sta     LEBE0
-        inx
-        lda     LE817,x
-        sta     LEBE4
-        ldx     #$00
-        lda     LE817,x
-        sta     LE812
-        sec
-        sbc     #$07
-        sta     LEBFC
-        lda     #$02
-        pha
-        ldx     #$06
-        lda     ($56),y
-        cmp     LE817,x
-        beq     LEBEA
-LEBD6:  ldx     #$06
-LEBD8:  iny
-        bne     LEBDD
-        inc     $57
-LEBDD:  lda     $57
-        .byte   $C9
-LEBE0:  sta     LEC90,y
-        .byte   $C0
-LEBE4:  sta     LE890,y
-        jmp     LEC0E
-
-LEBEA:  inx
-        cpx     LE812
-        bcs     LEBF3
-        jmp     LEBD8
-
-LEBF3:  pla
-        cmp     #$FC
-        bcs     LEC0F
-        tax
-        tya
-        sec
-        .byte   $E9
-LEBFC:  sta     $169D,y
-        sbc     #$E8
-        lda     $57
-        sbc     #$00
-        sta     LE916,x
-        inx
-        txa
-        pha
-        jmp     LEBD6
-
-LEC0E:  pla
-LEC0F:  ldy     #$00
-        sta     LE916,y
-        iny
-        lda     LE817,y
-        sta     LE916,y
-        jsr     LEF4F
-        jmp     LEA49
-
-        ldy     #$02
-        lda     LE817,y
-        sta     LEC64
-        iny
-        lda     LE817,y
-        sta     LEC6A
-        iny
-        lda     LE817,y
-        sta     $57
-        iny
-        lda     LE817,y
-        sta     $56
-        ldy     #$08
-        lda     LE817,y
-        sta     $59
-        iny
-        lda     LE817,y
-        sta     $58
-        ldy     #$00
-LEC4B:  lda     ($56),y
-        sta     ($58),y
-        dec     $56
-        lda     $56
-        cmp     #$FF
-        bne     LEC59
-        dec     $57
-LEC59:  dec     $58
-        lda     $58
-        cmp     #$FF
-        bne     LEC63
-        dec     $59
-LEC63:  .byte   $A9
-LEC64:  sta     $57C5,y
-        bcc     LEC4B
-        .byte   $A9
-LEC6A:  sta     $56C5,y
-        bcc     LEC4B
-        .byte   $4C
-        .byte   $49
-LEC71:  nop
-        ldy     #$02
-        lda     LE817,y
-        sta     $57
-        iny
-        lda     LE817,y
-        sta     $56
-        iny
-        lda     LE817,y
-        sta     LECAE
-        iny
-        lda     LE817,y
-        sta     LECB4
-        iny
-        .byte   $B9
-        .byte   $17
-LEC90:  inx
-        sta     $59
-        iny
-        lda     LE817,y
-        sta     $58
-        ldy     #$00
-LEC9B:  lda     ($56),y
-        sta     ($58),y
-        inc     $56
-        bne     LECA5
-        inc     $57
-LECA5:  inc     $58
-        bne     LECAB
-        inc     $59
-LECAB:  lda     $57
-        .byte   $C9
-LECAE:  ora     ($90,x)
-        nop
-        lda     $56
-        .byte   $C9
-LECB4:  brk
-        bcc     LEC9B
-        jmp     LEA49
-
-        ldy     #$02
-        lda     LE817,y
-        sta     $57
-        iny
-        lda     LE817,y
-        sta     $56
-        iny
-        lda     LE817,y
-        sta     LECF8
-        iny
-        lda     LE817,y
-        sta     LECFE
-        iny
-        lda     LE817,y
-        sta     $59
-        iny
-        lda     LE817,y
-        sta     $58
-        ldy     #$00
-        lda     ($56),y
-        cmp     ($58),y
-        bne     LED0F
-        inc     $56
-        bne     LECEF
-        inc     $57
-LECEF:  inc     $58
-        bne     LECF5
-        inc     $59
-LECF5:  lda     $57
-        .byte   $C9
-LECF8:  sta     LE890,y
-        lda     $56
-        .byte   $C9
-LECFE:  sta     LE290,y
-        ldx     #$02
-        lda     #$FF
-        sta     LE916,x
-        inx
-        sta     LE916,x
-        jmp     LED34
-
-LED0F:  pha
-        ldx     #$02
-        lda     $57
-        sta     LE916,x
-        inx
-        lda     $56
-        sta     LE916,x
-        inx
-        pla
-        sta     LE916,x
-        inx
-        lda     $59
-        sta     LE916,x
-        inx
-        lda     $58
-        sta     LE916,x
-        inx
-        lda     ($58),y
-        sta     LE916,x
-LED34:  inx
-        txa
-        ldx     #$00
-        sta     LE916,x
-        inx
-        lda     LE817,x
-        sta     LE916,x
-        jsr     LEF4F
-        jmp     LEA49
-
-        ldx     #$00
-LED4A:  lda     LE813,x
-        sta     $56,x
-        inx
-        cpx     #$04
-        bcc     LED4A
-        ldx     LE811
-        txs
-        ldy     #$00
-        lda     LE817,y
-        sta     LE916,y
-        iny
-        lda     LE817,y
-        sta     LE916,y
-        iny
-        lda     LE817,y
-        pha
-        iny
-        lda     LE817,y
-        pha
-        dey
-        lda     BRKVector
-        sta     LE817,y
-        iny
-        lda     $03F1
-        sta     LE817,y
-        lda     #$98
-        sta     BRKVector
-        lda     #$ED
-        sta     $03F1
-        ldx     LE80E
-        ldy     LE80F
-        lda     LE810
-        pha
-        lda     LE80D
-        plp
-        rts
-
-        nop
-        jmp     LEFA4
-
-LED9C:  tsx
-        stx     LE811
-        dey
-        lda     LE817,y
-        sta     BRKVector
-        iny
-        lda     LE817,y
-        sta     $03F1
-        jsr     LEF4F
-        jmp     LEA49
-
-        ldx     #$7C
-        lda     #$C0
-        sta     LE812
-        lda     #$00
-        sta     $56
-        sta     $57
-        tay
-LEDC2:  lda     ($56),y
-        sta     $58
-        iny
-        bne     LEDCC
-        jsr     LEEC7
-LEDCC:  lda     ($56),y
-        cmp     $58
-        beq     LEDEF
-        lda     $58
-        cmp     #$83
-        bne     LEDE3
-        pha
-        jsr     LEF97
-        dex
-        bne     LEDE2
-        jsr     LEEC1
-LEDE2:  pla
-LEDE3:  jsr     LEF97
-        dex
-        bne     LEDEC
-        jsr     LEEC1
-LEDEC:  jmp     LEDC2
-
-LEDEF:  iny
-        bne     LEDF5
-        jsr     LEEC7
-LEDF5:  lda     ($56),y
-        cmp     $58
-        beq     LEE2E
-        lda     $58
-        cmp     #$83
-        bne     LEE17
-        pha
-        jsr     LEF97
-        dex
-        bne     LEE0B
-        jsr     LEEC1
-LEE0B:  pla
-        pha
-        jsr     LEF97
-        dex
-        bne     LEE16
-        jsr     LEEC1
-LEE16:  pla
-LEE17:  pha
-        jsr     LEF97
-        dex
-        bne     LEE21
-        jsr     LEEC1
-LEE21:  pla
-        jsr     LEF97
-        dex
-        bne     LEE2B
-        jsr     LEEC1
-LEE2B:  jmp     LEDC2
-
-LEE2E:  lda     #$03
-        sta     $59
-LEE32:  iny
-        bne     LEE38
-        jsr     LEEC7
-LEE38:  lda     ($56),y
-        cmp     $58
-        beq     LEE8D
-        lda     #$83
-        jsr     LEF97
-        dex
-        bne     LEE49
-        jsr     LEEC1
-LEE49:  lda     $59
-        cmp     #$83
-        bne     LEE72
-        lda     #$40
-        jsr     LEF97
-        dex
-        bne     LEE5A
-        jsr     LEEC1
-LEE5A:  lda     $58
-        jsr     LEF97
-        dex
-        bne     LEE65
-        jsr     LEEC1
-LEE65:  lda     #$83
-        jsr     LEF97
-        dex
-        bne     LEE70
-        jsr     LEEC1
-LEE70:  lda     #$43
-LEE72:  jsr     LEF97
-        dex
-        bne     LEE7B
-        jsr     LEEC1
-LEE7B:  lda     $58
-        jsr     LEF97
-        dex
-        bne     LEE86
-        jsr     LEEC1
-LEE86:  lda     #$00
-        sta     $59
-        jmp     LEDC2
-
-LEE8D:  lda     $59
-        clc
-        adc     #$01
-        bcs     LEE99
-        sta     $59
-        jmp     LEE32
-
-LEE99:  lda     #$83
-        jsr     LEF97
-        dex
-        bne     LEEA4
-        jsr     LEEC1
-LEEA4:  lda     $59
-        jsr     LEF97
-        dex
-        bne     LEEAF
-        jsr     LEEC1
-LEEAF:  lda     $58
-        .byte   $20
-        .byte   $97
-LEEB3:  .byte   $EF
-        dex
-        bne     LEEBA
-        jsr     LEEC1
-LEEBA:  lda     #$01
-        sta     $59
-        jmp     LEE32
-
-LEEC1:  jsr     LEF7F
-        ldx     #$80
-        rts
-
-LEEC7:  lda     LE812
-        sec
-        sbc     #$01
-        beq     LEEDA
-        sta     LE812
-        lda     $57
-        clc
-        adc     #$01
-        sta     $57
-        rts
-
-LEEDA:  pla
-        pla
-        lda     $59
-        beq     LEEFB
-        lda     #$83
-        jsr     LEF97
-        dex
-        bne     LEEEB
-        jsr     LEEC1
-LEEEB:  lda     $59
-        jsr     LEF97
-        dex
-        bne     LEEF6
-        jsr     LEEC1
-LEEF6:  lda     $58
-        jsr     LEF97
-LEEFB:  jmp     LEA49
-
-        lda     #$C0
-        sta     LE812
-        lda     #$00
-        sta     $56
-        sta     $57
-        tay
-LEF0A:  jsr     LEF7F
-        cmp     #$83
-        beq     LEF1C
-LEF11:  sta     ($56),y
-        iny
-        bne     LEF19
-        jsr     LEF37
-LEF19:  jmp     LEF0A
-
-LEF1C:  jsr     LEF7F
-        cmp     #$83
-        beq     LEF11
-        tax
-        jsr     LEF7F
-LEF27:  sta     ($56),y
-        iny
-        bne     LEF31
-        pha
-        jsr     LEF37
-        pla
-LEF31:  dex
-        bne     LEF27
-        jmp     LEF0A
-
-LEF37:  lda     LE812
-        sec
-        sbc     #$01
-        beq     LEF4A
-        sta     LE812
-        lda     $57
-        clc
-        adc     #$01
-        sta     $57
-        rts
-
-LEF4A:  pla
-        pla
-        jmp     LEA49
-
-LEF4F:  ldy     #$00
-        lda     LE916,y
-        tax
-LEF55:  jsr     LEF7F
-        cmp     #$FF
-        beq     LEF66
-        lda     LE916,y
-        jsr     LEF97
-        iny
-        dex
-        bne     LEF55
-LEF66:  rts
-
-LEF67:  ldx     #$00
-LEF69:  lda     $56,x
-        sta     LE813,x
-        inx
-        cpx     #$04
-        bcc     LEF69
-        rts
-
-LEF74:  lda     #$03
-        sta     $C0B0
-        lda     #$11
-        sta     $C0B0
-        rts
-
-LEF7F:  lda     #$70
-        bit     $C0B0
-        bne     LEF92
-        lda     #$01
-        bit     $C0B0
-        beq     LEF7F
-        lda     $C0B1
-        clc
-        rts
-
-LEF92:  lda     $C0B1
-        sec
-        rts
-
-LEF97:  pha
-        lda     #$02
-        bit     $C0B0
-        .byte   $F0             ; TODO: disasm
-        .byte   $FB
-        pla
-        sta     $C0B1
-        rts
-
-LEFA4:  lda     L0045
-        sta     LE80D
-        lda     $46
-        sta     LE80E
-        lda     $47
-        sta     LE80F
-        lda     $48
-        sta     LE810
-        lda     $49
-        clc
-        adc     #$04
-        sta     LE811
-        ldy     #$02
-        lda     $3A
-        sec
-        sbc     #$02
-        sta     LE916,y
-        iny
-        lda     $3B
-        sbc     #$00
-        sta     LE916,y
-        jmp     LED9C
-
-        sta     L0045
-        plp
-        stx     $46
-        sty     $47
-        php
-        pla
-        sta     $48
-        tsx
-        stx     $49
-        cld
-        pla
-        sta     $3A
-        pla
-        sta     $3B
-        jmp     (BRKVector)
-
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        inc     $FFFF,x
-        .byte   0, 0
+        .byte   $A9, $D5, $8D, $FE, $FF, $A9, $EF, $8D
+        .byte   $FF, $FF, $4C, $31, $EA, $00, $60, $00
+        .byte   $36, $30, $05, $FF, $FF, $09, $0A, $04
+        .byte   $0B, $89, $1F, $43, $80, $80, $80, $80
+        .byte   $80, $80, $80, $80, $80, $80, $80, $80
+        .byte   $80, $80, $80, $80, $80, $80, $80, $80
+        .byte   $80, $80, $80, $80, $80, $80, $80, $80
+        .byte   $80, $80, $80, $80, $80, $80, $80, $80
+        .byte   $80, $80, $80, $80, $80, $80, $80, $80
+        .byte   $80, $D3, $AA, $80, $80, $80, $80, $C0
+        .byte   $9B, $84, $80, $80, $80, $80, $A0, $D8
+        .byte   $81, $80, $80, $80, $80, $80, $D0, $CD
+        .byte   $80, $80, $80, $80, $80, $E4, $86, $80
+        .byte   $80, $86, $80, $90, $80, $80, $C0, $81
+        .byte   $A0, $80, $80, $80, $80, $80, $80, $80
+        .byte   $80, $80, $80, $80, $80, $C0, $FF, $FF
+        .byte   $FF, $87, $80, $80, $80, $80, $80, $80
+        .byte   $80, $80, $80, $80, $E0, $88, $B2, $D8
+        .byte   $F1, $B6, $DB, $87, $DB, $D5, $AA, $D5
+        .byte   $AA, $80, $80, $80, $80, $80, $80, $80
+        .byte   $80, $80, $80, $80, $80, $80, $80, $80
+        .byte   $80, $80, $80, $80, $80, $80, $80, $80
+        .byte   $80, $80, $80, $80, $80, $80, $80, $80
+        .byte   $80, $80, $80, $80, $80, $80, $80, $80
+        .byte   $80, $80, $80, $82, $D5, $80, $80, $80
+        .byte   $80, $F0, $91, $88, $80, $80, $80, $80
+        .byte   $90, $88, $C1, $8D, $80, $80, $80, $E0
+        .byte   $C6, $98, $84, $80, $80, $80, $C0, $B0
+        .byte   $B6, $E7, $E7, $83, $83, $90, $B6, $C3
+        .byte   $99, $80, $A0, $80, $C6, $80, $C4, $80
+        .byte   $C4, $81, $B0, $B6, $83, $80, $80, $A0
+        .byte   $83, $80, $80, $93, $80, $DB, $81, $E4
+        .byte   $80, $98, $88, $95, $A2, $D4, $C0, $81
+        .byte   $C2, $E0, $D8, $8D, $86, $83, $D4, $80
+        .byte   $D1, $A2, $A5, $80, $80, $00, $04, $0B
+        .byte   $00, $A9, $02, $00, $A9, $01, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $EA, $7A, $EA
+        .byte   $9E, $EA, $E4, $EA, $48, $EA, $FE, $EB
+        .byte   $41, $EB, $75, $EB, $9D, $EC, $20, $EC
+        .byte   $71, $EC, $B9, $ED, $47, $ED, $B3, $EE
+        .byte   $FD, $08, $8D, $0D, $E8, $68, $8D, $10
+        .byte   $E8, $8E, $0E, $E8, $8C, $0F, $E8, $BA
+        .byte   $8E, $11, $E8, $20, $67, $EF, $20, $74
+        .byte   $EF, $A0, $00, $20, $7F, $EF, $99, $17
+        .byte   $E8, $AA, $CA, $F0, $0E, $C8, $C0, $FF
+        .byte   $B0, $09, $20, $7F, $EF, $99, $17, $E8
+        .byte   $4C, $52, $EA, $A0, $01, $B9, $17, $E8
+        .byte   $C9, $0E, $90, $03, $4C, $49, $EA, $0A
+        .byte   $AA, $BD, $15, $EA, $48, $E8, $BD, $15
+        .byte   $EA, $48, $60, $A0, $00, $A9, $04, $99
+        .byte   $16, $E9, $C8, $B9, $17, $E8, $99, $16
+        .byte   $E9, $C8, $68, $99, $16, $E9, $C8, $68
+        .byte   $48, $99, $16, $E9, $88, $B9, $16, $E9
+        .byte   $48, $20, $4F, $EF, $4C, $49, $EA, $A0
+        .byte   $00, $A9, $03, $99, $16, $E9, $C8, $B9
+        .byte   $17, $E8, $99, $16, $E9, $C8, $B9, $17
+        .byte   $E8, $C9, $41, $D0, $06, $AD, $0D, $E8
+        .byte   $4C, $DC, $EA, $C9, $58, $D0, $06, $AD
+        .byte   $0E, $E8, $4C, $DC, $EA, $C9, $59, $D0
+        .byte   $06, $AD, $0F, $E8, $4C, $DC, $EA, $C9
+        .byte   $53, $D0, $06, $AD, $11, $E8, $4C, $DC
+        .byte   $EA, $AD, $10, $E8, $99, $16, $E9, $20
+        .byte   $4F, $EF, $4C, $49, $EA, $A0, $00, $A9
+        .byte   $03, $99, $16, $E9, $C8, $B9, $17, $E8
+        .byte   $99, $16, $E9, $C8, $A9, $00, $99, $16
+        .byte   $E9, $20, $4F, $EF, $4C, $49, $EA, $A0
+        .byte   $02, $B9, $17, $E8, $C8, $C9, $41, $D0
+        .byte   $09, $B9, $17, $E8, $8D, $0D, $E8, $4C
+        .byte   $49, $EA, $C9, $58, $D0, $09, $B9, $17
+        .byte   $E8, $8D, $0E, $E8, $4C, $49, $EA, $C9
+        .byte   $59, $D0, $09, $B9, $17, $E8, $8D, $0F
+        .byte   $E8, $4C, $49, $EA, $C9, $53, $D0, $09
+        .byte   $B9, $17, $E8, $8D, $11, $E8, $4C, $49
+        .byte   $EA, $B9, $17, $E8, $8D, $10, $E8, $4C
+        .byte   $49, $EA, $A0, $02, $B9, $17, $E8, $85
+        .byte   $57, $C8, $B9, $17, $E8, $85, $56, $C8
+        .byte   $B9, $17, $E8, $AA, $18, $69, $02, $A0
+        .byte   $00, $99, $16, $E9, $C8, $B9, $17, $E8
+        .byte   $99, $16, $E9, $A0, $00, $B1, $56, $C8
+        .byte   $C8, $99, $16, $E9, $88, $CA, $D0, $F5
+        .byte   $20, $4F, $EF, $4C, $49, $EA, $A0, $02
+        .byte   $B9, $17, $E8, $85, $57, $C8, $B9, $17
+        .byte   $E8, $85, $56, $A0, $00, $B9, $17, $E8
+        .byte   $8D, $12, $E8, $A2, $04, $A0, $00, $BD
+        .byte   $17, $E8, $91, $56, $C8, $E8, $EC, $12
+        .byte   $E8, $90, $F4, $4C, $49, $EA, $A2, $02
+        .byte   $BD, $17, $E8, $85, $57, $A9, $00, $85
+        .byte   $56, $E8, $BD, $17, $E8, $A8, $E8, $BD
+        .byte   $17, $E8, $8D, $E0, $EB, $E8, $BD, $17
+        .byte   $E8, $8D, $E4, $EB, $A2, $00, $BD, $17
+        .byte   $E8, $8D, $12, $E8, $38, $E9, $07, $8D
+        .byte   $FC, $EB, $A9, $02, $48, $A2, $06, $B1
+        .byte   $56, $DD, $17, $E8, $F0, $14, $A2, $06
+        .byte   $C8, $D0, $02, $E6, $57, $A5, $57, $C9
+        .byte   $99, $90, $EC, $C0, $99, $90, $E8, $4C
+        .byte   $0E, $EC, $E8, $EC, $12, $E8, $B0, $03
+        .byte   $4C, $D8, $EB, $68, $C9, $FC, $B0, $17
+        .byte   $AA, $98, $38, $E9, $99, $9D, $16, $E9
+        .byte   $E8, $A5, $57, $E9, $00, $9D, $16, $E9
+        .byte   $E8, $8A, $48, $4C, $D6, $EB, $68, $A0
+        .byte   $00, $99, $16, $E9, $C8, $B9, $17, $E8
+        .byte   $99, $16, $E9, $20, $4F, $EF, $4C, $49
+        .byte   $EA, $A0, $02, $B9, $17, $E8, $8D, $64
+        .byte   $EC, $C8, $B9, $17, $E8, $8D, $6A, $EC
+        .byte   $C8, $B9, $17, $E8, $85, $57, $C8, $B9
+        .byte   $17, $E8, $85, $56, $A0, $08, $B9, $17
+        .byte   $E8, $85, $59, $C8, $B9, $17, $E8, $85
+        .byte   $58, $A0, $00, $B1, $56, $91, $58, $C6
+        .byte   $56, $A5, $56, $C9, $FF, $D0, $02, $C6
+        .byte   $57, $C6, $58, $A5, $58, $C9, $FF, $D0
+        .byte   $02, $C6, $59, $A9, $99, $C5, $57, $90
+        .byte   $E2, $A9, $99, $C5, $56, $90, $DC, $4C
+        .byte   $49, $EA, $A0, $02, $B9, $17, $E8, $85
+        .byte   $57, $C8, $B9, $17, $E8, $85, $56, $C8
+        .byte   $B9, $17, $E8, $8D, $AE, $EC, $C8, $B9
+        .byte   $17, $E8, $8D, $B4, $EC, $C8, $B9, $17
+        .byte   $E8, $85, $59, $C8, $B9, $17, $E8, $85
+        .byte   $58, $A0, $00, $B1, $56, $91, $58, $E6
+        .byte   $56, $D0, $02, $E6, $57, $E6, $58, $D0
+        .byte   $02, $E6, $59, $A5, $57, $C9, $01, $90
+        .byte   $EA, $A5, $56, $C9, $00, $90, $E4, $4C
+        .byte   $49, $EA, $A0, $02, $B9, $17, $E8, $85
+        .byte   $57, $C8, $B9, $17, $E8, $85, $56, $C8
+        .byte   $B9, $17, $E8, $8D, $F8, $EC, $C8, $B9
+        .byte   $17, $E8, $8D, $FE, $EC, $C8, $B9, $17
+        .byte   $E8, $85, $59, $C8, $B9, $17, $E8, $85
+        .byte   $58, $A0, $00, $B1, $56, $D1, $58, $D0
+        .byte   $26, $E6, $56, $D0, $02, $E6, $57, $E6
+        .byte   $58, $D0, $02, $E6, $59, $A5, $57, $C9
+        .byte   $99, $90, $E8, $A5, $56, $C9, $99, $90
+        .byte   $E2, $A2, $02, $A9, $FF, $9D, $16, $E9
+        .byte   $E8, $9D, $16, $E9, $4C, $34, $ED, $48
+        .byte   $A2, $02, $A5, $57, $9D, $16, $E9, $E8
+        .byte   $A5, $56, $9D, $16, $E9, $E8, $68, $9D
+        .byte   $16, $E9, $E8, $A5, $59, $9D, $16, $E9
+        .byte   $E8, $A5, $58, $9D, $16, $E9, $E8, $B1
+        .byte   $58, $9D, $16, $E9, $E8, $8A, $A2, $00
+        .byte   $9D, $16, $E9, $E8, $BD, $17, $E8, $9D
+        .byte   $16, $E9, $20, $4F, $EF, $4C, $49, $EA
+        .byte   $A2, $00, $BD, $13, $E8, $95, $56, $E8
+        .byte   $E0, $04, $90, $F6, $AE, $11, $E8, $9A
+        .byte   $A0, $00, $B9, $17, $E8, $99, $16, $E9
+        .byte   $C8, $B9, $17, $E8, $99, $16, $E9, $C8
+        .byte   $B9, $17, $E8, $48, $C8, $B9, $17, $E8
+        .byte   $48, $88, $AD, $F0, $03, $99, $17, $E8
+        .byte   $C8, $AD, $F1, $03, $99, $17, $E8, $A9
+        .byte   $98, $8D, $F0, $03, $A9, $ED, $8D, $F1
+        .byte   $03, $AE, $0E, $E8, $AC, $0F, $E8, $AD
+        .byte   $10, $E8, $48, $AD, $0D, $E8, $28, $60
+        .byte   $EA, $4C, $A4, $EF, $BA, $8E, $11, $E8
+        .byte   $88, $B9, $17, $E8, $8D, $F0, $03, $C8
+        .byte   $B9, $17, $E8, $8D, $F1, $03, $20, $4F
+        .byte   $EF, $4C, $49, $EA, $A2, $7C, $A9, $C0
+        .byte   $8D, $12, $E8, $A9, $00, $85, $56, $85
+        .byte   $57, $A8, $B1, $56, $85, $58, $C8, $D0
+        .byte   $03, $20, $C7, $EE, $B1, $56, $C5, $58
+        .byte   $F0, $1D, $A5, $58, $C9, $83, $D0, $0B
+        .byte   $48, $20, $97, $EF, $CA, $D0, $03, $20
+        .byte   $C1, $EE, $68, $20, $97, $EF, $CA, $D0
+        .byte   $03, $20, $C1, $EE, $4C, $C2, $ED, $C8
+        .byte   $D0, $03, $20, $C7, $EE, $B1, $56, $C5
+        .byte   $58, $F0, $33, $A5, $58, $C9, $83, $D0
+        .byte   $16, $48, $20, $97, $EF, $CA, $D0, $03
+        .byte   $20, $C1, $EE, $68, $48, $20, $97, $EF
+        .byte   $CA, $D0, $03, $20, $C1, $EE, $68, $48
+        .byte   $20, $97, $EF, $CA, $D0, $03, $20, $C1
+        .byte   $EE, $68, $20, $97, $EF, $CA, $D0, $03
+        .byte   $20, $C1, $EE, $4C, $C2, $ED, $A9, $03
+        .byte   $85, $59, $C8, $D0, $03, $20, $C7, $EE
+        .byte   $B1, $56, $C5, $58, $F0, $4F, $A9, $83
+        .byte   $20, $97, $EF, $CA, $D0, $03, $20, $C1
+        .byte   $EE, $A5, $59, $C9, $83, $D0, $23, $A9
+        .byte   $40, $20, $97, $EF, $CA, $D0, $03, $20
+        .byte   $C1, $EE, $A5, $58, $20, $97, $EF, $CA
+        .byte   $D0, $03, $20, $C1, $EE, $A9, $83, $20
+        .byte   $97, $EF, $CA, $D0, $03, $20, $C1, $EE
+        .byte   $A9, $43, $20, $97, $EF, $CA, $D0, $03
+        .byte   $20, $C1, $EE, $A5, $58, $20, $97, $EF
+        .byte   $CA, $D0, $03, $20, $C1, $EE, $A9, $00
+        .byte   $85, $59, $4C, $C2, $ED, $A5, $59, $18
+        .byte   $69, $01, $B0, $05, $85, $59, $4C, $32
+        .byte   $EE, $A9, $83, $20, $97, $EF, $CA, $D0
+        .byte   $03, $20, $C1, $EE, $A5, $59, $20, $97
+        .byte   $EF, $CA, $D0, $03, $20, $C1, $EE, $A5
+        .byte   $58, $20, $97, $EF, $CA, $D0, $03, $20
+        .byte   $C1, $EE, $A9, $01, $85, $59, $4C, $32
+        .byte   $EE, $20, $7F, $EF, $A2, $80, $60, $AD
+        .byte   $12, $E8, $38, $E9, $01, $F0, $0B, $8D
+        .byte   $12, $E8, $A5, $57, $18, $69, $01, $85
+        .byte   $57, $60, $68, $68, $A5, $59, $F0, $1B
+        .byte   $A9, $83, $20, $97, $EF, $CA, $D0, $03
+        .byte   $20, $C1, $EE, $A5, $59, $20, $97, $EF
+        .byte   $CA, $D0, $03, $20, $C1, $EE, $A5, $58
+        .byte   $20, $97, $EF, $4C, $49, $EA, $A9, $C0
+        .byte   $8D, $12, $E8, $A9, $00, $85, $56, $85
+        .byte   $57, $A8, $20, $7F, $EF, $C9, $83, $F0
+        .byte   $0B, $91, $56, $C8, $D0, $03, $20, $37
+        .byte   $EF, $4C, $0A, $EF, $20, $7F, $EF, $C9
+        .byte   $83, $F0, $EE, $AA, $20, $7F, $EF, $91
+        .byte   $56, $C8, $D0, $05, $48, $20, $37, $EF
+        .byte   $68, $CA, $D0, $F3, $4C, $0A, $EF, $AD
+        .byte   $12, $E8, $38, $E9, $01, $F0, $0B, $8D
+        .byte   $12, $E8, $A5, $57, $18, $69, $01, $85
+        .byte   $57, $60, $68, $68, $4C, $49, $EA, $A0
+        .byte   $00, $B9, $16, $E9, $AA, $20, $7F, $EF
+        .byte   $C9, $FF, $F0, $0A, $B9, $16, $E9, $20
+        .byte   $97, $EF, $C8, $CA, $D0, $EF, $60, $A2
+        .byte   $00, $B5, $56, $9D, $13, $E8, $E8, $E0
+        .byte   $04, $90, $F6, $60, $A9, $03, $8D, $B0
+        .byte   $C0, $A9, $11, $8D, $B0, $C0, $60, $A9
+        .byte   $70, $2C, $B0, $C0, $D0, $0C, $A9, $01
+        .byte   $2C, $B0, $C0, $F0, $F2, $AD, $B1, $C0
+        .byte   $18, $60, $AD, $B1, $C0, $38, $60, $48
+        .byte   $A9, $02, $2C, $B0, $C0, $F0, $FB, $68
+        .byte   $8D, $B1, $C0, $60, $A5, $45, $8D, $0D
+        .byte   $E8, $A5, $46, $8D, $0E, $E8, $A5, $47
+        .byte   $8D, $0F, $E8, $A5, $48, $8D, $10, $E8
+        .byte   $A5, $49, $18, $69, $04, $8D, $11, $E8
+        .byte   $A0, $02, $A5, $3A, $38, $E9, $02, $99
+        .byte   $16, $E9, $C8, $A5, $3B, $E9, $00, $99
+        .byte   $16, $E9, $4C, $9C, $ED, $85, $45, $28
+        .byte   $86, $46, $84, $47, $08, $68, $85, $48
+        .byte   $BA, $86, $49, $D8, $68, $85, $3A, $68
+        .byte   $85, $3B, $6C, $F0, $03, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $FF, $00, $FE, $FF, $FF, $00, $00
 
 ;;; ============================================================
 ;;; "War Report" for "World War 1 Ace" mode
 ;;; The whole display is rendered, then the stats are re-rendered
 ;;; in orange.
+
+.assert * = $F000, error, .sprintf("placement, %04X", *)
 
 msg_war_report: MESSAGE $00, $18, "***** WAR REPORT *****"
                 MESSAGE $0C, $04, "ENEMY PLANES SHOT DOWN = "

@@ -587,3 +587,5 @@ LFB7B:  rts
         .byte   $FF, $FF, $00, $76
 
         .assert * = $FC00, error, "EOF mismatch"
+
+;;; $FC00 is used for instrument save buffers
