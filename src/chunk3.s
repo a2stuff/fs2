@@ -1652,6 +1652,7 @@ SetCol:
 ;;;   byte 3 = XSize
 ;;;   byte 4/5 = storage buffer
 
+;;; The macro takes care of the funky order and bit-sharing
 .macro SAVE_RECORD xstart, ystart, xsize, ysize, bufptr
         .byte   xstart & $FF, (ysize << 1) | (xstart >> 8), ystart, xsize
         .addr   bufptr
@@ -2322,32 +2323,32 @@ LE800:
 
 msg_war_report: MESSAGE $00, $18, "***** WAR REPORT *****"
                 MESSAGE $0C, $04, "ENEMY PLANES SHOT DOWN = "
-msg_wr2:        MESSAGE $0C, $68, "000"
+msg_wr2:        MESSAGE $0C, $68, "000", str_enemy_shot_down
                 MESSAGE $12, $04, "BOMB HITS = "
-msg_wr3:        MESSAGE $12, $34, "000"
+msg_wr3:        MESSAGE $12, $34, "000", str_bomb_hits
                 MESSAGE $18, $04, "AIRCRAFT DAMAGE BY ENEMY = "
-msg_wr4:        MESSAGE $18, $70, "000"
+msg_wr4:        MESSAGE $18, $70, "000", str_damage_by_enemy
                 MESSAGE $24, $04, "ENEMY STATUS: 0=SHOT DOWN"
                 MESSAGE $2A, $3C, "1=RETURNING OR HOME"
                 MESSAGE $30, $3C, "2=ATTACKING"
 
                 MESSAGE $3C, $04, "ENEMY 1 = "
-msg_wr5:        MESSAGE $3C, $2C, "0", LF0C3
+msg_wr5:        MESSAGE $3C, $2C, "0", str_enemy1_status
 
                 MESSAGE $3C, $3C, "ENEMY 2 = "
-msg_wr6:        MESSAGE $3C, $64, "0", LF0D4
+msg_wr6:        MESSAGE $3C, $64, "0", str_enemy2_status
 
                 MESSAGE $42, $04, "ENEMY 3 = "
-msg_wr7:        MESSAGE $42, $2C, "0", LF0E5
+msg_wr7:        MESSAGE $42, $2C, "0", str_enemy3_status
 
                 MESSAGE $42, $3C, "ENEMY 4 = "
-msg_wr8:        MESSAGE $42, $64, "0", LF0F6
+msg_wr8:        MESSAGE $42, $64, "0", str_enemy4_status
 
                 MESSAGE $48, $04, "ENEMY 5 = "
-msg_wr9:        MESSAGE $48, $2C, "0", LF107
+msg_wr9:        MESSAGE $48, $2C, "0", str_enemy5_status
 
                 MESSAGE $48, $3C, "ENEMY 6 = "
-msg_wr10:       MESSAGE $48, $64, "0", LF118
+msg_wr10:       MESSAGE $48, $64, "0", str_enemy6_status
 
                 MESSAGE $54, $00, "PRESS ANY KEY TO RESUME BATTLE"
         .byte   0, 0            ; sentinel
@@ -2362,35 +2363,35 @@ LF13D:  rts
         sta     $B6
         lda     #$00
         sta     $B7
-        CALLAX  Set3DigitStringRelay, $F037
+        CALLAX  Set3DigitStringRelay, str_enemy_shot_down
         lda     $A81B
         sta     $B6
         lda     #$00
         sta     $B7
-        CALLAX  Set3DigitStringRelay, $F04C
+        CALLAX  Set3DigitStringRelay, str_bomb_hits
         lda     $08A4
         sta     $B6
         lda     #$00
         sta     $B7
-        CALLAX  Set3DigitStringRelay, $F070
+        CALLAX  Set3DigitStringRelay, str_damage_by_enemy
         lda     $A972
         ora     #$30
-        sta     LF0C3
+        sta     str_enemy1_status
         lda     $A98E
         ora     #$30
-        sta     LF0D4
+        sta     str_enemy2_status
         lda     $A9AA
         ora     #$30
-        sta     LF0E5
+        sta     str_enemy3_status
         lda     $A9C6
         ora     #$30
-        sta     LF0F6
+        sta     str_enemy4_status
         lda     $A9E2
         ora     #$30
-        sta     LF107
+        sta     str_enemy5_status
         lda     $A9FE
         ora     #$30
-        sta     LF118
+        sta     str_enemy6_status
         jsr     ClearViewportsToBlack
         CALLAX  DrawMultiMessage, msg_war_report
         CALLAX  DrawMessageOrange, msg_wr2
