@@ -1,15 +1,19 @@
         .org $d300
 
 ;;; Some functionality that is only present in the "64k" mode
-;;; of the original FS2:
-;;; * War Report
-;;; * North and East readouts in slew mode
-;;; * Automatic Direction Finder (ADF)
+;;; of the original FS2 (per Appendix 3):
+;;; * Instrument lights function at night. The panel can be shut off.
+;;; * ADF functions.
+;;; * Wingtip generation in side and back views.
+;;; * North and East readouts in slew mode.
+;;; * Bomb sight in war game.
+;;; * War report.
 ;;; * COM Radio
-;;; * Instrument lights function at night (hidden if lights off)
+;;; * Airplane image in center of the radar screen.
 
 L00BA           := $00BA
 
+;;; Uninitialized memory
         .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
         .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
         .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
@@ -37,8 +41,9 @@ L00BA           := $00BA
         .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
         .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $76
 
+;;; ============================================================
+
 LD3D0:  jmp     LD41F
-        .refto LD3D0
 
 LD3D3:  jmp     LD3FA
 
@@ -51,6 +56,8 @@ LD3DC:  jmp     LD76F
 LD3DF:  jmp     LD3E5
 
 LD3E2:  jmp     LD95D
+
+;;; ============================================================
 
 LD3E5:  lda     #$00
         sta     $1E09
@@ -210,6 +217,8 @@ LD55F:  lda     $A8
         ora     #$AA
         sta     $3B5E
         rts
+
+;;; ============================================================
 
 ReadBlockDataBuffer:
         .res    506, 0
@@ -477,6 +486,7 @@ LDC3D:  ldx     #$00
         jmp     LDC15
 
 ;;; ============================================================
+;;; ???
 
         ;; Jump table
 LDC49:  .addr   LDD07
@@ -680,8 +690,8 @@ LDE22:  lda     $2A36
         and     #$01
         beq     LDE4C
         lda     $0937
-        ora     $0836
-        ora     $0A70
+        ora     RadarView
+        ora     ViewDirection
         bne     LDE4C
         inc     LDDFB
         lda     LDDFB
@@ -762,243 +772,203 @@ LDEC9:  sta     $0884
         bne     LDEC9
         rts
 
-LDED1:  brk
-LDED2:  brk
-LDED3:  brk
-LDED4:  brk
-LDED5:  brk
-LDED6:  brk
-LDED7:  brk
-LDED8:  brk
-        .byte   $14
-        brk
-        ora     ($46,x)
-        .byte   $8B
-        brk
-        brk
-        asl     $C014,x
-        ora     ($3C,x)
-        sei
-        .byte   $80
-        brk
-        plp
-        .byte   $02
-        brk
-        brk
-        .byte   $3C
-        bvs     LDEEF
-LDEEF:  brk
-        plp
-        .byte   $02
-        brk
-        brk
-        .byte   $3C
-        pha
-        brk
-        brk
-        plp
-        .byte   $02
-        brk
-        brk
-        .byte   $3C
-        jsr     $0000
-        plp
-        .byte   $14
-        cpy     #$01
-        .byte   $3C
-        plp
-        rti
+;;; ============================================================
 
-        ora     ($28,x)
-        .byte   $14
-        brk
-        ora     ($46,x)
-        .byte   $14
-        brk
-        ora     ($1E,x)
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-LDF19:  .byte   $14
-        .byte   $2B
-        .byte   $7F
-        .byte   $13
-        .byte   $2B
-        .byte   $7F
-        ora     $2B,x
-        .byte   $7F
-        .byte   $14
-        .byte   $27
-        .byte   $0C
-        .byte   $14
-        .byte   $23
-        .byte   $0C
-        sty     $3E,x
-        .byte   $3F
-        sty     $3A,x
-        .byte   $0C
-        .byte   $14
-        .byte   $2F
-        .byte   $0C
-        .byte   $14
-        .byte   $33
-        .byte   $0C
-        .byte   $14
-        .byte   $37
-        .byte   $3F
-        .byte   $14
-        .byte   $3B
-        .byte   $0C
-        .byte   $14
-        .byte   $3F
-        .byte   $0C
-        sty     $36,x
-        .byte   $0C
-        sty     $32,x
-        .byte   $3F
-        sty     $23,x
-        .byte   $3F
-        brk
-        brk
-        .byte   $14
-        .byte   $2B
-        .byte   $7F
-        .byte   $14
-        .byte   $27
-        .byte   $0C
-        .byte   $14
-        .byte   $23
-        .byte   $0C
-        .byte   $14
-        .byte   $2F
-        .byte   $0C
-        .byte   $14
-        .byte   $33
-        .byte   $0C
-        .byte   $14
-        .byte   $37
-        .byte   $0C
-        .byte   $14
-        .byte   $3B
-        .byte   $3F
-        .byte   $13
-        .byte   $2B
-        sei
-        ora     $2B,x
-        .byte   $03
-        brk
-        brk
+;;; Data for drawing wingtips / tail
+;;; Word-sized values (x, w, dx, dw) are 8.8 fixed point;
+;;; X values are in "color pixels" (0...139)
+;;; Format:
+;;;   byte 0   = w (8.8 hi, lo is 0)
+;;;   byte 1/2 = dw (8.8, lo/hi)
+;;;   byte 3   = y start
+;;;   byte 4   = x (8.8 hi, lo is 0)
+;;;   byte 5/6 = dx (8.8, lo/hi)
+;;;   byte 7   = height
 
-LDF65:  lda     $0836
-        beq     LDF6E
-        ldx     #$2F
-        bne     LDF7C
-LDF6E:  lda     $0A70
-        bpl     LDFA4
+.macro TRAPEZOID_RECORD xstart, dx, width, dw, ystart, height
+        .byte   width
+        .word   dw
+        .byte   ystart
+        .byte   xstart
+        .word   dx
+        .byte   height
+.endmacro
+
+WingOrTailTrapezoids:
+        TRAPEZOID_RECORD $00, $0000, $00, $0000, $00, $00 ; front (nothing)
+        TRAPEZOID_RECORD $8B, $0000, $14, $0100, $46, $1E ; front right (wingtip)
+        TRAPEZOID_RECORD $78, $0080, $14, $01C0, $3C, $28 ; right (wingtip)
+        TRAPEZOID_RECORD $70, $0000, $02, $0000, $3C, $28 ; back right (tail)
+        TRAPEZOID_RECORD $48, $0000, $02, $0000, $3C, $28 ; back (tail)
+        TRAPEZOID_RECORD $20, $0000, $02, $0000, $3C, $28 ; back left (tail)
+        TRAPEZOID_RECORD $28, $0140, $14, $01C0, $3C, $28 ; left (wingtip)
+        TRAPEZOID_RECORD $14, $0100, $14, $0100, $46, $1E ; front left (wingtip)
+        TRAPEZOID_RECORD $00, $0000, $00, $0000, $00, $00 ; down (nothing)
+
+;;; Data for airplane image (radar view) and bomb sight (WW1 mode)
+;;; Format is: addr lo, addr hi, or mask
+
+.macro OVERLAY_RECORD addr, mask
+        .addr   addr
+        .byte   mask
+.endmacro
+
+ImageOverlays:
+BombSightOverlayPixels:
+        OVERLAY_RECORD  $2B14, $7F
+        OVERLAY_RECORD  $2B13, $7F
+        OVERLAY_RECORD  $2B15, $7F
+        OVERLAY_RECORD  $2714, $0C
+        OVERLAY_RECORD  $2314, $0C
+        OVERLAY_RECORD  $3E94, $3F
+        OVERLAY_RECORD  $3A94, $0C
+        OVERLAY_RECORD  $2F14, $0C
+        OVERLAY_RECORD  $3314, $0C
+        OVERLAY_RECORD  $3714, $3F
+        OVERLAY_RECORD  $3B14, $0C
+        OVERLAY_RECORD  $3F14, $0C
+        OVERLAY_RECORD  $3694, $0C
+        OVERLAY_RECORD  $3294, $3F
+        OVERLAY_RECORD  $2394, $3F
+        .byte   $00, $00        ; sentinel
+
+AirplaneOverlayPixels:
+        OVERLAY_RECORD  $2B14, $7F
+        OVERLAY_RECORD  $2714, $0C
+        OVERLAY_RECORD  $2314, $0C
+        OVERLAY_RECORD  $2F14, $0C
+        OVERLAY_RECORD  $3314, $0C
+        OVERLAY_RECORD  $3714, $0C
+        OVERLAY_RECORD  $3B14, $3F
+        OVERLAY_RECORD  $2B13, $78
+        OVERLAY_RECORD  $2B15, $03
+        .byte   $00, $00        ; sentinel
+
+.proc DrawViewOverlays
+        lda     RadarView
+        beq     NotRadar
+        ldx     #AirplaneOverlayPixels - ImageOverlays
+        bne     Skip            ; always
+
+NotRadar:
+        lda     ViewDirection
+        bpl     DrawWingsOrTailOverlays ; anything but down
         lda     #$10
         ldx     WW1AceMode
-        beq     LDFA4
-        ldx     #$00
-LDF7C:  ldy     #$00
-LDF7E:  lda     LDF19,x
+        beq     DrawWingsOrTailOverlays
+
+        ;; Draw airplane image (radar view) or bomb sight (WW1 mode)
+        ldx     #BombSightOverlayPixels - ImageOverlays
+Skip:   ldy     #$00
+
+Loop:   lda     ImageOverlays,x
         sta     $B8
         inx
-        lda     LDF19,x
-        beq     LDFA3
+        lda     ImageOverlays,x
+        beq     Exit            ; sentinel
         sta     $B9
         inx
-        lda     LDF19,x
+        lda     ImageOverlays,x
         pha
         ora     ($B8),y
         sta     ($B8),y
-        lda     $B9
+
+        lda     $B9             ; do page 2 as well
         clc
         adc     #$20
         sta     $B9
+
         pla
         ora     ($B8),y
         sta     ($B8),y
-        inx
-        bne     LDF7E
-LDFA3:  rts
 
-LDFA4:  asl     a
-        asl     a
+        inx
+        bne     Loop
+Exit:   rts
+
+.proc DrawWingsOrTailOverlays
+        asl     a               ; *= 4
+        asl     a               ; `ViewDirection` already scaled by 2
         pha
-        jsr     LDFBA
+        jsr     DrawWingsOrTail
         pla
         cmp     #$40
-        beq     LDFA3
+        beq     Exit
 LDFAF:  rts
 
-LDFB0:  brk
-LDFB1:  brk
-LDFB2:  brk
-LDFB3:  brk
-LDFB4:  brk
-LDFB5:  brk
-LDFB6:  brk
-LDFB7:  brk
-LDFB8:  brk
-LDFB9:  brk
-LDFBA:  pha
+TrapezoidX:     .word   0       ; "color pixel" right pos in 8.8 form
+TrapezoidDX:    .word   0       ; pos delta (8.8)
+TrapezoidW:     .word   0       ; "color pixel" width in 8.8 form
+TrapezoidDW:    .word   0       ; width delta (8.8)
+TrapezoidY:     .byte   0       ; top
+TrapezoidH:     .byte   0       ; height
+
+DrawWingsOrTail:
+        pha
         lda     #$09
         sta     $0876
         jsr     L601E
         pla
         tax
         lda     #$00
-        sta     LDFB4
-        sta     LDFB0
-        lda     LDED1,x
-        sta     LDFB5
-        beq     LDFAF
-        lda     LDED2,x
-        sta     LDFB6
-        lda     LDED3,x
-        sta     LDFB7
-        lda     LDED4,x
-        sta     LDFB8
-        lda     LDED5,x
-        sta     LDFB1
-        lda     LDED6,x
-        sta     LDFB2
-        lda     LDED7,x
-        sta     LDFB3
-        lda     LDED8,x
-        sta     LDFB9
-LDFFF:  lda     LDFB1
-        sta     $27
-        ldy     LDFB8
+        sta     TrapezoidW     ; low byte (fraction) of 8.8 fixed
+        sta     TrapezoidX     ; point values start at 0
+        lda     WingOrTailTrapezoids,x
+        sta     TrapezoidW+1   ; high byte - integer part
+        beq     LDFAF           ; exit if sentinel
+
+        lda     WingOrTailTrapezoids+1,x
+        sta     TrapezoidDW
+        lda     WingOrTailTrapezoids+2,x
+        sta     TrapezoidDW+1
+        lda     WingOrTailTrapezoids+3,x
+        sta     TrapezoidY
+        lda     WingOrTailTrapezoids+4,x
+        sta     TrapezoidX+1   ; high byte - integer part
+        lda     WingOrTailTrapezoids+5,x
+        sta     TrapezoidDX
+        lda     WingOrTailTrapezoids+6,x
+        sta     TrapezoidDX+1
+        lda     WingOrTailTrapezoids+7,x
+        sta     TrapezoidH
+Loop:
+        lda     TrapezoidX+1
+        sta     $27             ; "color pixel" (0...139) right edge
+        ldy     TrapezoidY
         lda     HiresTableLo,y
         sta     HiresRowPtr
         lda     HiresTableHi,y
         sta     HiresRowPtr+1
-        lda     LDFB5
-        jsr     L601B
-        lda     LDFB0
+        lda     TrapezoidW+1   ; A = "color pixel" (0...139)
+        jsr     DrawColorSpanRelay
+
+        ;; Update pos and width by delta, 8.8 fixed point math.
+        ;; (Which is just 16-bit addition.)
+        lda     TrapezoidX
         clc
-        adc     LDFB2
-        sta     LDFB0
-        lda     LDFB1
-        adc     LDFB3
-        sta     LDFB1
-        lda     LDFB4
+        adc     TrapezoidDX
+        sta     TrapezoidX
+        lda     TrapezoidX+1
+        adc     TrapezoidDX+1
+        sta     TrapezoidX+1
+
+        lda     TrapezoidW
         clc
-        adc     LDFB6
-        sta     LDFB4
-        lda     LDFB5
-        adc     LDFB7
-        sta     LDFB5
-        inc     LDFB8
-        dec     LDFB9
-        bne     LDFFF
+        adc     TrapezoidDW
+        sta     TrapezoidW
+        lda     TrapezoidW+1
+        adc     TrapezoidDW+1
+        sta     TrapezoidW+1
+
+        inc     TrapezoidY
+        dec     TrapezoidH
+
+        bne     Loop
         rts
+.endproc
+.endproc
+
+;;; ============================================================
 
 LE046:  .byte   $01
 LE047:  .byte   $01
@@ -1043,8 +1013,6 @@ LE06B:  brk
         .byte   $3F
         eor     ($43,x)
         .byte   $46
-
-;;; ADF???
 
 mE08B:  MESSAGE $9A, $76, "O"
 mE08F:  MESSAGE $9A, $76, "L"
@@ -1346,7 +1314,7 @@ Select3DViewPatch:
         jmp     L8CC6
 
 LE307:  ldx     #$01
-        lda     $0836
+        lda     RadarView
         bne     LE2F7
         stx     $FA
         rts

@@ -30,7 +30,7 @@ L6012:  jmp     L84B5
 L6018:  jmp     L67FD
 
         ;; Called by chunk3
-L601B:  jmp     L790E
+DrawColorSpanRelay:  jmp     DrawColorSpan
 
         ;; Called by chunk3
 L601E:  jmp     MapColorAndPrepRowRoutine
@@ -152,7 +152,7 @@ L60FD:  and     #$03
         lda     #$06
         jmp     L67FD
 
-L610A:  lda     $0836
+L610A:  lda     RadarView
         beq     L612D
         lda     #$00
         sta     $72
@@ -684,7 +684,7 @@ L6515:
 
 ;;; Make sky/ground edge white, to avoid color clash/black pixels
 .proc TidySkyGroundEdgeInRow
-        stx     TmpStash             ; self-modified opcode (RTS / STX)
+        stx     TmpStash        ; self-modified opcode (RTS / STX)
         ldy     AltColorPixelToByteTable,x
         lda     PixelToBitNumberTable+4,x
         tax
@@ -919,14 +919,14 @@ L668B:  lda     #$8B
         sta     $27
         sec
         sbc     $B2
-        jsr     L790E
+        jsr     DrawColorSpan
 L6695:  lda     FillColor
         beq     L669D
         cmp     #$FF
         bne     L66A4
 L669D:  lda     $B2
         sta     $27
-        jsr     L790E
+        jsr     DrawColorSpan
 L66A4:  ldx     $B2
         rts
 
@@ -1512,7 +1512,7 @@ L6B64:  iny
         STAX    $18
         LDAX    $62
         STAX    $1E
-        lda     $0836
+        lda     RadarView
         beq     L6B8A
         LDAX    $0A73
         STAX    $1B
@@ -1557,7 +1557,7 @@ L6BC3:  lda     $5C
         sbc     ($8B),y
         sta     $67
         sec
-        lda     $0836
+        lda     RadarView
         beq     L6BFE
         lda     $AD
         bne     L6BEB
@@ -1853,7 +1853,7 @@ L6DF0:  jmp     L674D
 
 L6DF3:  jsr     L6E17
         sec
-        lda     $0836
+        lda     RadarView
         beq     L6E07
         lda     ZoomLevel+1
         sbc     $98
@@ -3067,7 +3067,7 @@ L785D:  lda     $B1
         sta     $27
         lda     L0BF8,x
         stx     $B0
-        jsr     L790E
+        jsr     DrawColorSpan
         ldx     $B0
         jmp     L789B
 
@@ -3118,7 +3118,7 @@ L78CE:  lda     $01,x
         sec
         sbc     $02,x
         stx     $B2
-        jsr     L790E
+        jsr     DrawColorSpan
         ldx     $B2
         dex
         dex
@@ -3150,31 +3150,41 @@ L78F4:  lda     $C6
         sta     $33
         rts
 
-L790E:  sta     $F1
+;;; ============================================================
+;;; Draw horizontal span in color
+;;; Inputs:
+;;;   A is width in color pixels (0...139)
+;;;   $27 is right edge in color pixels (0...139)
+;;;
+
+DrawColorSpan:
+        ;; Edges of span (pixel-by-pixel)
+        sta     $F1
         inc     $F1
         ldx     $27
         ldy     AltColorPixelToByteTable,x
         lda     PixelToBitNumberTable,x
-        tax
+        tax                     ; X is bit position
         cmp     #$06
         beq     L7941
 L791F:  lda     (HiresRowPtr),y
-L7921:  .byte   OPC_ORA_abx
-L7922:  .addr   L13FA
+L7921:  .byte   OPC_ORA_abx     ; self-modified opcode
+L7922:  .addr   OrMaskTable2    ; self-modified operand - color table
         cpx     #$03
         bne     L792D
         sta     (HiresRowPtr),y
         dey
         lda     (HiresRowPtr),y
-L792D:  .byte   OPC_AND_abx
-L792E:  .addr   L1404
+L792D:  .byte   OPC_AND_abx     ; self-modified opcode
+L792E:  .addr   AndMaskTable1   ; self-modified operand - color table
         sta     (HiresRowPtr),y
         dex
-        bmi     L793A
+        bmi     L793A           ; switch to whole-byte mode
         dec     $F1
         bne     L791F
 L7939:  rts
 
+        ;; Middle of span (two bytes at a time)
 L793A:  ldx     #$06
         dey
         dec     $F1
@@ -3182,8 +3192,8 @@ L793A:  ldx     #$06
 L7941:  lda     $F1
         sec
         sbc     #$07
-        bcc     L791F
-        beq     L7959
+        bcc     L791F           ; back to pixel-by-pixel
+        beq     L7959           ; early exit path
         sta     $F1
         lda     ColorByteEven
         sta     (HiresRowPtr),y
@@ -3200,6 +3210,8 @@ L7959:  lda     ColorByteEven
         sta     (HiresRowPtr),y
         rts
 
+;;; ============================================================
+
 L7963:  lda     HiresTableHi,y
         sta     HiresRowPtr+1
         lda     HiresTableLo,y
@@ -3209,14 +3221,14 @@ L7963:  lda     HiresTableHi,y
         tax
         lda     (HiresRowPtr),y
 L7976:  .byte   OPC_ORA_abx     ; self-modified opcode
-L7977:  .addr   L13FA           ; self-modified operand
+L7977:  .addr   OrMaskTable2    ; self-modified operand
         cpx     #$03
         bne     L7982
         sta     (HiresRowPtr),y
         dey
         lda     (HiresRowPtr),y
 L7982:  .byte   OPC_AND_abx     ; self-modified opcode
-L7983:  .addr   L1404           ; self-modified operand
+L7983:  .addr   AndMaskTable1   ; self-modified operand
         sta     (HiresRowPtr),y
         rts
 
@@ -3301,19 +3313,19 @@ L7A0A:  ldy     $EA
         ldy     $B1
         lda     (HiresRowPtr),y
 L7A1A:  .byte   OPC_ORA_abx     ; self-modified opcode
-L7A1B:  .addr   L13FA           ; self-modified operand
+L7A1B:  .addr   OrMaskTable2    ; self-modified operand
         cpx     #$03
         bne     L7A2E
         sta     (HiresRowPtr),y
         dey
         lda     (HiresRowPtr),y
 L7A26:  .byte   OPC_AND_abx     ; self-modified opcode
-L7A27:  .addr   L1404           ; self-modified operand
+L7A27:  .addr   AndMaskTable1   ; self-modified operand
         sta     (HiresRowPtr),y
         iny
         bne     L7A33
 L7A2E:  .byte   OPC_AND_abx     ; self-modified opcode
-L7A2F:  .addr   L1404           ; self-modified operand
+L7A2F:  .addr   AndMaskTable1   ; self-modified operand
         sta     (HiresRowPtr),y
 L7A33:  dec     $F1
         bne     L79F0
@@ -3367,14 +3379,14 @@ L7A86:  dex
 L7A8C:  .byte   OPC_LDA_izy     ; self-modified opcode
 L7A8D:  .byte   $8E             ; self-modified operand
 L7A8E:  .byte   OPC_ORA_abx     ; self-modified opcode
-L7A8F:  .addr   L13FA           ; self-modified operand
+L7A8F:  .addr   OrMaskTable2    ; self-modified operand
         cpx     #$03
         bne     L7A9A
         sta     (HiresRowPtr),y
         dey
         lda     (HiresRowPtr),y
 L7A9A:  .byte   OPC_AND_abx     ; self-modified opcode
-L7A9B:  .addr   $1408           ; self-modified opcode
+L7A9B:  .addr   AndMaskTable2   ; self-modified opcode
         sta     (HiresRowPtr),y
 L7A9F:  dec     $F1
         bne     L7A67
@@ -3463,17 +3475,17 @@ L7B16:  tax
         bne     L7B26           ; always
 
 L7B1D:  ldx     #OPC_ORA_abx
-        bit     L13F6
+        bit     OrMaskTable1
         bne     L7B26
         ldx     #OPC_AND_abx
 L7B26:  stx     L7982
         stx     L7A2E
         stx     L7A9A
         stx     L7A26
-        LDXY    #L13F6
-        bit     L13F6
+        LDXY    #OrMaskTable1
+        bit     OrMaskTable1
         bne     L7B3F
-        LDXY    #L1404
+        LDXY    #AndMaskTable1
 L7B3F:  STXY    L7983
         STXY    L7A2F
         STXY    L7A9B
@@ -3483,16 +3495,16 @@ L7B3F:  STXY    L7983
         ldx     #OPC_EOR_abx
         bne     L7B67
 L7B5E:  ldx     #OPC_ORA_abx
-        bit     L13FA
+        bit     OrMaskTable2
         bne     L7B67
         ldx     #OPC_AND_abx
 L7B67:  stx     L7976
         stx     L7A1A
         stx     L7A8E
-        LDXY    #L13FA
-        bit     L13FA
+        LDXY    #OrMaskTable2
+        bit     OrMaskTable2
         bne     L7B7D
-        LDXY    #L1408
+        LDXY    #AndMaskTable2
 L7B7D:  STXY    L7977
         STXY    L7A1B
         STXY    L7A8F
@@ -3517,24 +3529,24 @@ SetEvenAndOddColorsAndPrepRowRoutine:
         sta     ColorByteOdd
         txa
         ldx     #OPC_ORA_abx
-        bit     L13F6
+        bit     OrMaskTable1
         bne     :+
         ldx     #OPC_AND_abx
 :       stx     L792D
-        LDXY    #L13F6
-        bit     L13F6
+        LDXY    #OrMaskTable1
+        bit     OrMaskTable1
         bne     :+
-        LDXY    #L1404
+        LDXY    #AndMaskTable1
 :       STXY    L792E
         ldx     #OPC_ORA_abx
-        bit     L13FA
+        bit     OrMaskTable2
         bne     :+
         ldx     #OPC_AND_abx
 :       stx     L7921
-        LDXY    #L13FA
-        bit     L13FA
+        LDXY    #OrMaskTable2
+        bit     OrMaskTable2
         bne     :+
-        LDXY    #L1408
+        LDXY    #AndMaskTable2
 :       STXY    L7922
         rts
 
@@ -4643,7 +4655,7 @@ L841F:  txa
         sta     $27
         sec
         sbc     #$1E
-L8425:  jsr     L790E
+L8425:  jsr     DrawColorSpan
         ldx     $B2
         rts
 .endproc
@@ -5000,7 +5012,7 @@ P64K_6: jsr     NoOp            ; 64K: Patched to JSR `LDD7A`
         beq     :+
         jsr     LA7EE
 :
-P64K_3: jsr     NoOp            ; 64K: Patched to JSR `LDF65`
+P64K_3: jsr     NoOp            ; 64K: Patched to JSR `DrawViewOverlays`
         jsr     L9F6B
         jsr     L9FE9
 P64K_8: jsr     NoOp            ; 64k: Patched to JSR `HideOrShowInstruments`
@@ -6306,7 +6318,7 @@ SelectRadarView:                ; 64k: Patched to JMP `LE2E6`
         ldx     #$02            ; Radar View
         stx     InputMode
 L9100:  dex
-        stx     $0836
+        stx     RadarView
         rts
 
 ;;; 5 key
@@ -6314,7 +6326,7 @@ L9100:  dex
 ;;; Otherwise: 3D View
 Select3DView:                   ; 64k: Patched to JMP `LE2FA`
         ldx     #$01            ; 3D View
-        lda     $0836
+        lda     RadarView
         bne     L9100
         stx     InputMode
         rts
@@ -9492,7 +9504,7 @@ PatchTable:
         jsr     KeyIncreasePatch
 
         .addr   P64K_3
-        jsr     LDF65
+        jsr     DrawViewOverlays
 
         .addr   P64K_4
         jsr     UpdateAltimeter10K

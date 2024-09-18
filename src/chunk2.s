@@ -1,9 +1,9 @@
         .org $f600
 
 ;;; Some functionality that is only present in the "64k" mode
-;;; of the original FS2:
-;;; * Course Plotter
-;;; * Altimeter 3rd Hand
+;;; of the original FS2 (per Appendix 3):
+;;; * Altimeter 3rd hand.
+;;; * Course plotter system.
 
 ;;; ============================================================
 ;;; Course Plotting

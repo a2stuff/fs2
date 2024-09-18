@@ -289,7 +289,7 @@ L0810:  brk
         ora     ($00,x)
         brk
         brk
-        brk
+RadarView:      .byte   0       ; $01 if in Radar View mode
         brk
         brk
         brk
@@ -1293,15 +1293,19 @@ PixelToBitNumberTable:
 
 L13EE:  .byte   0, 2, 4, 6, 1, 3, 5, 7
 
-;;; Turn coordinator data
+;;; Pixel and/or masks
 
-L13F6:  .byte   $01, $04, $10, $40
+OrMaskTable1:
+        .byte   $01, $04, $10, $40
 
-L13FA:  .byte   $02, $08, $20, $01, $04, $10, $40, $02, $08, $20
+OrMaskTable2:
+        .byte   $02, $08, $20, $01, $04, $10, $40, $02, $08, $20
 
-L1404:  .byte   $FE, $FB, $EF, $BF
+AndMaskTable1:
+        .byte   $FE, $FB, $EF, $BF
 
-L1408:  .byte   $FD, $F7, $DF, $FE, $FB, $EF, $BF, $FD, $F7, $DF
+AndMaskTable2:
+        .byte   $FD, $F7, $DF, $FE, $FB, $EF, $BF, $FD, $F7, $DF
 
         ;; Hires color table
 L1412:  .byte   $00, $2A, $55, $7F
