@@ -1203,8 +1203,6 @@ LE21E:  adc     #$64
         adc     #$00
 LE228:  sta     $099D
 LE22B:  lda     $31
-        LE22C := *-1
-
         and     #$1F
         bne     LE2AC
         lda     $099B
@@ -1717,7 +1715,7 @@ LE5D5:
         AltFlags := $A0
 
         STAX    RecPtr          ; record ptr
-LE646:  lda     #8              ; number of instruments
+        lda     #8              ; number of instruments
         sta     Count
 Loop:
         lda     AltFlags

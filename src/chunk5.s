@@ -9100,6 +9100,7 @@ LA7D3:  rts
         .byte   $A7
         .byte   $41
 
+        ;; The next $20 bytes here get stashed to LABCC
 LA7E0:  .word   LB000
 
         ;; Reset/Interrupt handler
@@ -9211,6 +9212,8 @@ msg_48k_demo:
         MESSAGE $3C, $0A, "PRESS ANY KEY TO CONTINUE....."
         .byte   0, 0
 
+;;; ============================================================
+
 ColorModePatch:
         .byte   $BB
         .byte   $BB
@@ -9259,6 +9262,9 @@ BWModePatch:
         .byte   $00
         .byte   $00
 
+;;; ============================================================
+
+;;; Part of reset handler???
 LAB91:  nop
         ldx     #$3F
         txs
@@ -9273,24 +9279,28 @@ LAB91:  nop
         jsr     LA6F9
         bcs     LABB4
 
+;;; ============================================================
+
 .assert * = $ABAE, error, "mismatch"
 
 ;;; Per @qkumba, this is entry point after all chunks are loaded
-        jsr     LAE9F
+        jsr     InitZeroPage
         jmp     LABBA
 
 LABB4:  lda     $1E01
         jmp     L1F89
 
 LABBA:  jsr     Apply64KPatchTable
-        jsr     LAD32
+        jsr     InitGraphicsScreens
         jsr     PromptColorOrBW
-        jsr     LACBA
+        jsr     InitInstruments
         jsr     LAEAA
         jmp     L877F
 
-LABCC:  brk
-        bcs     LAC1B
+        ;; Used to stash $20 bytes from `LA7E0`
+LABCC:
+        brk
+        bcs     $AC1B
         sta     ($AB),y
         jmp     LAB91
 
@@ -9311,11 +9321,13 @@ LABCC:  brk
         brk
         brk
 
-LABEC:  ldx     #$1F
-LABEE:  lda     LA7E0,x
+LABEC:
+        ;; Save `LA7E0`
+        ldx     #$1F
+:       lda     LA7E0,x
         sta     LABCC,x
         dex
-        bpl     LABEE
+        bpl     :-
 
         lda     #<$0200
         sta     L1E03
@@ -9324,28 +9336,30 @@ LABEE:  lda     LA7E0,x
         lda     #$00
         sta     $1E01
 
-LAC06:  jsr     L1EAD
+:       jsr     L1EAD
         bcs     LAC39
         lda     $1E01
         cmp     #$07
-        bcc     LAC06
+        bcc     :-
         lda     #$00
         sta     $1E03
         lda     #$60
-        .byte   $8D
-        .byte   $04
-LAC1B:  asl     $08A9,x
+        sta     $1E04
+        lda     #$08
         sta     $1E01
-LAC21:  jsr     L1EAD
+:       jsr     L1EAD
         bcs     LAC39
         lda     $1E01
         cmp     #$1A
-        bcc     LAC21
+        bcc     :-
+
+        ;; Restore `LA7E0`
         ldx     #$1F
-LAC2F:  lda     LABCC,x
+:       lda     LABCC,x
         sta     LA7E0,x
         dex
-        bpl     LAC2F
+        bpl     :-
+
         clc
 LAC39:  rts
 
@@ -9417,7 +9431,10 @@ LACB4:  lda     #$00
         sta     EditModeFlag
         rts
 
-LACBA:  lda     #$01
+;;; ============================================================
+
+.proc InitInstruments
+        lda     #$01
         sta     $08BE
         lda     $0A33
         jsr     UpdateAltimeterIndicator::Init
@@ -9453,8 +9470,12 @@ LACBA:  lda     #$01
         jsr     DrawVOR2
         jsr     L8933
         rts
+.endproc
 
-LAD15:  lda     #$00
+;;; ============================================================
+
+.proc LAD15
+        lda     #$00
         sta     $1E03
         lda     #$40
         sta     $1E04
@@ -9467,33 +9488,46 @@ LAD24:  jsr     L1EAD
         bcc     LAD24
         clc
 LAD31:  rts
+.endproc
 
-LAD32:  lda     TXTCLR
+;;; ============================================================
+
+.proc InitGraphicsScreens
+        ;; Show graphics page 1
+        lda     TXTCLR
         lda     MIXCLR
         lda     HIRES
         lda     LOWSCR
-        ldy     #$00
-        ldx     #$BF
-LAD42:  lda     HiresTableLo,x
-        sta     $B8
-        sta     $C0
+
+        page1_ptr := $B8
+        page2_ptr := $C0
+
+        ;; Copy instrument panel from page1 to page2
+        ldy     #0
+        ldx     #191            ; bottom of screen
+Loop:   lda     HiresTableLo,x
+        sta     page1_ptr
+        sta     page2_ptr
         lda     HiresTableHi,x
-        sta     $B9
-        clc
+        sta     page1_ptr+1
+        clc                     ; TODO: Just EOR with %01100000
         adc     #$20
         cmp     #$60
-        bcc     LAD58
+        bcc     :+
         sec
         sbc     #$40
-LAD58:  sta     $C1
-        lda     ($B8),y
-        and     #$7F
-        sta     ($B8),y
-        sta     ($C0),y
+:       sta     page2_ptr+1
+
+        lda     (page1_ptr),y
+        and     #$7F            ; clear high bit
+        sta     (page1_ptr),y
+        sta     (page2_ptr),y
+
         dex
-        cpx     #$63
-        bne     LAD42
+        cpx     #99             ; bottom of viewport
+        bne     Loop
         rts
+.endproc
 
 ;;; ============================================================
 
@@ -9645,7 +9679,7 @@ LAE43:  rts
         lda     Has64K
         beq     LAE9E
         ldx     #$00
-LAE4B:  ldy     #$00
+Loop:   ldy     #$00
         lda     PatchTable,x
         inx
         sta     L00A5
@@ -9665,15 +9699,10 @@ LAE4B:  ldy     #$00
         lda     PatchTable,x
         inx
         sta     (L00A5),y
-        jmp     LAE4B
-.endproc
+        jmp     Loop
 
-;;; ============================================================
-
-LAE74:  lda     #$00
-        ldx     #$D0
-        sta     $0932
-        stx     $0933
+LAE74:  LDAX    #$D000
+        STAX    $0932
         lda     #$19
         sta     $0931
         lda     #$01
@@ -9684,36 +9713,53 @@ LAE74:  lda     #$00
         STAX    $FFFA           ; NMI
         STAX    $FFFC           ; Reset
         STAX    $FFFE           ; IRQ
+.endproc
+
 LAE9E:  rts
 
-LAE9F:  ldx     #$00
-LAEA1:  lda     LAF00,x
+;;; ============================================================
+
+.proc InitZeroPage
+        ldx     #$00
+:       lda     InitialZeroPageData,x
         sta     $00,x
         inx
-        bne     LAEA1
+        bne     :-
         rts
+.endproc
 
-LAEAA:  LDAX    $0932
+;;; ============================================================
+
+.proc LAEAA
+        LDAX    $0932
         STAX    $B8
+
         lda     #$0A
-LAEB6:  ldy     #$40
-LAEB8:  sta     ($B8),y
+Loop:
+        ldy     #$40
+:       sta     ($B8),y
         dey
-        bpl     LAEB8
+        bpl     :-
         clc
         adc     #$01
         pha
+
         lda     $B8
         clc
         adc     #$41
         sta     $B8
         bcc     LAECC
         inc     $B9
+
 LAECC:  pla
         cmp     $0931
-        bne     LAEB6
+        bne     Loop
         rts
+.endproc
 
+;;; ============================================================
+
+;;; Unused???
         tay
         jsr     DrawMultiMessage
         lda     WarDeclared
@@ -9724,241 +9770,57 @@ LAECC:  pla
         CALLAX  DrawMultiMessage, $A83B ; In middle of another MESSAGE ???
         ldx     #$00
         ldy     #$00
-LAEEE:  inx
-        bne     LAEEE
+:       inx
+        bne     :-
         iny
-        bne     LAEEE
+        bne     :-
 LAEF4:  rts
 
+;;; Unused???
         lda     $0A60
-        beq     LAF39
+        beq     $AF39
         dec     $0A60
         jsr     LB025
-LAF00:  jmp     L003C
 
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        plp
-        brk
-        eor     $2A,x
-        brk
-        brk
-        brk
-        ora     ($22),y
-        .byte   $4F
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        .byte   $9E
-        .byte   $81
-LAF39:  .byte   $9E
-        tax
-        eor     #$00
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        and     L6000
-        brk
-        rol     $2E,x
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        asl     $56
-        brk
-        cli
-        .byte   $AF
-        brk
-        brk
-        .byte   $1F
-        ora     ($00,x)
-        .byte   $03
-        brk
-        brk
-        brk
-        brk
-        bit     $03
-        brk
-        inc     $1000,x
-        brk
-        inc     a:$00,x
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        .byte   $FF
-        inc     a:$08,x
-        .byte   $FF
-        brk
-        php
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        brk
-        brk
-        brk
-        .byte   $FF
-        .byte   $20, $00, $03
-        jmp     HideOrShow8Instruments::LE646
 
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        ora     #$01
-        brk
-        brk
-        brk
-        brk
-        .byte   $02
-        .byte   $AB
-        jsr     LE22C
-        and     ($55),y
-        and     $11,x
-        ora     #$15
-        brk
-LAFB1:  brk
-        brk
-        brk
-LAFB4:  brk
-        brk
-        .byte   $02
-        brk
-        eor     $FC,x
-LAFBA:  cmp     #$3A
-        bcs     LAFC8
-        cmp     #$20
-LAFC0:  beq     LAFB1
-        sec
-        sbc     #$30
-        sec
-        sbc     #$D0
-LAFC8:  rts
 
-        .byte   $80
-LAFCA:  brk
-LAFCB:  .byte   $C7
-        .byte   $52
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        brk
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        brk
-        .byte   $FF
-        brk
-        brk
-        brk
-        .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        brk
-        brk
-        brk
-        .byte   $FF
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        .byte   $0F
-        brk
-        brk
+;;; Intial data for zero page
+
+InitialZeroPageData:
+        .byte   $4C, $3C, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $28, $00, $55, $2A, $00, $00, $00
+        .byte   $11, $22, $4F, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $9E
+        .byte   $81, $9E, $AA, $49, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $2D, $00, $60, $00
+        .byte   $36, $2E, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $06, $56, $00
+        .byte   $58, $AF, $00, $00, $1F, $01, $00, $03
+        .byte   $00, $00, $00, $00, $24, $03, $00, $FE
+        .byte   $00, $10, $00, $FE, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $FF, $FE, $08, $00, $FF, $00, $08, $00
+        .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
+        .byte   $FF, $00, $00, $00, $FF, $20, $00, $03
+        .byte   $4C, $46, $E6, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $09
+        .byte   $01, $00, $00, $00, $00, $02, $AB, $20
+        .byte   $2C, $E2, $31, $55, $35, $11, $09, $15
+        .byte   $00, $00, $00, $00, $00, $00, $02, $00
+        .byte   $55, $FC, $C9, $3A, $B0, $0A, $C9, $20
+        .byte   $F0, $EF, $38, $E9, $30, $38, $E9, $D0
+        .byte   $60, $80, $00, $C7, $52, $FF, $00, $00
+        .byte   $FF, $00, $00, $00, $FF, $FF, $00, $00
+        .byte   $00, $FF, $00, $00, $00, $FF, $00, $00
+        .byte   $FF, $FF, $00, $00, $00, $FF, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $00, $00, $00, $00, $00
+        .byte   $00, $00, $00, $FF, $FF, $0F, $00, $00
+
+;;; ============================================================
 
 LB000:
         adc     $C908,y
@@ -10228,13 +10090,13 @@ LB255:  lda     $0924,x
         tay
         beq     LB27F
         clc
-LB261:  lda     LAFB4,x
+LB261:  lda     InitialZeroPageData + $B4,x
         adc     $091C
         sta     $091C
-        lda     LAFBA,x
+        lda     InitialZeroPageData + $BA,x
         adc     $091D
         sta     $091D
-        lda     LAFC0,x
+        lda     InitialZeroPageData + $C0,x
         adc     $091E
         sta     $091E
         dey
@@ -10260,13 +10122,13 @@ LB29F:  lda     #$30
         sta     $092D
 LB2A4:  lda     $091C
         sec
-        sbc     LAFB4,x
+        sbc     InitialZeroPageData + $B4,x
         sta     $092E
         lda     $091D
-        sbc     LAFBA,x
+        sbc     InitialZeroPageData + $BA,x
         sta     $092F
         lda     $091E
-        sbc     LAFC0,x
+        sbc     InitialZeroPageData + $C0,x
         bmi     LB2D3
         sta     $091E
         lda     $092F
@@ -10367,9 +10229,9 @@ LB385:  lda     $0934
         jmp     LB37C
 
 LB38E:  ldx     $0920
-        lda     LAFCA,x
+        lda     InitialZeroPageData + $CA,x
         sta     L00A5
-        lda     LAFCB,x
+        lda     InitialZeroPageData + $CB,x
         sta     $A6
 LB39B:  ldy     #$00
         lda     (L00A5),y
