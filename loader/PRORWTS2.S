@@ -9,8 +9,8 @@ ver_02 = 1
 } else { ;ver_02 = 0
   !cpu 65c02
 } ;ver_02
-!to "prorwts2#0624f8",plain
-*=$24f8
+!to "fs2#062499",plain
+*=$2499
 
 ;place no code before init label below.
 
@@ -57,9 +57,9 @@ ver_02 = 1
                 return_size  = 0        ;set to 1 to receive file size on open in read-only mode
                 no_interrupts= 0        ;set to 1 to disable interrupts across calls
                 detect_err   = 0        ;set to 1 to to detect errors in no_interrupt mode
-                swap_zp      = 0        ;set to 1 to include code to preserve zpage
+                swap_zp      = 1        ;set to 1 to include code to preserve zpage
                                         ;used only by RWTS mode
-                swap_scrn    = 0        ;set to 1 to preserve screen hole contents across SmartPort calls
+                swap_scrn    = 1        ;set to 1 to preserve screen hole contents across SmartPort calls
                                         ;reading directly into screen memory that includes holes (either main or aux) is not recommended
                                         ;because SCSI firmware writes there (i.e. whichever bank is active) on exit, which will damage read content
                                         ;requires 64 bytes to save all holes
@@ -328,9 +328,9 @@ skiphdr         clc
                 ;there can be only one page crossed, so we can increment instead of adc
 
                 inc     blokhi
-+               cmp     #<(readbuff + $1ff) ;4 + ($27 * $0d)
++               cmp     #<(readbuff + NAME_LENGTH + ($27 * $0d))
                 lda     blokhi
-                sbc     #>(readbuff + $1ff)
+                sbc     #>(readbuff + NAME_LENGTH + ($27 * $0d))
                 bcc     inextent
 
                 ;read next directory block when we reach the end of this block
@@ -381,8 +381,8 @@ adjpath         tya
                 sta     unrblocklo + 1
                 stx     unrblockhi + 1
 } ;enable_floppy
-                sta     unrhddblocklo + 1
-                stx     unrhddblockhi + 1
+                sta     unrhddblocklo2 + 1
+                stx     unrhddblockhi2 + 1
 +               sta     x80_parms + 4
                 stx     x80_parms + 5
 ++              lda     sizelo
@@ -513,6 +513,8 @@ tmp	=	$8
                 lda     LCBANK2+2
 
 !if swap_scrn = 1 {
+lda #$a9
+sta saveslotx
                 jsr     saveslotx
                 lda     #$91
                 sta     unrelochdd + (initpatch - reloc)
@@ -552,7 +554,7 @@ jsr unpack
 lda #$26
 sta dst+1
 jsr unpack
-!warn *
+!warn "x=",*
 lda #$b3
 sta dst+1
 lda #$e0
@@ -666,52 +668,7 @@ cpy #(hddcodeend-reloc)
                 ;self-modified by init code
 
 hddopendir
-unrhddblocklo = *
-                ldx     #2
-unrhddblockhi = *
-                lda     #0
-hddreaddir1     jsr     hddreaddirsel
-
-hddfirstent     lda     #NAME_LENGTH + <hdddirbuf
-                sta     bloklo
-                lda     #(>hdddirbuf) - 1
-                sta     blokhi
-
-                ;there can be only one page crossed, so we can increment here
-
-hddnextent1     inc     blokhi
-hddnextent      ldy     #0
-
-                ;match name lengths before attempting to match names
-
-                lda     (bloklo), y
-                and     #$0f
-                tax
-                inx
--               cmp     filename, y
-                beq     hddfoundname
-
-                ;match failed, move to next entry in this block, if possible
-
-+               clc
-                lda     bloklo
-                adc     #ENTRY_SIZE
-                sta     bloklo
-                bcs     hddnextent1
-                cmp     #<(hdddirbuf + ($27 * $0d))
-                bne     hddnextent
-
-                ;read next directory block when we reach the end of this block
-
-                ldx     hdddirbuf + NEXT_BLOCK_LO
-                lda     hdddirbuf + NEXT_BLOCK_HI
-                bcs     hddreaddir1
-
-hddfoundname    iny
-                lda     (bloklo), y
-                dex
-                bne -
-
+		ldx	#0
   !if ((swap_zp xor 1) + mem_swap) > 0 {
     !if allow_trees = 1 {
                 stx     treeidx
@@ -728,38 +685,36 @@ hddfoundname    iny
                 sty     zp_array + lastblk - first_zp ;guarantee no match
   } ;swap_zp or mem_swap
 
-                ;fetch KEY_POINTER
+-		lda	scenery,x
+		sta	$fc00,x
+ lda cxpy,x
+sta $b400,x
+		inx
+		bne	-
+		jsr	swap_zpg
+		jsr	findscene
+		bcc	+
+		lda	#<intercept
+		sta	$8792
+		lda	#>intercept
+		sta	$8793
 
-                ldy     #KEY_POINTER
-                lda     (bloklo), y
-                tax
-  !if (allow_trees + (fast_trees xor 1)) > 1 {
-    !if swap_zp = 0 {
-                sta     treeblklo
-    } else { ;swap_zp = 1
-                sta     zp_array + treeblklo - first_zp
-    } ;swap_zp
-  } ;allow_trees = 1 and fast_trees = 0
-                iny
-                lda     (bloklo), y
-  !if allow_trees = 1 {
-    !if fast_trees = 0 {
-      !if swap_zp = 0 {
-                sta     treeblkhi
-      } else { ;swap_zp = 1
-                sta     zp_array + treeblkhi - first_zp
-      } ;swap_zp
-    } else { ;fast_trees = 1
-                ldy     #>hddtreebuf
-                jsr     hddreaddirsect
-    } ;fast_trees
-  } ;allow_trees = 1
++		jsr	firstscene
 
-ldy #0
-- lda cxpy,y
-sta $b400,y
-iny
-bne -
+		lda	#$20
+		sta	patchscene
+
+lda $11
+sta $af11
+lda $12
+sta $af12
+lda $13
+sta $af13
+lda $14
+sta $af14
+lda $15
+sta $af15
+
 jmp $b400
 
 cxpy !pseudopc $b400 {
@@ -777,9 +732,171 @@ txs
 jmp $abae
 }
 
+scenery !pseudopc $fc00 {
+intercept
+	lda	$a7e8
+	cmp	#$4c
+	beq	+
+	jsr	$8758
+		lda	#<readdiry
+		sta	$b05b
+		lda	#>readdiry
+		sta	$b05c
+		lda	#<nextscene
+		sta	$b1f5
+		lda	#>nextscene
+		sta	$b1f6
++	jmp $a7e8
+
+
+nextscene
+	cmp	#'N'
+	bne	notscene
+	jsr	bleex
+
+notscene
+		jmp	$b150
+
+bleex
+	jsr	readdirx
+
+		lda	#<(xfilename-1)
+		sta	xname+1
+		jsr	blee2
+		bcs	+
+firstscene
+ 		lda	#<xfilename_e
+		sta	xname+1
+		jsr	findscene
+
++
+		lda pblock
+		sta $14
+		lda pblock+1
+		sta $15
+
+patchscene
+		bit	printscene
+
+                ldy     #KEY_POINTER
+                lda     ($12), y
+                tax
+                iny
+                lda     ($12), y
+                ldy     #>hddtreebuf
+                jsr     hddreaddirsect
+poox		ldy	treeidx
+		ldx	hddtreebuf,y
+		lda	hddtreebuf+$100,y
+                jsr     hddreaddirsel
+		jmp	swap_zpg
+
+readdirx
+	jsr	swap_zpg
+	ldx	$14
+	lda	$15
+                jmp     hddreaddirsel
+
+readdiry
+	jsr	readdirx
+	jsr	printscene
+	beq	poox
+
+printscene
+		lda	#$a0
+		sta	$7d5
+		sta	$7d6
+		sta	$7d7
+		ldy	#0
+                lda     ($12), y
+		and	#$0f
+		tax
+-		iny
+                lda     ($12), y
+		ora	#$80
+		sta	$7cf,y
+		dex
+		bne	-
+		rts
+
+
+
+
+
+findscene
+unrhddblocklo2 = scenery+*-$fc00
+                ldx     #2
+unrhddblockhi2 = scenery+*-$fc00
+                lda     #0
+xhddreaddir1     jsr     hddreaddirsel
+
+                ldx     hdddirbuf + FILE_COUNT ;assuming only 256 files per subdirectory
+		inx
+                stx     $11
+
+xhddfirstent     lda     #NAME_LENGTH + <hdddirbuf
+                sta     $12
+                lda     #(>hdddirbuf) - 1
+                sta     $13
+
+                ;there can be only one page crossed, so we can increment here
+
+xhddnextent1     inc     $13
+xhddnextent      ldy     #0
+
+                ;match name lengths before attempting to match names
+
+                lda     ($12), y
+                and     #MASK_ALL
+                beq     blee
+                lda     ($12), y
+                and     #$0f
+		cmp	#5
+		bcs	+
+-
+blee2
+		clc
+                dec     $11
+                beq     noscene
+
+                ;match failed, move to next entry in this block, if possible
+
+blee                clc
+                lda     $12
+                adc     #ENTRY_SIZE
+                sta     $12
+                bcs     xhddnextent1
+                cmp     #<(hdddirbuf + NAME_LENGTH + ($27 * $0d))
+                bne     xhddnextent
+
+                ;read next directory block when we reach the end of this block
+
+                ldx     hdddirbuf + NEXT_BLOCK_LO
+                lda     hdddirbuf + NEXT_BLOCK_HI
+                jsr     hddreaddirsec
+                lda     #NAME_LENGTH
+                bne     xhddfirstent
+
++                ldx	#5
+
+xhddfoundname    iny
+                lda     ($12), y
+xname
+               cmp     xfilename-1, y
+                bne     -
+                dex
+                bne xhddfoundname
+noscene
+		rts
+	
+
+xfilename	!text   "A2.SD"
+xfilename_e
+}
 filename	!byte   filename_e-filename_b
 filename_b	!text   "FS2.1"
 filename_e
+
 } else { ;rwts_mode = 0
                 rts
 } ;rwts_mode
@@ -913,7 +1030,7 @@ unrdrvoff2 = unrelocdsk + (* - reloc)
                 adc     #ENTRY_SIZE
                 sta     bloklo
                 bcs     nextent1
-                cmp     #$ff ;4 + ($27 * $0d)
+                cmp     #NAME_LENGTH + ($27 * $0d)
                 bne     nextent
 
                 ;read next directory block when we reach the end of this block
@@ -1997,14 +2114,11 @@ adc #1
                 sta     treeidx
                 txa
                 ror
-;;                jsr     seek1
+                jsr     seek1
 
 
   !if swap_zp = 1 {
 swap_zpg
-                pha
-                tya
-                pha
                 ldx     #(last_zp - first_zp)
 -               lda     first_zp,x
                 ldy     zp_array,x
@@ -2012,9 +2126,6 @@ swap_zpg
                 sty     first_zp,x
                 dex
                 bpl     -
-                pla
-                tay
-                pla
   } ;swap_zp
 
   !if (enable_write + swap_zp) > 0 {
@@ -2155,7 +2266,7 @@ hddnextent      ldy     #0
                 adc     #ENTRY_SIZE
                 sta     bloklo
                 bcs     hddnextent1
-                cmp     #$ff ;4 + ($27 * $0d)
+                cmp     #NAME_LENGTH + ($27 * $0d)
                 bne     hddnextent
 
                 ;read next directory block when we reach the end of this block
@@ -2970,8 +3081,10 @@ unrppacket = unrelochdd + (* - reloc)
 } ;use_smartport
 
 !if swap_scrn = 1 {
+saveslotx=unrelochdd + (* - reloc)
 saveslot
-                lda     #4
+rts
+!byte 4
                 sta     $49
                 ldx     #0
                 stx     $48
@@ -3274,7 +3387,7 @@ hdddataend
   !if verbose_info = 1 {
     !warn "hdd code: ", reloc, "-", hddcodeend - 1
     !if hddcodeend != hdddataend {
-      !warn "hdd data: ", hdddatabeg, "-", hdddataend - 1
+      !warn "hdd data: ", hddcodeend, "-", hdddataend - 1
     }
     !warn "hdd dirbuf: ", hdddirbuf, "-", hdddirbuf + $1ff
     !if aligned_read = 0 {

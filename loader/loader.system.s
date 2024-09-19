@@ -2,7 +2,7 @@
 
         .refto __APPLE2__
 
-        TARGET := $24F8
+        TARGET := $2499
         MLI := $BF00
 
         jsr     MLI

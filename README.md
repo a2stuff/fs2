@@ -12,7 +12,7 @@ PRs welcome. Comments are strongly encouraged. Macro use for common patterns is 
 
 # Loader
 
-The source for @qkumba's ProDOS loader is included. To build the binary, use `make binary`. The output will be `out/fs2#0624f8`. This requires the following addtional tools to be available on the command line.
+The source for @qkumba's ProDOS loader is included. To build the binary, use `make binary`. The output will be `out/fs2#062499`. This requires the following addtional tools to be available on the command line.
 
 * `apultra` - https://github.com/emmanuel-marty/apultra (compression)
 * `acme` - https://sourceforge.net/projects/acme-crossass/ (cross-assembler)
