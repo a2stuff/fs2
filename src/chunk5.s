@@ -5062,7 +5062,7 @@ P64K_2: jsr     NoOp            ; 64k: Patched to JSR `UpdateADFIndicator`
 
 L8863:  jsr     L9C40
         jsr     LA054
-        lda     $097A
+        lda     JoystickMode
         beq     L8871
         jsr     ReadPaddlesIfButtonDown
 L8871:  inc     $2B
@@ -5256,7 +5256,7 @@ L8A26:  inc     $34
         bne     L8A45
         jsr     MaybeProcessKey
 
-L8A45:  lda     $097A
+L8A45:  lda     JoystickMode
         beq     L8A4D
         jsr     ReadPaddleDeltas
 L8A4D:  inc     $31
@@ -5283,18 +5283,18 @@ L8A62:  jsr     L93CA
         ldx     $08F0
         cpx     #$3B
         bne     L8A9F
-        ldy     $0955
+        ldy     Minutes
         cpy     #$3B
         bne     L8A99
-        inc     $0954
-        lda     $0954
+        inc     Hours
+        lda     Hours
         cmp     #$18
         bne     L8A97
         lda     #$00
-        sta     $0954
+        sta     Hours
 L8A97:  ldy     #$FF
 L8A99:  iny
-        sty     $0955
+        sty     Minutes
         ldx     #$FF
 L8A9F:  inx
         stx     $08F0
@@ -5319,7 +5319,7 @@ L8A9F:  inx
 L8AC4:  jsr     CheckForAbort
 
         ;; Update clock minutes display
-        lda     $0955
+        lda     Minutes
         ldx     #'0'-1
 :       inx
         sec
@@ -5332,7 +5332,7 @@ L8AC4:  jsr     CheckForAbort
         CALLAX  DrawMessageOrange, msg_clock_mm
 
         ;; Update clock hours display
-        lda     $0954
+        lda     Hours
         ldx     #'0'-1
 :       inx
         sec
@@ -5421,7 +5421,7 @@ KeyTable:
         .addr   ADF             ; A
         .addr   YokeUp          ; B
         .addr   RudderLeft      ; C
-        .addr   L91F3           ; D
+        .addr   ToggleSlewDigits  ; D
         .addr   Ignore          ; E
         .addr   YokeLeft        ; F
         .addr   YokeCenter      ; G
@@ -6452,7 +6452,8 @@ L91DE:  lda     #$50
 L91F2:  rts
 
 ;;; D key
-L91F3:  inc     $08B4
+ToggleSlewDigits:
+        inc     ShowSlewDigits
         rts
 
 ;;; F key
@@ -6678,23 +6679,18 @@ L93CA:  lda     SlewMode
         ldx     $09AD
         lda     $09AE
         jsr     L1778
-        sta     $0A03
-        stx     $0A04
+        STAX    $0A03
         lda     $09AE
         jsr     L1763
-        sta     $09B7
-        stx     $09B8
+        STAX    $09B7
         ldx     $09AF
         lda     $09B0
         jsr     L1778
-        sta     $0A05
-        stx     $0A06
+        STAX    $0A05
         lda     $09B0
         jsr     L1763
-        sta     $09BB
-        stx     $09BC
-        sta     $09C7
-        stx     $09C8
+        STAX    $09BB
+        STAX    $09C7
         lda     #$D6
         sta     $B8
         lda     #$0D
@@ -7516,15 +7512,15 @@ L9BE8:  lda     SlewRollRate
 L9BF8:  lda     $65
         clc
         adc     #$40
-        sta     $093D
+        sta     NorthPosition+1
         lda     $64
-        sta     $093C
+        sta     NorthPosition
         lda     $5D
         clc
         adc     #$40
-        sta     $093F
+        sta     EastPosition+1
         lda     $5C
-        sta     $093E
+        sta     EastPosition
         rts
 
 L9C13:  tax
@@ -7788,7 +7784,7 @@ L9DDA:  lda     #$FE
 
 DrawNav2:
         jsr     CheckForAbort
-        lda     $097B
+        lda     ADFMode
         bne     L9E08
         CALLAX  DrawMessageOrange, msg_nav2
         LDAX    #str_nav2
@@ -7864,7 +7860,7 @@ L9E63:  rts
 .endproc
 
 .proc DrawVOR2
-        lda     $097B
+        lda     ADFMode
         bne     L9EBB
         lda     $FD
         and     #$08
@@ -8278,7 +8274,7 @@ LA1B7:  rts
 LA1B8:  lda     $FD
         and     #$08
         beq     LA204
-        lda     $097B
+        lda     ADFMode
         bne     LA204
         lda     $0988
         cmp     $098A
@@ -8293,7 +8289,7 @@ LA1B8:  lda     $FD
         jsr     DrawVORFlag
         pla
         jsr     DrawVOR2CourseDeviationIndicatorNeedle
-LA1E2:  lda     $097B
+LA1E2:  lda     ADFMode
         bne     LA204
         lda     $0983
         cmp     $0984
@@ -8761,11 +8757,11 @@ LA500:  sta     $C0
         sta     $BF
         rts
 
-LA524:  lda     $0940
+LA524:  lda     Altitude
         clc
         adc     #$09
         sta     $C2
-        lda     $0941
+        lda     Altitude+1
         adc     #$00
         sta     $C3
         lda     #$0C
@@ -8847,7 +8843,7 @@ LA5D8:  lda     #$05
         rts
 
 LA5E1:  ldx     #$01            ; 64k: Patched to JMP `LDE72`
-        lda     $0954
+        lda     Hours
         cmp     #$05
         bcc     LA5F6
         cmp     #$06
@@ -8860,7 +8856,7 @@ LA5F6:  ldx     #$04
         bne     LA5FC
 LA5FA:  ldx     #$02
 LA5FC:  stx     $083C
-        ldx     $0956
+        ldx     Season
         lda     #$01
 LA604:  sta     $0884
         asl     a

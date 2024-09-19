@@ -394,8 +394,12 @@ RebootFlag:     .byte   1
 
         brk
         brk
-        txs
-        ora     a:$01
+        .byte   $9A
+        .byte   $0D
+
+ShowSlewDigits: .byte   1       ; low bit is flag
+
+        .byte   0
         brk
         brk
         brk
@@ -465,13 +469,11 @@ L08FA:  brk
         asl     $04,x
         brk
         brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
+
+RunwaysTable:           .byte   0, 0, 0
+
+SeasonTempTable:        .byte   0, 0, 0, 0
+
         brk
         brk
         .byte   $FF
@@ -502,9 +504,14 @@ DemoMode:       .byte   0
         brk
         brk
         brk
-        brk
+
+BaseTemp:       .byte   0
+
         .byte   $0C, $50, $A7
         brk
+
+;;; ============================================================
+;;; Current Flight Parameters
 
 SoundMode:      .byte   0
 
@@ -521,49 +528,37 @@ WW1AceMode:     .byte   $00
 
 ATISPacing:     .byte   $C8
 
-        bit     $43
-        .byte   $1F
-        eor     ($00,x)
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        .byte   $FF
-        .byte   $7F
-        .byte   $FF
-        .byte   $7F
-        brk
-        brk
-        .byte   $FF
-        .byte   $7F
-        php
-        brk
-        .byte   $04
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
+NorthPosition:  .word   17188
+EastPosition:   .word   16671
+Altitude:       .word   0
+
+;;; TODO: These are locations set by Edit Mode, but not otherwise
+;;; directly referenced. They must be copied elsewhere afterwards.
+
+EMPitch:        .word   0
+        .refto EMPitch
+EMBank:         .word   0
+        .refto EMBank
+EMHeading:      .word   0
+        .refto EMHeading
+EMAirspeed:     .word   0
+        .refto EMAirspeed
+EMThrottle:     .word   0
+        .refto EMThrottle
+EMRudder:       .word   32767
+        .refto EMRudder
+EMAilerons:     .word   32767
+        .refto EMAilerons
+EMFlaps:        .word   0
+        .refto EMFlaps
+EMElevators:    .word   32767
+        .refto EMElevators
+
+Hours:          .byte   8
+Minutes:        .byte   0
+
+Season:         .byte   4
+
         brk
         brk
         brk
@@ -576,13 +571,40 @@ ATISPacing:     .byte   $C8
         brk
         brk
         brk
-        .byte   $64
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+        brk
+
+WindSpeed:              .byte   0
+
+        brk
+
+WindDirection:          .word   0
+
+ReliabilityFactor:      .byte   100
+
         brk
         .byte   $FF
         .byte   $FF
         .byte   $0F
-        brk
-        brk
+
+JoystickMode:   .byte   0
+
+ADFMode:        .byte   0
+
+;;; ============================================================
+
         asl     a
         ora     ($01,x)
         brk

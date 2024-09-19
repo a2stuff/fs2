@@ -247,7 +247,7 @@ msg_adf_frequency:
 
 ;;; Update the ADF instrument on the panel
 .proc UpdateADFIndicator
-        lda     $097B
+        lda     ADFMode
         beq     LDA52
         lsr     LD9E5
         bcc     LD9FE
@@ -409,7 +409,7 @@ LDBAC:  lda     #$0D            ; ADF
 LDBAE:  jmp     SetInputModeAndCounter
 
 KeyDecreasePatch:
-        ldx     $097B
+        ldx     ADFMode
         beq     LDBD3
         lda     InputMode
         cmp     #$0D            ; ADF
@@ -436,7 +436,7 @@ LDBD3:  lda     InputMode
         bne     LDC11           ; always
 
 KeyIncreasePatch:
-        ldx     $097B
+        ldx     ADFMode
         beq     LDC05
         lda     InputMode
         cmp     #$0D            ; ADF
@@ -529,9 +529,9 @@ LDC84:  dec     $08BC
         sta     $08BC
         lda     $63
         adc     $5B
-        cmp     #$64
+        cmp     #100
         bcs     LDC9E
-        cmp     $0975
+        cmp     ReliabilityFactor
         bcc     LDC9E
         jsr     LDCE9
 LDC9E:  lda     $099E
@@ -613,21 +613,17 @@ msg_east:
         MESSAGE $02, $4C, " 00000 EAST "
 
 .proc DrawSlewOverlays
-        lda     $08B4
+        lda     ShowSlewDigits
         and     #$01
         beq     :+
-        lda     $093C
-        ldx     $093D
-        sta     $B6
-        stx     $B7
+        LDAX    NorthPosition
+        STAX    $B6
 
         ;; Draw "00000 NORTH" (slew mode)
         CALLAX  DrawMessage, msg_north
 
-        lda     $093E
-        ldx     $093F
-        sta     $B6
-        stx     $B7
+        LDAX    EastPosition
+        STAX    $B6
 
         ;; Draw "00000 EAST" (slew mode)
         CALLAX  DrawMessage, msg_east
@@ -739,28 +735,28 @@ LDE72:
         asl     a
         asl     a
         tax
-        lda     $0955
+        lda     Minutes
         sec
         sbc     LDE52
-        lda     $0954
+        lda     Hours
         sbc     LDE53,x
         bmi     LDEB7
-        lda     $0955
+        lda     Minutes
         sec
         sbc     LDE54
-        lda     $0954
+        lda     Hours
         sbc     LDE55,x
         bmi     LDEBB
-        lda     $0955
+        lda     Minutes
         sec
         sbc     LDE56
-        lda     $0954
+        lda     Hours
         sbc     LDE57,x
         bmi     LDEBF
-        lda     $0955
+        lda     Minutes
         sec
         sbc     LDE58
-        lda     $0954
+        lda     Hours
         sbc     LDE59,x
         bmi     LDEBB
 LDEB7:  lda     #$04
@@ -769,7 +765,7 @@ LDEBB:  lda     #$02
         bne     LDEC1
 LDEBF:  lda     #$01
 LDEC1:  sta     $083C
-        ldx     $0956
+        ldx     Season
         lda     #$01
 LDEC9:  sta     $0884
         asl     a
@@ -1069,7 +1065,7 @@ LE0D9:  lda     RealityMode
         jsr     Delay
         ldx     #3              ; both
         jsr     SetMagnetoState
-        lda     $0956
+        lda     Season
         cmp     #$01
         bne     LE10B
         lda     $2B
@@ -1422,18 +1418,19 @@ str_ceiling_digits:     .byte   "00600 OVERCAST - ", 0
 mcC:                    .byte   "ON INITIAL CONTACT", 0
 
 .proc UpdateCOMMessageChunks
-        ldx     $0956
-        lda     $090E,x
+        ldx     Season
+        lda     SeasonTempTable,x
         clc
-        adc     $0930
+        adc     BaseTemp
         jsr     ATo2Digits
         sta     str_temp_digits   ; temperature 10s digit
         stx     str_temp_digits+1 ; temperature 1s digit
-        lda     #<$0168
+
+        lda     #<360
         sta     $C2
-        lda     #>$0168
+        lda     #>360
         sta     $C2+1
-        LDAX    $0973
+        LDAX    WindDirection
         jsr     MultiplyAXByC2
         txa
         ldx     $C9
@@ -1444,26 +1441,28 @@ mcC:                    .byte   "ON INITIAL CONTACT", 0
         bne     LE444
         ldy     #$20
 LE444:  sty     str_wind_dir_digits ; wind direction 100s digit
-        lda     $0971
+
+        lda     WindSpeed
         jsr     ATo2Digits
         cmp     #$30
         bne     LE453
         lda     #$20
-LE453:
-        sta     str_wind_speed_digits   ; wind speed 10s digit
+LE453:  sta     str_wind_speed_digits   ; wind speed 10s digit
         stx     str_wind_speed_digits+1 ; wind speed 1s digit
-        lda     $0954
+
+        lda     Hours
         clc
         adc     $0854
         cmp     #$18
         bcc     LE467
         sec
-        sbc     #$18
+        sbc     #24
 LE467:  jsr     ATo2Digits
         STAX    str_time_digits ; start of "12:00 ZULU"
-        lda     #$66
+
+        lda     #<$0866
         sta     $C2
-        lda     #$08
+        lda     #>$0866
         sta     $C3
         LDAX    $0856
         jsr     MultiplyAXByC2
@@ -1486,15 +1485,15 @@ LE48E:  ldy     #' '            ; include ceiling message
 LE4A2:  sty     str_ceiling_digits   ; ceiling 10000s digit
         sta     str_ceiling_digits+1 ; ceiling 1000s digit
         stx     str_ceiling_digits+2 ; ceiling 100s digit
-LE4AB:  lda     $0974
-        lsr     a
+LE4AB:  lda     WindDirection+1
+        lsr     a               ; /= 64
         lsr     a
         lsr     a
         lsr     a
         lsr     a
         lsr     a
         tax
-        lda     $090B,x
+        lda     RunwaysTable,x
         jsr     ATo2Digits
         sta     str_runway_digits   ; runway 10s digit
         stx     str_runway_digits+1 ; runway 1s digit

@@ -451,23 +451,20 @@ LFA56:  lda     $5F
         lda     $60
         sbc     $0964
         bmi     LFA81
-        lda     #$65
-        ldx     #$09
+
+        LDAX    #$0965
         jmp     LFA96
 
-LFA81:  lda     #$69
-        ldx     #$09
+LFA81:  LDAX    #$0969
         jmp     LFA96
 
-LFA88:  lda     #$6D
-        ldx     #$09
+LFA88:  LDAX    #$096D
         jmp     LFA96
 
-LFA8F:  lda     #$71
-        ldx     #$09
+LFA8F:  LDAX    #$0971
         inc     $09A6
-LFA96:  sta     $BE
-        stx     $BF
+
+LFA96:  STAX    $BE
         ldy     #$01
         lda     ($BE),y
         sta     LF9B3
