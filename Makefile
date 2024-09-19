@@ -64,7 +64,7 @@ validate: $(CHUNKS)
 # custom code for loading FS2 chunks.
 binary: $(OUTDIR)/fs2\#0624f8
 
-$(OUTDIR)/fs2\#0624f8: $(CHUNKS)
+$(OUTDIR)/fs2\#0624f8: $(CHUNKS) loader/PRORWTS2.S
 	cd $(OUTDIR) && ../loader/pack.py
 	cd $(OUTDIR) && acme --color --report prorwts2.list ../loader/PRORWTS2.S
 	cd $(OUTDIR) && ../loader/movebytes.py
