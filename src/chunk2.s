@@ -4,6 +4,7 @@
 ;;; of the original FS2 (per Appendix 3):
 ;;; * Altimeter 3rd hand.
 ;;; * Course plotter system.
+;;; * Improved demo mode.
 
 ;;; ============================================================
 ;;; Course Plotting
@@ -504,23 +505,30 @@ LFAB2:  pha
         sty     $09A5
         rts
 
-LFAE9:  .byte   $01
-LFAEA:  .byte   $06
-LFAEB:  .byte   $02
-LFAEC:  lda     $0A5B
-        cmp     #$18
-        bcs     LFAF6
-        jsr     YokeUp
-LFAF6:  lda     $60
-        cmp     LFAE9
-        bcs     LFB03
-        jsr     MoreThrottle
-        jmp     LFB0B
+;;; ============================================================
+;;; Demo Mode
 
-LFB03:  cmp     LFAEA
-        bcc     LFB0B
+DemoModeParam1:  .byte   $01    ; constant
+DemoModeParam2:  .byte   $06    ; constant
+DemoModeParam3:  .byte   $02
+
+.proc DemoMode64K
+        lda     YokeVertPos
+        cmp     #$18
+        bcs     :+
+        jsr     YokeUp
+:       lda     $60
+        cmp     DemoModeParam1
+        bcs     :+
+        jsr     MoreThrottle
+        jmp     Common
+:
+        cmp     DemoModeParam2
+        bcc     Common
         jsr     LessThrottle
-LFB0B:  lda     #$24
+
+Common:
+        lda     #$24
         sta     $08FF
         lda     #$03
         sta     $0900
@@ -534,10 +542,10 @@ LFB0B:  lda     #$24
         rol     $BE
         lda     $BF
         rol     a
-        cmp     LFAEB
+        cmp     DemoModeParam3
         bcc     LFB66
         lda     #$01
-        sta     LFAEB
+        sta     DemoModeParam3
         lda     $B7
         eor     #$80
         tax
@@ -545,34 +553,42 @@ LFB0B:  lda     #$24
         sbc     $09E4
         txa
         sbc     $09E5
-        bpl     LFB56
+        bpl     :+
+
+        ;; Maybe turn left
         lda     $09B0
         eor     #$80
         cmp     #$72
-        bcc     LFB78
+        bcc     Center
         jsr     YokeLeft
         jsr     YokeLeft
         rts
-
-LFB56:  lda     $09B0
+:
+        ;; Maybe turn right
+        lda     $09B0
         eor     #$80
         cmp     #$8E
-        bcs     LFB78
+        bcs     Center
         jsr     YokeRight
         jsr     YokeRight
         rts
 
 LFB66:  lda     #$02
-        sta     LFAEB
+        sta     DemoModeParam3
         ldx     $09B0
-        beq     LFB7B
+        beq     Exit
         bpl     LFB74
         inx
         inx
 LFB74:  dex
         stx     $09B0
-LFB78:  jsr     YokeCenter
-LFB7B:  rts
+Center:
+        jsr     YokeCenter
+
+Exit:   rts
+.endproc
+
+;;; ============================================================
 
         .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00
         .byte   $FF, $FF, $00, $00, $FF, $FF, $00, $00

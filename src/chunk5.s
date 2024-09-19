@@ -4973,7 +4973,7 @@ L8782:  lda     $33
         clc
         adc     #$0D
         sta     $33
-        lda     $08A6
+        lda     EditModeFlag
         ora     $08A7
         beq     L8794
         jsr     LA7E8
@@ -5016,9 +5016,9 @@ P64K_3: jsr     NoOp            ; 64K: Patched to JSR `DrawViewOverlays`
         jsr     L9F6B
         jsr     L9FE9
 P64K_8: jsr     NoOp            ; 64k: Patched to JSR `HideOrShowInstruments`
-        lda     $092C
+        lda     DemoMode
         beq     L8804
-P64K_C: jsr     L8C6A           ; 64k: Patched to JSR `LFAEC`
+P64K_C: jsr     DemoMode48K     ; 64k: Patched to JSR `DemoMode64K`
 L8804:  lda     $2B
         lsr     a
         bcs     L8836
@@ -5196,11 +5196,11 @@ L89B6:  lda     $0834
 
 ;;; Ctrl+P / P key
 TogglePause:
-        lda     $08A6
+        lda     EditModeFlag
         pha
         inc     $08BB
         lda     #$01
-        sta     $08A6
+        sta     EditModeFlag
 L89DC:  lda     $32
         clc
         adc     #$0A
@@ -5217,7 +5217,7 @@ L89F0:  lda     $08B1
         stx     $08B1
         tax
         pla
-        sta     $08A6
+        sta     EditModeFlag
         txa
         and     #$7F
         lsr     $08BB
@@ -5428,7 +5428,7 @@ KeyTable:
         .addr   YokeRight       ; H
         .addr   Ignore          ; I
         .addr   Ignore          ; J
-        .addr   L900C           ; K
+        .addr   ExitDemoMode    ; K
         .addr   ToggleLights    ; L
         .addr   RudderRight     ; M
         .addr   FlapsDown       ; N
@@ -5593,19 +5593,21 @@ L8C69:  rts
 
 ;;; ============================================================
 
-L8C6A:  lda     YokeVertPos
+.proc DemoMode48K
+        lda     YokeVertPos
         cmp     #$18
-        bcs     L8C74
+        bcs     :+
         jsr     YokeUp
-L8C74:  jsr     MoreThrottle
+:       jsr     MoreThrottle
         rts
+.endproc
 
 ;;; ============================================================
 
 .proc MaybeProcessKey
         jsr     ReadKeyBuffer
         bcc     :+
-        ldx     $08A6
+        ldx     EditModeFlag
         beq     L8C88
         ora     #$80
         sta     $08B1
@@ -5629,7 +5631,7 @@ L8C88:  cmp     #'`'            ; ignore lower-case range
 
 .proc EditMode
         lda     #$01
-        sta     $08A6
+        sta     EditModeFlag
         rts
 .endproc
 
@@ -6150,7 +6152,8 @@ CarbHeat:
         jmp     DrawCarbHeatAndLights
 
 ;;; K key
-L900C:  lsr     $092C
+ExitDemoMode:
+        lsr     DemoMode
         rts
 
 ;;; Ctrl+L / L key
@@ -9208,46 +9211,53 @@ msg_48k_demo:
         MESSAGE $3C, $0A, "PRESS ANY KEY TO CONTINUE....."
         .byte   0, 0
 
+ColorModePatch:
         .byte   $BB
         .byte   $BB
         .byte   $77
         .byte   $77
-        ora     ($11),y
+        .byte   $11
+        .byte   $11
         .byte   $FF
         .byte   $FF
         .byte   $FF
         .byte   $FF
-        brk
-        brk
-        .byte   $FF
-        .byte   $FF
-        .byte   $22
-        .byte   $22
-        .byte   $FF
-        .byte   $FF
+        .byte   $00
+        .byte   $00
         .byte   $FF
         .byte   $FF
         .byte   $22
         .byte   $22
-        ora     ($11),y
-        .byte   $FF
-        .byte   $FF
-        ora     ($11),y
         .byte   $FF
         .byte   $FF
         .byte   $FF
         .byte   $FF
+        .byte   $22
+        .byte   $22
+
+BWModePatch:
+        .byte   $11
+        .byte   $11
+        .byte   $FF
+        .byte   $FF
+        .byte   $11
+        .byte   $11
         .byte   $FF
         .byte   $FF
         .byte   $FF
         .byte   $FF
-        ora     ($11),y
         .byte   $FF
         .byte   $FF
         .byte   $FF
         .byte   $FF
-        brk
-        brk
+        .byte   $11
+        .byte   $11
+        .byte   $FF
+        .byte   $FF
+        .byte   $FF
+        .byte   $FF
+        .byte   $00
+        .byte   $00
 
 LAB91:  nop
         ldx     #$3F
@@ -9274,7 +9284,7 @@ LABB4:  lda     $1E01
 
 LABBA:  jsr     Apply64KPatchTable
         jsr     LAD32
-        jsr     LAC3A
+        jsr     PromptColorOrBW
         jsr     LACBA
         jsr     LAEAA
         jmp     L877F
@@ -9341,7 +9351,8 @@ LAC39:  rts
 
 ;;; ============================================================
 
-LAC3A:  jsr     ClearViewportsToBlack
+.proc PromptColorOrBW
+        jsr     ClearViewportsToBlack
         CALLAX  DrawMultiMessage, msg_intro
 
         ;; Color/B&W prompt
@@ -9352,28 +9363,35 @@ LAC3A:  jsr     ClearViewportsToBlack
         cmp     #'b'
         beq     lower
         cmp     #'A'
-        beq     LAC66
+        beq     PatchInColor
         cmp     #'B'
-        beq     LAC6D
+        beq     PatchInBW
         bne     :-
 lower:  jsr     ClearViewportsToBlack
         CALLAX  DrawMultiMessage, msg_lowercase
         jmp     :-
 
-LAC66:  lda     #$65
-        ldx     #$AB
-        jmp     LAC71
+        ;; Color
+PatchInColor:
+        LDAX    #ColorModePatch
+        jmp     Common
 
-LAC6D:  lda     #$7B
-        ldx     #$AB
-LAC71:  ldy     #$00
-        sta     $BE
-        stx     $BF
-LAC77:  lda     ($BE),y
-        sta     $0800,y
+        ;; B&W
+PatchInBW:
+        LDAX    #BWModePatch
+
+        ;; Common
+Common:
+        ldy     #$00
+        STAX    $BE
+:       lda     ($BE),y
+        sta     ColorOrBWModePatch,y
         iny
         cpy     #$16
-        bne     LAC77
+        bne     :-
+
+        ;; fall through to Demo/Regular prompt
+.endproc
 
         ;; Demo/Regular Flight Mode prompt
 
@@ -9385,18 +9403,18 @@ LAC77:  lda     ($BE),y
         cmp     #'B'
         beq     LACB4
         bne     :-
-LAC98:  inc     $092C
+LAC98:  inc     DemoMode
 
         ;; Demo mode
 
         jsr     ClearViewportsToBlack
         CALLAX  DrawMultiMessage, msg_demo
         lda     Has64K
-        bne     LACB1
+        bne     :+
         CALLAX  DrawMultiMessage, msg_48k_demo
-LACB1:  jsr     TogglePause
+:       jsr     TogglePause
 LACB4:  lda     #$00
-        sta     $08A6
+        sta     EditModeFlag
         rts
 
 LACBA:  lda     #$01
@@ -9575,7 +9593,7 @@ PatchTable:
         jsr     LFA56
 
         .addr   P64K_C
-        jsr     LFAEC
+        jsr     DemoMode64K
 
         .addr   L87BE
         jsr     LDDFC

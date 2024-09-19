@@ -505,7 +505,7 @@ LDC59:  lda     RealityMode
         beq     $DCDA
         lda     $0937
         bne     LDC84
-        lda     $0A5B
+        lda     YokeVertPos
         tax
         sec
         sbc     $0A5D
@@ -521,7 +521,7 @@ LDC75:  txa
 LDC7A:  txa
         clc
         adc     #$02
-        sta     $0A5B
+        sta     YokeVertPos
 LDC81:  jsr     L91DE
 LDC84:  dec     $08BC
         bpl     LDC9E

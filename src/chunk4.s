@@ -56,7 +56,9 @@ LA851           := $A851        ; into middle of message???
         .byte   $80
         rti
 
-        jsr     L0810
+        .byte   $20
+        .byte   $10
+        .byte   $08
         .byte   $04
         .byte   $02
         .byte   $01
@@ -235,29 +237,10 @@ ND07BA: .byte   $01, $01, $01, $01, $01, $02, $01, $02, $01, $02, $01, $03, $01,
         brk
         brk
 
-        ;; $800
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-L0810:  brk
-        brk
-        brk
-        brk
-        brk
-        brk
+        ;; $800 - $16 bytes patched in Color or B&W choice
+ColorOrBWModePatch:
+        .res    $16, 0
+
         brk
         brk
         brk
@@ -395,7 +378,9 @@ RadarView:      .byte   0       ; $01 if in Radar View mode
         brk
         brk
         brk
-        brk
+
+EditModeFlag:   .byte   0
+
         brk
         brk
         brk
@@ -513,7 +498,7 @@ L08FA:  brk
         brk
         brk
         brk
-        brk
+DemoMode:       .byte   0
         brk
         brk
         brk
