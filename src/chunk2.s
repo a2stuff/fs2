@@ -21,14 +21,18 @@ msg_courseplotter:
         MESSAGE $5C, $0A, "MODE TO VIEW OR RECORD COURSE."
         .byte   $00, $00
 
-LF715:  .byte   10
-LF716:  .byte   1
+CoursePlotterSampleRate:
+        .byte   10
+CoursePlotterSampleCounter:
+        .byte   1               ; reset to above; sample at 0
 CoursePlotterState:
         .byte   0               ; 0 = off; 1 = record; 2 = display
-LF718:  .byte   0
-LF719:  .byte   0
-LF71A:  .byte   0
-LF71B:  .byte   0
+CoursePlotterRecordPos:
+        .word   0               ; pointer to data pos ($D000...$DFFF)
+CoursePlotterSampleRange:
+        .byte   0               ; 6 = normal, 4 = precision
+CoursePlotterAnyData:
+        .byte   0               ; 0 = not data, 1 = some data
 
 CoursePlottingMenu:
         jsr     ClearViewportsToBlack
@@ -49,12 +53,12 @@ CoursePlottingMenu:
         rts
 
 BeginNormalCourseRecording:
-        ldx     #$06
-        lda     #$0A
-        bne     BeginRecordingCommon           ; always
+        ldx     #$06            ; range
+        lda     #$0A            ; rate
+        bne     BeginRecordingCommon ; always
 
 DisplayCoursePlot:
-        lda     LF71B
+        lda     CoursePlotterAnyData
         beq     CoursePlottingMenu
         lda     #$02
         sta     CoursePlotterState
@@ -80,33 +84,33 @@ TurnOffCoursePlotter:
         jmp     CoursePlottingMenu
 
 BeginPrecisionRecording:
-        ldx     #$04
-        lda     #$02
+        ldx     #$04            ; range
+        lda     #$02            ; rate
 
 BeginRecordingCommon:
-        stx     LF71A
-        sta     LF715
+        stx     CoursePlotterSampleRange
+        sta     CoursePlotterSampleRate
         lda     #$01
         sta     CoursePlotterState
-        jsr     LF8B0
-        lda     #$00
-        ldx     #$D0
-        sta     $B8
-        stx     $B9
+        jsr     EnableLCBank1
+        LDAX    #$D000
+        STAX    $B8
         ldy     #$00
         lda     #$07
         sta     ($B8),y
         iny
-        lda     LF71A
+        lda     CoursePlotterSampleRange
         sta     ($B8),y
         iny
+
         ldx     #$00
-LF79F:  lda     $5A,x
+:       lda     $5A,x
         sta     ($B8),y
         inx
         iny
         cpx     #$0C
-        bne     LF79F
+        bne     :-
+
         lda     #$1C
         sta     ($B8),y
         iny
@@ -131,55 +135,54 @@ LF79F:  lda     $5A,x
         tya
         clc
         adc     $B8
-        sta     LF718
+        sta     CoursePlotterRecordPos
         lda     $B9
-        sta     LF719
+        sta     CoursePlotterRecordPos+1
         lda     #$01
-        sta     LF71B
-        jsr     LF8BC
+        sta     CoursePlotterAnyData
+        jsr     EnableLCBank2
         jmp     CoursePlottingMenu
 
 ;;; ============================================================
 ;;; Course Plotting - Record State
 
 LF7E2:  lda     CoursePlotterState
-        bne     LF7E8
+        bne     :+
         rts
-
-LF7E8:  cmp     #$01
-        beq     LF803
+:
+        cmp     #$01            ; recording?
+        beq     MaybeRecord     ; yes, maybe grab a sample
         cmp     #$02
-        beq     LF7F1
+        beq     Display
         rts
 
-LF7F1:  lda     #$00
-        ldx     #$D0
-        sta     $8B
-        stx     $8C
-        jsr     LF8B0
+Display:
+        LDAX    #$D000
+        STAX    $8B
+        jsr     EnableLCBank1
         jsr     L6006
-        jsr     LF8BC
+        jsr     EnableLCBank2
         rts
 
-LF803:  dec     LF716
-        beq     LF809
+MaybeRecord:
+        dec     CoursePlotterSampleCounter
+        beq     :+
         rts
-
-LF809:  lda     LF715
-        sta     LF716
-        lda     #$E0
+:
+        ;; Is there room?
+        lda     CoursePlotterSampleRate
+        sta     CoursePlotterSampleCounter
+        lda     #<$DFE0
         sec
-        sbc     LF718
-        lda     #$DF
-        sbc     LF719
-        bpl     LF81D
-        rts
-
-LF81D:  jsr     LF8B0
-        lda     LF718
-        ldx     LF719
-        sta     $B8
-        stx     $B9
+        sbc     CoursePlotterRecordPos
+        lda     #>$DFE0
+        sbc     CoursePlotterRecordPos+1
+        bpl     :+
+        rts                     ; nope
+:
+        jsr     EnableLCBank1
+        LDAX    CoursePlotterRecordPos
+        STAX    $B8
         ldy     #$00
         lda     #$02
         sta     ($B8),y
@@ -194,7 +197,7 @@ LF81D:  jsr     LF8B0
         lda     $5D
         sbc     $D005
         sta     $BD
-        jsr     LF8C6
+        jsr     AdjustForRange
         lda     $B7
         sta     ($B8),y
         iny
@@ -211,7 +214,7 @@ LF81D:  jsr     LF8B0
         lda     $61
         sbc     $D009
         sta     $BD
-        jsr     LF8C6
+        jsr     AdjustForRange
         lda     $B7
         sta     ($B8),y
         iny
@@ -228,7 +231,7 @@ LF81D:  jsr     LF8B0
         lda     $65
         sbc     $D00D
         sta     $BD
-        jsr     LF8C6
+        jsr     AdjustForRange
         lda     $B7
         sta     ($B8),y
         iny
@@ -240,27 +243,30 @@ LF81D:  jsr     LF8B0
         tya
         clc
         adc     $B8
-        sta     LF718
+        sta     CoursePlotterRecordPos
         lda     $B9
         adc     #$00
-        sta     LF719
-        jsr     LF8BC
+        sta     CoursePlotterRecordPos+1
+        jsr     EnableLCBank2
         rts
 
-LF8B0:  lda     #$01
+EnableLCBank1:
+        lda     #$01
         sta     $08B0
         lda     LCBANK1
         lda     LCBANK1
         rts
 
-LF8BC:  lsr     $08B0
+EnableLCBank2:
+        lsr     $08B0
         lda     LCBANK2
         lda     LCBANK2
         rts
 
-LF8C6:  lda     LF71A
-        cmp     #$04
-        beq     LF8E5
+AdjustForRange:
+        lda     CoursePlotterSampleRange
+        cmp     #$04            ; reduced range?
+        beq     :+
         lsr     $BD
         ror     $BC
         ror     $B7
@@ -273,7 +279,7 @@ LF8C6:  lda     LF71A
         lsr     $BD
         ror     $BC
         ror     $B7
-LF8E5:  rts
+:       rts
 
 ;;; ============================================================
 ;;; Altimeter - Third Hand (10k)

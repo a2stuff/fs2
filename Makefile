@@ -43,22 +43,22 @@ $(OUTDIR)/complete.o: src/complete.s src/chunk2.s src/chunk3.s src/chunk4.s src/
 $(OUTDIR)/1_4000-5fff: res/loading_panel.bin
 	cp $< $@
 $(OUTDIR)/2_f600-fbff: $(OUTDIR)/complete.built
-	dd if=$< of=$@ bs=1 skip=0 count=1536
+	dd status=none if=$< of=$@ bs=1 skip=0 count=1536
 $(OUTDIR)/3_d300-f3ff: $(OUTDIR)/complete.built
-	dd if=$< of=$@ bs=1 skip=1536 count=8448
+	dd status=none if=$< of=$@ bs=1 skip=1536 count=8448
 $(OUTDIR)/4_0200-25ff: $(OUTDIR)/complete.built
-	dd if=$< of=$@ bs=1 skip=9984 count=9216
+	dd status=none if=$< of=$@ bs=1 skip=9984 count=9216
 $(OUTDIR)/5_6000-b3df: $(OUTDIR)/complete.built
-	dd if=$< of=$@ bs=1 skip=19200 count=21472
+	dd status=none if=$< of=$@ bs=1 skip=19200 count=21472
 
 # "Phony" target that verifies that built chunks exactly match the
 # original chunks of the @qkumba's ProDOS port.
 validate: $(CHUNKS)
-	@diff -q chunks/1_4000-5fff $(OUTDIR)/1_4000-5fff > /dev/null || ( echo "Chunk 1 mismatch" && false )
-	@diff -q chunks/2_f600-fbff $(OUTDIR)/2_f600-fbff > /dev/null || ( echo "Chunk 2 mismatch" && false )
-	@diff -q chunks/3_d300-f3ff $(OUTDIR)/3_d300-f3ff > /dev/null || ( echo "Chunk 3 mismatch" && false )
-	@diff -q chunks/4_0200-25ff $(OUTDIR)/4_0200-25ff > /dev/null || ( echo "Chunk 4 mismatch" && false )
-	@diff -q chunks/5_6000-b3df $(OUTDIR)/5_6000-b3df > /dev/null || ( echo "Chunk 5 mismatch" && false )
+	@diff -q orig/1_4000-5fff $(OUTDIR)/1_4000-5fff > /dev/null || ( echo "Chunk 1 mismatch" && false )
+	@diff -q orig/2_f600-fbff $(OUTDIR)/2_f600-fbff > /dev/null || ( echo "Chunk 2 mismatch" && false )
+	@diff -q orig/3_d300-f3ff $(OUTDIR)/3_d300-f3ff > /dev/null || ( echo "Chunk 3 mismatch" && false )
+	@diff -q orig/4_0200-25ff $(OUTDIR)/4_0200-25ff > /dev/null || ( echo "Chunk 4 mismatch" && false )
+	@diff -q orig/5_6000-b3df $(OUTDIR)/5_6000-b3df > /dev/null || ( echo "Chunk 5 mismatch" && false )
 
 # Target that creates a FS2 binary using @qkumba's ProRWTS2, with
 # custom code for loading FS2 chunks.
@@ -66,6 +66,6 @@ binary: $(OUTDIR)/fs2\#0624f8
 
 $(OUTDIR)/fs2\#0624f8: $(CHUNKS)
 	cd $(OUTDIR) && ../loader/pack.py
-	cd $(OUTDIR) && acme --report prorwts2.list ../loader/PRORWTS2.S
+	cd $(OUTDIR) && acme --color --report prorwts2.list ../loader/PRORWTS2.S
 	cd $(OUTDIR) && ../loader/movebytes.py
 	@echo Successfully created: $@

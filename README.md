@@ -6,7 +6,7 @@ Work in progress. The effort is just getting started.
 
 The target is @qkumba's ProDOS port of FS2, which has a custom loader which decompressess chunks of code/data into memory. The project primarily focuses on understanding those chunks, which represent the memory-resident code of the original FS2.
 
-The [cc65](http://cc65.github.io/cc65/) tool chain is used; source files target the ca65 macro assembler; `ca65` and `ld65` must be available. Build via `make` and use `make validate` to verify that the built chunks (`out/chunk*.built`) are byte-identical to the original chunks (`chunks/*`).
+The [cc65](http://cc65.github.io/cc65/) tool chain is used; source files target the ca65 macro assembler; `ca65` and `ld65` must be available. Build via `make` and use `make validate` to verify that the built chunks (`out/?_????-????`) are byte-identical to the original chunks (`orig/?_????-????`).
 
 PRs welcome. Comments are strongly encouraged. Macro use for common patterns is also encouraged, where it helps understanding the original code.
 
