@@ -520,12 +520,16 @@ L08FA:  brk
         brk
         .byte   $0C, $50, $A7
         brk
-        brk
-        .byte   $01
+
+SoundMode:      .byte   0
+
+AutoCoordinationMode:
+                .byte   1
 
 SlewMode:       .byte   $00
 
-        brk
+RealityMode:    .byte   0
+
         brk
 
 WW1AceMode:     .byte   $00
@@ -814,8 +818,15 @@ ElevatorTrim:   .byte   0
 
 PanelLights:    .byte   $FF
 
-        .byte   $03
-        ora     ($00,x)
+MagnetoState:   .byte   3
+;;; 0 = off
+;;; 1 = left
+;;; 2 = right
+;;; 3 = both
+;;; 4 = start
+
+        .byte   1
+        .byte   0
 
 RudderPos:      .byte   0
 

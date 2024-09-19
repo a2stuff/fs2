@@ -5235,7 +5235,7 @@ MaybeBootDOS:
 
 L8A15:  sbc     #$11
         sta     $33
-        lda     $0935
+        lda     SoundMode
         beq     L8A26
         lda     $099B
         beq     L8A26
@@ -5707,7 +5707,7 @@ SlewPitchDown:
 
 ;;; , key
 KeyDecrease:
-        lda     InputMode       ; 64k: patched to JSR `LDBB1`
+        lda     InputMode       ; 64k: patched to JSR `KeyDecreasePatch`
         nop
         ldx     #$00
         stx     InputCounter
@@ -5879,7 +5879,7 @@ L8E0C:  sec
 .endproc
 
 ;;; . key
-KeyIncrease:                    ; 64K: Patched to JSR `LDBE3`
+KeyIncrease:                    ; 64k: Patched to JSR `KeyIncreasePatch`
         lda     InputMode
         nop
         ldx     #$00
@@ -6101,7 +6101,7 @@ L8FBE:  lda     #$08            ; Transponder
 L8FC0:  jmp     SetInputModeAndCounter
 
 ;;; Ctrl+A / A key
-ADF:    nop                     ; 64k: Patched to JMP `LDB99`
+ADF:    nop                     ; 64k: Patched to JMP `ADFKeyboardHook`
         nop
         nop
 
@@ -6314,7 +6314,7 @@ FuelTankSelect:
 ;;; 4 key
 ;;; Magnetos: Both
 ;;; Otherwise: Radar View
-SelectRadarView:                ; 64k: Patched to JMP `LE2E6`
+SelectRadarView:                ; 64k: Patched to JMP `SelectRadarViewPatch`
         ldx     #$02            ; Radar View
         stx     InputMode
 L9100:  dex
@@ -6324,7 +6324,7 @@ L9100:  dex
 ;;; 5 key
 ;;; Magnetos: Start
 ;;; Otherwise: 3D View
-Select3DView:                   ; 64k: Patched to JMP `LE2FA`
+Select3DView:                   ; 64k: Patched to JMP `Select3DViewPatch`
         ldx     #$01            ; 3D View
         lda     RadarView
         bne     L9100
@@ -6502,7 +6502,7 @@ YokeRight:
         adc     #$04
         bvs     L92A0
 L9259:  sta     YokeHorizPos
-L925C:  lda     $0936
+L925C:  lda     AutoCoordinationMode
         beq     L9270
         LDAX    $0A52           ; includes `YokeHorizPos`
         STAX    $0A64           ; includes `RudderPos`
@@ -6543,7 +6543,7 @@ RudderRight:
 
 L92B4:
         sta     RudderPos
-L92B7:  lda     $0936
+L92B7:  lda     AutoCoordinationMode
         beq     L92CB
         LDAX    $0A64           ; includes `RudderPos`
         STAX    $0A52           ; includes `YokeHorizPos`
@@ -7582,7 +7582,7 @@ L9C6D:  rts
 
 L9C6E:  lda     SlewMode
         beq     L9C76
-P64K_A: nop                     ; 64k: Patched to JSR `LDD50`
+P64K_A: nop                     ; 64k: Patched to JSR `DrawSlewOverlays`
         nop
         nop
 L9C76:  rts
@@ -7949,7 +7949,7 @@ DrawLights:
         bne     :+
         LDAX    #msg_lights_off
 :
-P64K_7: jmp     DrawMessageWhite    ; 64k: Patched to JMP `LE2D1`
+P64K_7: jmp     DrawMessageWhite    ; 64k: Patched to JMP `DrawMagnetoStateHook`
 
 .proc DrawRPM
         lda     $0990
@@ -8786,7 +8786,7 @@ LA551:  sty     $5F
         sta     $61
         rts
 
-LA55A:  lda     $0A6F           ; 64k: Patched to JMP $E09F
+LA55A:  lda     $0A6F           ; 64k: Patched to JMP `LE09F`
         lsr     a
         tay
         ldx     $0997
@@ -8807,7 +8807,7 @@ LA56F:  sty     $0990
         LDAX    $09A9
         jsr     ScaleC2ByAX
         STAX    $0A0D
-        lda     $0938
+        lda     RealityMode
         bne     LA59E
         lda     $0990
         cmp     #$0D
@@ -9486,7 +9486,7 @@ LAD58:  sta     $C1
         ;; Patch table
 PatchTable:
         .addr   ADF
-        jmp     LDB99
+        jmp     ADFKeyboardHook
 
         .addr   P64K_1
         jsr     LDC3D
@@ -9516,10 +9516,10 @@ PatchTable:
         jsr     LDD7A
 
         .addr   LA55A
-        jmp     $E09F
+        jmp     LE09F
 
         .addr   P64K_7
-        jmp     LE2D1
+        jmp     DrawMagnetoStateHook
 
         .addr   L8CC6
         jmp     LE2B3
@@ -9557,7 +9557,7 @@ PatchTable:
         jsr     LF7E2
 
         .addr   P64K_A
-        jsr     LDD50
+        jsr     DrawSlewOverlays
 
         .addr   LA60C
         jmp     LE4DD

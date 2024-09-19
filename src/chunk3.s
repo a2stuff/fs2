@@ -395,7 +395,8 @@ LDB48:  lda     $08A9
 LDB94:  lda     #$09
         jmp     L6018
 
-LDB99:  lda     $08F1
+ADFKeyboardHook:
+        lda     $08F1
         beq     LDBAC
         lda     $FA
         cmp     #$0D
@@ -498,7 +499,9 @@ LDC49:  .addr   LDD07
         .addr   LDD29
         .addr   LDD2D
 
-LDC59:  lda     $0938
+;;; ============================================================
+
+LDC59:  lda     RealityMode
         beq     $DCDA
         lda     $0937
         bne     LDC84
@@ -609,9 +612,10 @@ msg_north:
 msg_east:
         MESSAGE $02, $4C, " 00000 EAST "
 
-LDD50:  lda     $08B4
+.proc DrawSlewOverlays
+        lda     $08B4
         and     #$01
-        beq     LDD79
+        beq     :+
         lda     $093C
         ldx     $093D
         sta     $B6
@@ -628,7 +632,8 @@ LDD50:  lda     $08B4
         ;; Draw "00000 EAST" (slew mode)
         CALLAX  DrawMessage, msg_east
 
-LDD79:  rts
+:       rts
+.endproc
 
 ;;; ============================================================
 
@@ -679,7 +684,7 @@ LDE07:  and     #$06
         sty     $0834
 LDE15:  jsr     DrawMessageWhite
         ldx     #$FF
-        jsr     LE311
+        jsr     Delay
         ldx     #$01
         jmp     L9093
 
@@ -1014,15 +1019,19 @@ LE06B:  brk
         eor     ($43,x)
         .byte   $46
 
-mE08B:  MESSAGE $9A, $76, "O"
-mE08F:  MESSAGE $9A, $76, "L"
-mE093:  MESSAGE $9A, $76, "R"
-mE097:  MESSAGE $9A, $76, "B"
-mE09B:  MESSAGE $9A, $76, "S"
+;;; Improved engine (magneto, mixture, prop autorotation effects). ???
 
-        lda     WW1AceMode
+;;; Magneto state
+
+msg_O:  MESSAGE $9A, $76, "O"   ; off
+msg_L:  MESSAGE $9A, $76, "L"   ; left on
+msg_R:  MESSAGE $9A, $76, "R"   ; right on
+msg_B:  MESSAGE $9A, $76, "B"   ; both on
+msg_S:  MESSAGE $9A, $76, "S"   ; start
+
+LE09F:  lda     WW1AceMode
         bne     LE0C8
-        lda     $0938
+        lda     RealityMode
         beq     LE0C8
         lda     $0A49
         cmp     #$07
@@ -1044,7 +1053,7 @@ LE0C8:  lda     $0998
         bne     LE0D9
 LE0D4:  lda     $0997
         beq     LE0C2
-LE0D9:  lda     $0938
+LE0D9:  lda     RealityMode
         ora     $099B
         beq     LE10B
         lda     $099B
@@ -1052,13 +1061,14 @@ LE0D9:  lda     $0938
         lda     $0A12
         cmp     #$25
         bcs     LE10B
-        lda     $0A62
-        cmp     #$04
+
+        lda     MagnetoState
+        cmp     #4              ; start
         bne     LE110
         ldx     #$64
-        jsr     LE311
-        ldx     #$03
-        jsr     LE2C1
+        jsr     Delay
+        ldx     #3              ; both
+        jsr     SetMagnetoState
         lda     $0956
         cmp     #$01
         bne     LE10B
@@ -1136,7 +1146,7 @@ LE182:  sta     $C3
         cmp     $0990
         bmi     LE1A8
         sta     $0990
-LE1A8:  lda     $0938
+LE1A8:  lda     RealityMode
         bne     LE1B9
         lda     $0990
         cmp     #$0D
@@ -1263,25 +1273,27 @@ LE2B3:  ldy     #$00
         rol     a
         and     #$01
         sta     LE046
-LE2C1:  stx     $0A62
+SetMagnetoState:
+        stx     MagnetoState
         jmp     DrawCarbHeatAndLights
 
-;;; Message table
+;;; Message table for magneto state
 
-LE2C7:
-        .addr   mE08B
-        .addr   mE08F
-        .addr   mE093
-        .addr   mE097
-        .addr   mE09B
+MagnetoStateMessageTable:
+        .addr   msg_O
+        .addr   msg_L
+        .addr   msg_R
+        .addr   msg_B
+        .addr   msg_S
 
-LE2D1:  jsr     DrawMessageWhite
-        lda     $0A62
+DrawMagnetoStateHook:
+        jsr     DrawMessageWhite
+        lda     MagnetoState
         asl     a
         tax
-        lda     LE2C7,x
+        lda     MagnetoStateMessageTable,x
         pha
-        lda     LE2C7+1,x
+        lda     MagnetoStateMessageTable+1,x
         tax
         pla
         jsr     DrawMessageWhite
@@ -1321,14 +1333,18 @@ LE307:  ldx     #$01
 
 ;;; ============================================================
 
-LE311:  ldy     #$FF
-LE313:  inc     $A5
+;;; Inputs:
+;;;   X = delay length
+.proc Delay
+        ldy     #$FF
+:       inc     $A5
         dec     $A5
         dey
-        bne     LE313
+        bne     :-
         dex
-        bne     LE311
+        bne     Delay
         rts
+.endproc
 
 ;;; ============================================================
 ;;; COM Radio (ATIS Messages)
