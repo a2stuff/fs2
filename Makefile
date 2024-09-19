@@ -29,6 +29,7 @@ clean:
 	rm -f $(OUTDIR)/*.pak
 	rm -f $(OUTDIR)/prorwts2\#0624f8
 	rm -f $(OUTDIR)/fs2\#0624f8
+	rm -r $(OUTDIR)/loader.system\#ff2000
 
 # Target that builds all the chunks at once as a single output; this
 # eases sharing definitions across chunks.
@@ -62,10 +63,16 @@ validate: $(CHUNKS)
 
 # Target that creates a FS2 binary using @qkumba's ProRWTS2, with
 # custom code for loading FS2 chunks.
-binary: $(OUTDIR)/fs2\#0624f8
+binary: $(OUTDIR)/fs2\#0624f8 $(OUTDIR)/loader.system\#ff2000
 
 $(OUTDIR)/fs2\#0624f8: $(CHUNKS) loader/PRORWTS2.S
 	cd $(OUTDIR) && ../loader/pack.py
 	cd $(OUTDIR) && acme --color --report prorwts2.list ../loader/PRORWTS2.S
 	cd $(OUTDIR) && ../loader/movebytes.py
 	@echo Successfully created: $@
+
+$(OUTDIR)/loader.system\#ff2000: $(OUTDIR)/loader.system.o
+	ld65 $(LDFLAGS) -o $@ $<
+
+$(OUTDIR)/loader.system.o: loader/loader.system.s
+	ca65 $(CAFLAGS) --listing $(basename $@).list -o $@ $<

@@ -18,3 +18,5 @@ The source for @qkumba's ProDOS loader is included. To build the binary, use `ma
 * `acme` - https://sourceforge.net/projects/acme-crossass/ (cross-assembler)
 
 Note that the binary on its own is insufficient to actually run FS2; an adjacent file representing a full image of the 140k FS2 disk is required, which includes the dynamically loaded scenery database. This file (and more) are present on the `orig/flight simulator 2 with scenery PRODOS (san inc pack).po`. If you do build the binary, you can transfer it to a copy of that disk image and `BRUN` it.
+
+Additionally, a `out/loader.system#ff2000` file will also be produced. This can be transferred to a disk as a SYS file and executed to load/run the `FS2` binary.
