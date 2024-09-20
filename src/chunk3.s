@@ -3,6 +3,7 @@
 ;;; Some functionality that is only present in the "64k" mode
 ;;; of the original FS2 (per Appendix 3):
 ;;; * Instrument lights function at night. The panel can be shut off.
+;;; * Reality mode effects.
 ;;; * ADF functions.
 ;;; * Wingtip generation in side and back views.
 ;;; * North and East readouts in slew mode.
@@ -487,10 +488,11 @@ LDC3D:  ldx     #$00
         jmp     LDC15
 
 ;;; ============================================================
-;;; ???
+;;; Reality Mode
 
         ;; Jump table
-LDC49:  .addr   LDD07
+FailureProcTable:
+        .addr   LDD07
         .addr   LDD10
         .addr   LDD19
         .addr   LDD1D
@@ -499,10 +501,9 @@ LDC49:  .addr   LDD07
         .addr   LDD29
         .addr   LDD2D
 
-;;; ============================================================
-
-LDC59:  lda     RealityMode
-        beq     $DCDA
+.proc RealityModeHook
+        lda     RealityMode
+        beq     LDCDA
         lda     $0937
         bne     LDC84
         lda     YokeVertPos
@@ -562,7 +563,7 @@ LDCCB:  lda     $08AB
         inc     $08AC
 LDCD9:  rts
 
-        lda     #$00
+LDCDA:  lda     #$00
         sta     $099E
         sta     $099F
         sta     $08AB
@@ -575,15 +576,17 @@ LDCE9:  jsr     ClearViewportsToBlack
         adc     $5F
         and     #$0E
         tax
-        lda     LDC49,x
+        lda     FailureProcTable,x
         sta     L00BA
-        lda     LDC49+1,x
+        lda     FailureProcTable+1,x
         sta     L00BA+1
         jmp     (L00BA)
+.endproc
 
 LDD07:  lda     #$FE
-LDD09:  and     $0914
-        sta     $0914
+AndInstrumentFlags:
+        and     InstrumentOperationalFlags
+        sta     InstrumentOperationalFlags
         rts
 
 LDD10:  lda     #$03
@@ -592,17 +595,17 @@ LDD12:  ora     $0991
         rts
 
 LDD19:  lda     #$FB
-        bne     LDD09           ; always
+        bne     AndInstrumentFlags ; always
 LDD1D:  lda     #$F7
-        bne     LDD09           ; always
+        bne     AndInstrumentFlags ; always
 LDD21:  lda     #$0C
         bne     LDD12           ; always
 LDD25:  lda     #$DF
-        bne     LDD09           ; always
+        bne     AndInstrumentFlags ; always
 LDD29:  lda     #$BF
-        bne     LDD09           ; always
+        bne     AndInstrumentFlags ; always
 LDD2D:  lda     #$7F
-        bne     LDD09           ; always
+        bne     AndInstrumentFlags ; always
 
 ;;; ============================================================
 ;;; North and East readouts in slew mode
@@ -1653,7 +1656,7 @@ LE5D5:
 
 .proc HideOrShowInstruments
         lda     $0977
-        and     $0914
+        and     InstrumentOperationalFlags
         and     $0917
         cmp     $FB
         beq     :+

@@ -5017,7 +5017,7 @@ P64K_4: jsr     NoOp            ; 64k: Patched to JSR `UpdateAltimeter10K`
         jmp     L8848
 
 L8842:  jsr     UpdateOilTempAndPressureGauges::Pressure
-P64K_5: jsr     NoOp            ; 64k: Patched to JSR `LDC59`
+P64K_5: jsr     NoOp            ; 64k: Patched to JSR `RealityModeHook`
 L8848:  jsr     LA0D0
         jsr     LA139
         jsr     LA021
@@ -7344,7 +7344,7 @@ L9B1F:  lda     #$19
         sta     $0994
         sta     $0997
         ldx     #$FF
-        stx     $0914
+        stx     InstrumentOperationalFlags
         stx     $0915
         stx     $089B
         stx     $089C
@@ -9501,7 +9501,7 @@ PatchTable:
         jsr     UpdateAltimeter10K
 
         .addr   P64K_5
-        jsr     LDC59
+        jsr     RealityModeHook
 
         .addr   P64K_6
         jsr     LDD7A

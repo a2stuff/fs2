@@ -480,7 +480,10 @@ SeasonTempTable:        .byte   0, 0, 0, 0
 
         brk
         brk
+
+InstrumentOperationalFlags:
         .byte   $FF
+
         .byte   $FF
         .byte   $0F
         .byte   $FF
