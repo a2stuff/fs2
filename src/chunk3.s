@@ -668,7 +668,7 @@ crash_msg_table:
 LDDFB:  brk
 LDDFC:  lda     $0834
         bne     LDE07
-        lda     $09E3
+        lda     OnGroundFlag
         bne     LDE22
         rts
 
@@ -945,21 +945,8 @@ Loop:
 
         ;; Update pos and width by delta, 8.8 fixed point math.
         ;; (Which is just 16-bit addition.)
-        lda     TrapezoidX
-        clc
-        adc     TrapezoidDX
-        sta     TrapezoidX
-        lda     TrapezoidX+1
-        adc     TrapezoidDX+1
-        sta     TrapezoidX+1
-
-        lda     TrapezoidW
-        clc
-        adc     TrapezoidDW
-        sta     TrapezoidW
-        lda     TrapezoidW+1
-        adc     TrapezoidDW+1
-        sta     TrapezoidW+1
+        ADD16C  TrapezoidX, TrapezoidDX, TrapezoidX
+        ADD16C  TrapezoidW, TrapezoidDW, TrapezoidW
 
         inc     TrapezoidY
         dec     TrapezoidH
@@ -1054,7 +1041,7 @@ LE0D9:  lda     RealityMode
         beq     LE10B
         lda     $099B
         bne     LE110
-        lda     $0A12
+        lda     L0A11+1
         cmp     #$25
         bcs     LE10B
 
@@ -1073,7 +1060,7 @@ LE0D9:  lda     RealityMode
         beq     LE110
 LE10B:  lda     #$01
         sta     $099B
-LE110:  lda     $0A12
+LE110:  lda     L0A11+1
         lsr     a
         lsr     a
         cmp     #$1F
@@ -2466,15 +2453,12 @@ LF13D:  rts
         .byte   $2F
         rti
 
-LF242:  brk
-LF243:  brk
+LF242:  .word   0
 LF244:  brk
 LF245:  brk
         .byte   $41
-LF247:  brk
-LF248:  brk
-LF249:  brk
-LF24A:  brk
+LF247:  .word   0
+LF249:  .word   0
         .byte   $41
 LF24C:  brk
 LF24D:  brk
@@ -2601,13 +2585,7 @@ LF2DC:  txa
         sta     LF24E
         bne     LF338
         inc     LF24F
-LF338:  lda     $1B
-        clc
-        adc     $1E
-        sta     LF247
-        lda     $1C
-        adc     $1F
-        sta     LF248
+LF338:  ADD16C  $1B, $1E, LF247
         eor     #$FF
         sta     LF252
         lda     LF247
@@ -2617,13 +2595,7 @@ LF338:  lda     $1B
         sta     LF251
         bne     LF35C
         inc     LF252
-LF35C:  lda     $1B
-        sec
-        sbc     $1E
-        sta     LF242
-        lda     $1C
-        sbc     $1F
-        sta     LF243
+LF35C:  SUB16C  $1B, $1E, LF242
         eor     #$FF
         sta     LF24D
         lda     LF242
@@ -2633,13 +2605,7 @@ LF35C:  lda     $1B
         sta     LF24C
         bne     LF380
         inc     LF24D
-LF380:  lda     $18
-        sec
-        sbc     $A9
-        sta     LF249
-        lda     $19
-        sbc     $AA
-        sta     LF24A
+LF380:  SUB16C  $18, $A9, LF249
         eor     #$FF
         sta     LF254
         lda     LF249

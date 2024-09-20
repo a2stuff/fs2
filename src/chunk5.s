@@ -172,13 +172,7 @@ L610A:  lda     RadarView
 
 L612D:  lda     ViewDirection
         bpl     L6155
-        lda     #$00
-        sec
-        sbc     $70
-        sta     $74
-        lda     #$00
-        sbc     $71
-        sta     $75
+        SUB16C  #$00, $70, $74
         lda     #$00
         sta     $76
         lda     #$00
@@ -266,13 +260,7 @@ L61F0:  lda     $73
         clc
         adc     #$40
         bpl     L6210
-        lda     #$00
-        sec
-        sbc     $72
-        sta     $72
-        lda     #$80
-        sbc     $73
-        sta     $73
+        SUB16C  #$8000, $72, $72
         lda     $75
         eor     #$80
         sta     $75
@@ -365,14 +353,7 @@ L6210:  ldx     $72
         lda     #$80
         jsr     ZPScale
 
-        lda     #$00
-        sec
-        sbc     $CB
-        sta     $82
-        lda     #$00
-        sbc     $CC
-        sta     $83
-
+        SUB16C  #$00, $CB, $82
         SUB16   $4A, $DF, $84
         ADD16   $1B, $4D, $86
 
@@ -429,13 +410,7 @@ L6363:  lda     $C3
         php
         lda     $C3
         bpl     L6379
-        lda     #$00
-        sec
-        sbc     $C2
-        sta     $C2
-        lda     #$00
-        sbc     $C3
-        sta     $C3
+        SUB16C  #$00, $C2, $C2
 L6379:  LDAX    $68
         jsr     MultiplyAXByC2
         asl     $C7
@@ -443,13 +418,7 @@ L6379:  LDAX    $68
         rol     $C9
         plp
         bmi     L639C
-        lda     #$00
-        sec
-        sbc     $C7
-        sta     $C7
-        lda     #$00
-        sbc     $C8
-        sta     $C8
+        SUB16C  #$00, $C7, $C7
         lda     #$00
         sbc     $C9
         sta     $C9
@@ -5133,7 +5102,7 @@ L8933:  jsr     DrawNav1
         rts
 
 L8943:  LDAX    $0843
-        ldy     $0A12
+        ldy     L0A11+1
         cpy     #$0A
         bcs     L8956
         sta     $0A36
@@ -6077,21 +6046,8 @@ L8F56:  ldx     #'0'
         beq     Transponder
 
         ;; Transfer bank, pitch, heading to current flight parameters.
-        lda     #$00
-        sec
-        sbc     $6C
-        sta     $09AD
-        lda     #$00
-        sbc     $6D
-        sta     $09AE
-
-        lda     #$00
-        sec
-        sbc     $6E
-        sta     $09AF
-        lda     #$00
-        sbc     $6F
-        sta     $09B0
+        SUB16C  #$00, $6C, $09AD
+        SUB16C  #$00, $6E, $09AF
 
         LDAX    $70
         STAX    $09E4
@@ -6241,19 +6197,19 @@ MagsAndMixture:
 
 ;;; Space
 BrakesOrGuns:
-        lda     $09E3
+        lda     OnGroundFlag
         beq     L90B2
-        dec     $0A12
+        dec     L0A11+1
         bpl     L9090
         lda     #$00
-        sta     $0A11
-        sta     $0A12
+        sta     L0A11
+        sta     L0A11+1
 L9090:  rts
 
 ;;; + key
 ReadModeFromLibrary:
         ldx     #$01
-L9093:  stx     $08A7
+L9093:  stx     ModeLibraryAction
         rts
 
 ;;; S key
@@ -6785,7 +6741,7 @@ L94D5:  ldx     #$0F
 L94E1:  cmp     #$D1
         bcc     L94D5
 L94E5:  ldx     #$00
-L94E7:  LDAX    $0A11
+L94E7:  LDAX    L0A11
         STAX    $C2
         jsr     ScaleC2ByAX
         STAX    $0A13
@@ -6817,13 +6773,7 @@ L94E7:  LDAX    $0A11
         ldx     #$0B
 L9544:  txa
         pha
-        lda     $09F8
-        clc
-        adc     $09F6
-        sta     $C2
-        lda     $09F9
-        adc     $09F7
-        sta     $C3
+        ADD16C  $09F8, $09F6, $C2
         LDAX    $09A9
         jsr     ScaleC2ByAXIntoC2
         pla
@@ -6899,8 +6849,8 @@ L9603:  adc     $09E6
         txa
         adc     $0A0A
         sta     $09D0
-        lda     $0A11
-        ora     $0A12
+        lda     L0A11
+        ora     L0A11+1
         beq     L9662
         lda     $09CF
         clc
@@ -6929,7 +6879,7 @@ L9662:  lda     $0A0D
         jsr     ScaleC2ByAXIntoC2
         LDAX    $09F4
         jsr     L97B0
-        ldy     $09E3
+        ldy     OnGroundFlag
         beq     L96AF
         tay
         txa
@@ -6942,10 +6892,10 @@ L96AF:  clc
         adc     $09C4
 L96B8:  sty     $09CD
         sta     $09CE
-        lda     $09E3
+        lda     OnGroundFlag
         beq     L96E0
-        lda     $0A11
-        ora     $0A12
+        lda     L0A11
+        ora     L0A11+1
         beq     L96E0
         LDAX    $0A64
         jsr     AXDiv2
@@ -6973,7 +6923,7 @@ L9704:  jsr     ScaleC2ByAX
         sta     $09C9
         txa
         sta     $09CA
-        ldx     $09E3
+        ldx     OnGroundFlag
         beq     L971E
         tax
         bpl     L971E
@@ -6997,33 +6947,21 @@ L971E:  lda     #$76
         beq     L9745
         LDAX    $09D1
 L9745:  clc
-        adc     $0A11
-        sta     $0A11
+        adc     L0A11
+        sta     L0A11
         txa
-        adc     $0A12
+        adc     L0A11+1
         bvc     L9754
         lda     #$64
 L9754:  bpl     L975B
         lda     #$00
-        sta     $0A11
-L975B:  sta     $0A12
-        lda     $09AD
-        clc
-        adc     $09C9
-        sta     $09AD
-        lda     $09AE
-        adc     $09CA
-        sta     $09AE
+        sta     L0A11
+L975B:  sta     L0A11+1
+        ADD16C  $09AD, $09C9, $09AD
         bpl     L978B
         jsr     L9779
         jsr     L978B
-L9779:  lda     #$00
-        sec
-        sbc     $09AD
-        sta     $09AD
-        lda     #$00
-        sbc     $09AE
-        sta     $09AE
+L9779:  SUB16C  #$0000, $09AD, $09AD
         rts
 
 L978B:  tax
@@ -7089,11 +7027,11 @@ L97E5:  inc     $34
         sta     $09E5
         LDAX    $09DE
         STAX    $C2
-        LDAX    $0A11
+        LDAX    L0A11
         jsr     ScaleC2ByAX
         STAX    $09E0
         LDAX    $0A0B
-        ldy     $09E3
+        ldy     OnGroundFlag
         beq     L982F
         lda     #$00
         ldx     #$00
@@ -7151,13 +7089,7 @@ L982F:  clc
         LDAX    $09FD
         jsr     ScaleC2ByAX
         STAX    $09CB
-        lda     $09CB
-        sec
-        sbc     $08B9
-        sta     $09CB
-        lda     $09CC
-        sbc     $08BA
-        sta     $09CC
+        SUB16C  $09CB, $08B9, $09CB
         lda     $08B9
         ora     $08BA
         beq     L990E
@@ -7252,7 +7184,7 @@ L99A1:  LDAX    $09AB
         adc     #$00
 L99C5:  tax
         pla
-        ldy     $09E3
+        ldy     OnGroundFlag
         bne     L99D7
         clc
         adc     $09DC
@@ -7285,7 +7217,7 @@ L99D7:  sta     $6C
         sbc     #$00
         bpl     L9A0D
         dex
-L9A0D:  stx     $09E3
+L9A0D:  stx     OnGroundFlag
         txa
         beq     L9A6A
         lda     #$00
@@ -7310,7 +7242,7 @@ L9A37:  ldx     #$04
         bpl     L9A4B
         stx     $0834
         lda     #$00
-        sta     $0A12
+        sta     L0A11+1
 L9A4B:  lda     $6F
         clc
         adc     #$0A
@@ -7394,7 +7326,7 @@ L9AF5:  sta     $09AF
         stx     $09B0
 L9AFB:  lda     $0838
         beq     L9B1E
-        lda     $0A12
+        lda     L0A11+1
         bne     L9B19
         jsr     L9B1F
         lda     $0838
@@ -7502,13 +7434,7 @@ ApplySlewDeltas:
 
 L9BC5:  cmp     #$C0
         bcs     L9BE8
-L9BC9:  lda     #$00
-        sec
-        sbc     $6C
-        sta     $6C
-        lda     #$00
-        sbc     $6D
-        sta     $6D
+L9BC9:  SUB16C  #$00, $6C, $6C
         lda     $6D
         eor     #$80
         sta     $6D
@@ -7594,7 +7520,7 @@ L9C4A:  lda     $09AE
         adc     #$16
         cmp     #$2C
         bcs     L9C68
-        lda     $0A12
+        lda     L0A11+1
         clc
         adc     #$53
         cmp     #$A6
@@ -8063,7 +7989,7 @@ L9FE9:  lda     $FB
         bne     L9FF0
         rts
 
-L9FF0:  lda     $0A12
+L9FF0:  lda     L0A11+1
         cmp     #$5A
         bcc     L9FF9
         lda     #$5A
@@ -8077,7 +8003,7 @@ L9FF9:  pha
         sec
         sbc     $B6
         tay
-        lda     $0A11
+        lda     L0A11
         rol     a
         pla
         rol     a
@@ -8127,13 +8053,13 @@ LA051:  sta     $2A
 LA054:  lda     $FB
         and     #$02
         beq     LA08E
-        lda     $09E3
+        lda     OnGroundFlag
         bne     LA065
         lda     $09C2
         jmp     LA070
 
 LA065:  lda     #$00
-        ldy     $0A12
+        ldy     L0A11+1
         beq     LA070
         sec
         sbc     RudderPos
@@ -8781,15 +8707,8 @@ LA500:  sta     $C0
         sta     $BF
         rts
 
-LA524:  lda     Altitude
-        clc
-        adc     #$09
-        sta     $C2
-        lda     Altitude+1
-        adc     #$00
-        sta     $C3
-        lda     #$0C
-        ldx     #$4E
+LA524:  ADD16C  Altitude, #$09, $C2
+        LDAX    #$4E0C
         jsr     MultiplyAXByC2
         txa
         sec
@@ -10193,13 +10112,7 @@ LB305:  lda     (L003C),y
         sta     L003C
         bcc     LB31A
         inc     $3D
-LB31A:  lda     $3E
-        clc
-        adc     #$80
-        sta     $3E
-        lda     $3F
-        adc     #$00
-        sta     $3F
+LB31A:  ADD16C  $3E, #$80, $3E
         cmp     #$08
         bmi     LB303
         lda     $3E

@@ -381,7 +381,11 @@ RadarView:      .byte   0       ; $01 if in Radar View mode
 
 EditModeFlag:   .byte   0
 
-        brk
+ModeLibraryAction:
+                .byte   0
+;;; 1 = read
+;;; 2 = save
+
         brk
         brk
         brk
@@ -696,7 +700,10 @@ L09DA:  dey
         brk
         brk
         .byte   $FF
-        .byte   $FF
+
+OnGroundFlag:   .byte   $FF
+;;; $FF when on ground, $00 otherwise
+
         brk
         brk
         brk
@@ -740,8 +747,7 @@ L09F7:  brk
         brk
         brk
         brk
-        brk
-L0A12:  brk
+L0A11:  .word   0               ; Airspeed??? Ground Speed???
         brk
         brk
         brk
@@ -1548,13 +1554,7 @@ L158E:  lda     $C2
 L159A:  dec     $C2
 L159C:  lda     $C5
         bpl     :+
-        lda     #$00
-        sec
-        sbc     $C4
-        sta     $C4
-        lda     #$00
-        sbc     $C5
-        sta     $C5
+        SUB16C  #$00, $C4, $C4
         bpl     :+
         dec     $C4
         dec     $C5
@@ -1738,24 +1738,12 @@ ScaleC2ByC4 := ZPScale::ScaleC2ByC4
         ;; If `val1` is negative, invert it
         lda     val1+1
         bpl     :+
-        lda     #$00
-        sec
-        sbc     val1
-        sta     val1
-        lda     #$00
-        sbc     val1+1
-        sta     val1+1
+        SUB16C  #$00, val1, val1
 :
         ;; If `val2` is negative, invert it
         lda     val2+1
         bpl     :+
-        lda     #$00
-        sec
-        sbc     val2
-        sta     val2
-        lda     #$00
-        sbc     val2+1
-        sta     val2+1
+        SUB16C  #$00, val2, val2
 :
         ;; Now both `val1` and `val2` are positive...
         ldx     val1
@@ -1802,13 +1790,7 @@ L1710:
         ;; Invert `val1` if signs mismatched
         pla
         bpl     :+
-        lda     #$00
-        sec
-        sbc     val1
-        sta     val1
-        lda     #$00
-        sbc     val1+1
-        sta     val1+1
+        SUB16C  #$00, val1, val1
 :
         ;; Add 35 to $32-$33 ???
         lda     $32
@@ -2061,7 +2043,7 @@ L188C:  rts
 
 ;;; 188D: UpdateAltimeterIndicator
 .proc UpdateAltimeterIndicator
-        lda     L0A12
+        lda     L0A11+1
         tax
         lsr     a
         lsr     a
@@ -2701,13 +2683,7 @@ write:
 
 :       lda     #$2D
         sta     ($B8),y
-        lda     #$00
-        sec
-        sbc     $B6
-        sta     $B6
-        lda     #$00
-        sbc     $B7
-        sta     $B7
+        SUB16C  #$00, $B6, $B6
         bmi     L1C67
 
         ;; Prepare 5-digit number for display

@@ -360,20 +360,14 @@ LF9B3:  brk
 
 LF9B4:  rts
 
-LF9B5:  lda     $09E3
+LF9B5:  lda     OnGroundFlag
         bne     LF9B4
         ldx     #$00
         lda     $09A3
         bpl     LF9C2
         dex
 LF9C2:  stx     $A5
-        lda     $5A
-        sec
-        sbc     $09A2
-        sta     $5A
-        lda     $5B
-        sbc     $09A3
-        sta     $5B
+        SUB16C  $5A, $09A2, $5A
         lda     $5C
         sbc     $A5
         sta     $5C
@@ -385,13 +379,7 @@ LF9C2:  stx     $A5
         bpl     LF9E7
         dex
 LF9E7:  stx     $A5
-        lda     $62
-        sec
-        sbc     $09A4
-        sta     $62
-        lda     $63
-        sbc     $09A5
-        sta     $63
+        SUB16C  $62, $09A4, $62
         lda     $64
         sbc     $A5
         sta     $64
