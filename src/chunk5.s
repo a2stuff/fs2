@@ -4980,7 +4980,7 @@ L8782:  lda     $33
 L8794:  jsr     LA7F4
         lda     SlewMode
         beq     L87A2
-        jsr     L9B47
+        jsr     ApplySlewDeltas
         jmp     L87A8
 
 L87A2:  jsr     L97BF
@@ -5064,7 +5064,7 @@ L8863:  jsr     L9C40
         jsr     LA054
         lda     JoystickMode
         beq     L8871
-        jsr     ReadPaddlesIfButtonDown
+        jsr     CalibrateJoystickIfButtonDown
 L8871:  inc     $2B
         jmp     L8782
 
@@ -5373,11 +5373,11 @@ KeyTable:
         .addr   Ignore          ; Ctrl+Q
         .addr   Ignore          ; Ctrl+R
         .addr   Ignore          ; Ctrl+S
-        .addr   Transponder     ; Ctrl+T
+        .addr   TransponderOrTransferParams ; Ctrl+T
         .addr   MoreThrottle    ; Ctrl+U Right Arrow
         .addr   VORS            ; Ctrl+V
         .addr   Ignore          ; Ctrl+W
-        .addr   ReadModeFromDisk    ; Ctrl+X
+        .addr   Transponder     ; Ctrl+X
         .addr   Ignore          ; Ctrl+Y
         .addr   Ignore          ; Ctrl+Z
         .addr   EditMode        ; Ctrl+[ Escape
@@ -5421,7 +5421,7 @@ KeyTable:
         .addr   ADF             ; A
         .addr   YokeUp          ; B
         .addr   RudderLeft      ; C
-        .addr   ToggleSlewDigits  ; D
+        .addr   SlewToggleDigits  ; D
         .addr   Ignore          ; E
         .addr   YokeLeft        ; F
         .addr   YokeCenter      ; G
@@ -5504,20 +5504,21 @@ KeyTable:
 
 ;;; ============================================================
 
-Paddle1Reading: .byte   $40
-Paddle0Readng:  .byte   $40
+;;; Center position, after calibrating with button down.
+Paddle1Center:  .byte   $40
+Paddle0Center:  .byte   $40
 
 .proc ReadPaddleDeltas
         jsr     ReadPaddles
         tya
         sec
-        sbc     Paddle1Reading
-        jsr     MapPaddleDelta
+        sbc     Paddle1Center
+        jsr     ScalePaddleValue
         pha
         txa
         sec
-        sbc     Paddle0Readng
-        jsr     MapPaddleDelta
+        sbc     Paddle0Center
+        jsr     ScalePaddleValue
         cmp     #$80
         ror     a
         jsr     L9259
@@ -5529,15 +5530,13 @@ Paddle0Readng:  .byte   $40
 
 ;;; ============================================================
 
-;;; If either button is down, read paddles.
-
-.proc ReadPaddlesIfButtonDown
+.proc CalibrateJoystickIfButtonDown
         lda     BUTN0
         ora     BUTN1
         bpl     :+
         jsr     ReadPaddles
-        sty     Paddle1Reading
-        stx     Paddle0Readng
+        sty     Paddle1Center
+        stx     Paddle0Center
 :       rts
 .endproc
 
@@ -5576,18 +5575,19 @@ L8C5A:  rts
 
 ;;; ============================================================
 
+;;; Scale and clamp value to -127...127
 ;;; Uses: $C6
 
-.proc MapPaddleDelta
+.proc ScalePaddleValue
         sta     $C6
         clc
         adc     $C6
         bvc     L8C69
         bpl     L8C67
-        lda     #$7F
+        lda     #127
         rts
 
-L8C67:  lda     #$81
+L8C67:  lda     #AS_BYTE(-127)
 L8C69:  rts
 .endproc
 
@@ -5638,7 +5638,7 @@ L8C88:  cmp     #'`'            ; ignore lower-case range
 ;;; 1 key
 ;;; Magnetos: off
 ;;; Nav Radio / VORS: Select 1
-Select1:
+.proc Select1
         ldx     #$01
         lda     InputMode
         cmp     #$03            ; Magnetos ?
@@ -5657,6 +5657,7 @@ L8CBE:  cmp     #$0C            ; VORS ?
         bne     L8CC5
         stx     $0A71
 L8CC5:  rts
+.endproc
 
 L8CC6:  ldy     #$00            ; 64k: Patched to JMP `LE2B3`
         sty     InputMode
@@ -5665,7 +5666,7 @@ L8CC6:  ldy     #$00            ; 64k: Patched to JMP `LE2B3`
 ;;; 2 key
 ;;; Magnetos: Right
 ;;; Nav Radio / VORS: Select 2
-Select2:
+.proc Select2
         lda     InputMode
         ldx     #$02
         cmp     #$03            ; Magnetos
@@ -5685,6 +5686,7 @@ L8CE5:  cmp     #$0C
         bne     L8CEC
         stx     $0A71
 L8CEC:  rts
+.endproc
 
 ;;; 3 key
 MagnetosLeft:
@@ -5708,7 +5710,7 @@ SlewPitchDown:
         bne     L8CC6
 
 ;;; , key
-KeyDecrease:
+.proc KeyDecrease
         lda     InputMode       ; 64k: patched to JSR `KeyDecreasePatch`
         nop
         ldx     #$00
@@ -5844,6 +5846,7 @@ L8DEA:  lda     InputMode
 L8DF8:  jmp     UpdateFuelTankIndicator
 
 L8DFB:  rts
+.endproc
 
 .proc DecComOrNavLowerDigits
         cpx     #'0'
@@ -5881,8 +5884,8 @@ L8E0C:  sec
 .endproc
 
 ;;; . key
-KeyIncrease:                    ; 64k: Patched to JSR `KeyIncreasePatch`
-        lda     InputMode
+KeyIncrease:
+        lda     InputMode       ; 64k: Patched to JSR `KeyIncreasePatch`
         nop
         ldx     #$00
         stx     InputCounter
@@ -6059,17 +6062,21 @@ L8F56:  ldx     #'0'
 .endproc
 
 ;;; W key
-DeclareWar:
+.proc DeclareWar
         lda     #$01
         ora     WarDeclared
         sta     WarDeclared
         rts
+.endproc
 
         rts                     ; ???
 
-Transponder:
+;;; Ctrl+T
+.proc TransponderOrTransferParams
         lda     SlewMode
-        beq     ReadModeFromDisk
+        beq     Transponder
+
+        ;; Transfer bank, pitch, heading to current flight parameters.
         lda     #$00
         sec
         sbc     $6C
@@ -6077,6 +6084,7 @@ Transponder:
         lda     #$00
         sbc     $6D
         sta     $09AE
+
         lda     #$00
         sec
         sbc     $6E
@@ -6084,12 +6092,15 @@ Transponder:
         lda     #$00
         sbc     $6F
         sta     $09B0
+
         LDAX    $70
         STAX    $09E4
+
         rts
+.endproc
 
 ;;; Ctrl+X
-ReadModeFromDisk:
+.proc Transponder
         lda     InputCounter
         beq     L8FBE
         lda     InputMode
@@ -6101,6 +6112,7 @@ ReadModeFromDisk:
         bne     L8FC0
 L8FBE:  lda     #$08            ; Transponder
 L8FC0:  jmp     SetInputModeAndCounter
+.endproc
 
 ;;; Ctrl+A / A key
 ADF:    nop                     ; 64k: Patched to JMP `ADFKeyboardHook`
@@ -6452,7 +6464,7 @@ L91DE:  lda     #$50
 L91F2:  rts
 
 ;;; D key
-ToggleSlewDigits:
+SlewToggleDigits:
         inc     ShowSlewDigits
         rts
 
@@ -7413,40 +7425,44 @@ L9B1F:  lda     #$19
         inc     $08A5
         rts
 
-L9B47:  lsr     $08C2
-        bcc     L9B4F
-        jsr     L9211
+;;; ============================================================
 
-L9B4F:  lda     YokeHorizPos
-        jsr     L9C13
+ApplySlewDeltas:
+        lsr     $08C2
+        bcc     :+
+        jsr     L9211
+:
+        lda     YokeHorizPos
+        jsr     MapYokePosToSlewDelta
         clc
         adc     $5B
         sta     $5B
         txa
         adc     $5C
         sta     $5C
-        lda     $BC
+        lda     $BC             ; hi byte
         adc     $5D
         sta     $5D
 
         lda     #$00
         sec
         sbc     YokeVertPos
-        jsr     L9C13
+        jsr     MapYokePosToSlewDelta
         clc
         adc     $63
         sta     $63
         txa
         adc     $64
         sta     $64
-        lda     $BC
+        lda     $BC             ; hi byte
         adc     $65
         sta     $65
-        ldx     #$FF
+
+        ldx     #$FF            ; sign extend
         lda     SlewAltRate
-        bmi     L9B86
+        bmi     :+
         inx
-L9B86:  clc
+:       clc
         adc     $5F
         sta     $5F
         txa
@@ -7455,26 +7471,27 @@ L9B86:  clc
         txa
         adc     $61
         sta     $61
-        bpl     L9B9F
+        bpl     :+
         lda     #$00
         sta     $5F
         sta     $60
         sta     $61
-L9B9F:  lda     $60
+:       lda     $60
         sta     $60             ; ???
+
         lda     SlewPitchRate
         asl     a
         tay
         lda     $6F
         clc
         adc     #$40
-        bpl     L9BB6
+        bpl     :+
         tya
         eor     #$FF
         clc
         adc     #$01
         tay
-L9BB6:  tya
+:       tya
         clc
         adc     $6D
         sta     $6D
@@ -7501,6 +7518,7 @@ L9BC9:  lda     #$00
         lda     $71
         eor     #$80
         sta     $71
+
 L9BE8:  lda     SlewRollRate
         clc
         adc     $6F
@@ -7509,7 +7527,8 @@ L9BE8:  lda     SlewRollRate
         sec
         sbc     SlewYawRate
         sta     $71
-L9BF8:  lda     $65
+L9BF8:
+        lda     $65
         clc
         adc     #$40
         sta     NorthPosition+1
@@ -7523,7 +7542,9 @@ L9BF8:  lda     $65
         sta     EastPosition
         rts
 
-L9C13:  tax
+;;; Returns low byte in A, high byte in $BC
+.proc MapYokePosToSlewDelta
+        tax
         bpl     L9C2B
         lda     #$FF
         sta     $BC
@@ -7553,6 +7574,9 @@ L9C31:  dex
         rol     a
         rol     $BC
         jmp     L9C31
+.endproc
+
+;;; ============================================================
 
 L9C40:  ldx     $0899
         dex
