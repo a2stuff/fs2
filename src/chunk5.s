@@ -3202,6 +3202,7 @@ L7983:  .addr   AndMaskTable1   ; self-modified operand
         rts
 
 ;;; ============================================================
+;;; Line drawing routine???
 
 L7988:  lda     $E9
         sec
@@ -4943,10 +4944,11 @@ L8782:  lda     $33
         adc     #$0D
         sta     $33
         lda     EditModeFlag
-        ora     $08A7
-        beq     L8794
+        ora     ModeLibraryAction
+        beq     :+
         jsr     LA7E8
-L8794:  jsr     LA7F4
+:
+        jsr     LA7F4
         lda     SlewMode
         beq     L87A2
         jsr     ApplySlewDeltas
@@ -4979,16 +4981,16 @@ P64K_9: jsr     NoOp            ; 64k: Patched to JSR `LF7E2`
 P64K_6: jsr     NoOp            ; 64K: Patched to JSR `LDD7A`
         lda     WW1AceMode
         beq     :+
-        jsr     LA7EE
+        jsr     LA7EE           ; Draw gunsight
 :
 P64K_3: jsr     NoOp            ; 64K: Patched to JSR `DrawViewOverlays`
         jsr     L9F6B
         jsr     L9FE9
 P64K_8: jsr     NoOp            ; 64k: Patched to JSR `HideOrShowInstruments`
         lda     DemoMode
-        beq     L8804
+        beq     :+
 P64K_C: jsr     DemoMode48K     ; 64k: Patched to JSR `DemoMode64K`
-L8804:  lda     $2B
+:       lda     UpdateCounter
         lsr     a
         bcs     L8836
         lsr     a
@@ -4997,7 +4999,7 @@ L8804:  lda     $2B
         jsr     MaybeBootDOS
         jsr     UpdateFuelTankGauges::Left
 P64K_B: jsr     NoOp            ; 64k: Patched to JSR `LFA56`
-        lda     $2B
+        lda     UpdateCounter
         and     #$04
         beq     L8863
         jsr     DrawDME
@@ -5034,7 +5036,7 @@ L8863:  jsr     L9C40
         lda     JoystickMode
         beq     L8871
         jsr     CalibrateJoystickIfButtonDown
-L8871:  inc     $2B
+L8871:  inc     UpdateCounter
         jmp     L8782
 
 ;;; Keyboard input ring buffer
@@ -7264,7 +7266,7 @@ L9A6A:  cmp     $09E2
         and     #$03
         bne     L9A85
         ldx     #$00
-        adc     $2B
+        adc     UpdateCounter
         bpl     L9A7F
         dex
 L9A7F:  sta     $09A0
@@ -7933,8 +7935,8 @@ L9F6B:  lda     $FB
         and     #$08
         bne     :+
         rts
-
-:       lda     $5F
+:
+        lda     $5F
         sta     $0A39
         clc
         adc     $0A36
@@ -8385,7 +8387,8 @@ LA2D9:  inx
         bne     LA2F5
         cmp     #$2C
         bcc     LA30F
-        bcs     LA2F5
+        bcs     LA2F5           ; always
+
 LA2E9:  .byte   $E0
 LA2EA:  inc     $0E90,x
         bne     LA30C
@@ -8829,7 +8832,7 @@ LA61B:  LDAX    LA7E0
         beq     LA639
         lda     $5F
         bmi     LA632
-        lda     $2B
+        lda     UpdateCounter
         bpl     LA639
 LA632:  nop
         jsr     ClearViewportsToBlack
@@ -8852,7 +8855,7 @@ LA64C:  inx
 LA656:  lda     $08E6
         sta     $9F
         LDAX    $08E7
-        STAX    $1E03
+        STAX    L1E03
         jsr     LA6CD
 LA66A:  rts
 
@@ -8873,9 +8876,9 @@ LA68F:  LDAX    LA617
 
 LA698:  STAX    $9E
 
-        lda     #<$A7E0
+        lda     #<LA7E0
         sta     L1E03
-        lda     #>$A7E0
+        lda     #>LA7E0
         sta     L1E03+1
 
         jsr     LA6CD
@@ -8890,7 +8893,7 @@ LA698:  STAX    $9E
         STAX    L1E03
 LA6CD:  lda     HISCR
 LA6D0:  lda     $9E
-        sta     $1E01
+        sta     L1E01
         jsr     L1EC4
         bcs     LA6F3
         lda     #$01
@@ -8905,7 +8908,7 @@ LA6DF:  jsr     L1EAD
         sta     $08A3
         rts
 
-LA6F3:  lda     $1E01
+LA6F3:  lda     L1E01
         jmp     L1F89
 
 LA6F9:  jsr     L1EBC
@@ -9051,8 +9054,8 @@ LA7E8:  jsr     LA674
         brk
         brk
         brk
-LA7EE:  jsr     LA67D
-        brk
+LA7EE:  jsr     LA67D           ; replaced with JMP $AA03
+        brk                     ; replaced with JMP $AA03
         brk
         brk
 LA7F4:  jsr     LA686
@@ -9226,7 +9229,7 @@ LAB91:  nop
         jsr     InitZeroPage
         jmp     LABBA
 
-LABB4:  lda     $1E01
+LABB4:  lda     L1E01
         jmp     L1F89
 
 LABBA:  jsr     Apply64KPatchTable
@@ -9273,22 +9276,22 @@ LABEC:
         lda     #>$0200
         sta     L1E03+1
         lda     #$00
-        sta     $1E01
+        sta     L1E01
 
 :       jsr     L1EAD
         bcs     LAC39
-        lda     $1E01
+        lda     L1E01
         cmp     #$07
         bcc     :-
         lda     #$00
-        sta     $1E03
+        sta     L1E03
         lda     #$60
-        sta     $1E04
+        sta     L1E03+1
         lda     #$08
-        sta     $1E01
+        sta     L1E01
 :       jsr     L1EAD
         bcs     LAC39
-        lda     $1E01
+        lda     L1E01
         cmp     #$1A
         bcc     :-
 
@@ -9415,14 +9418,14 @@ LACB4:  lda     #$00
 
 .proc LAD15
         lda     #$00
-        sta     $1E03
+        sta     L1E03
         lda     #$40
-        sta     $1E04
+        sta     L1E03+1
         lda     #$1A
-        sta     $1E01
+        sta     L1E01
 LAD24:  jsr     L1EAD
         bcs     LAD31
-        lda     $1E01
+        lda     L1E01
         cmp     #$22
         bcc     LAD24
         clc
@@ -9593,7 +9596,7 @@ ProbeLCMemory:
         lda     #>$D000
         sta     L1E03+1
         lda     #$00
-        sta     $1E01
+        sta     L1E01
 
         jsr     L1EB3
 
@@ -9956,23 +9959,24 @@ LB1AD:  cpy     #$14
 LB1BB:  inc     $08C3
 LB1BE:  ora     #$01
 LB1C0:  ora     #$02
-LB1C2:  ldy     $2B
+LB1C2:  ldy     UpdateCounter
         cpy     #$3F
         bcs     LB1CA
         ora     #$08
-LB1CA:  .byte   $A4
-LB1CB:  .byte   $2B
+LB1CA:  ldy     UpdateCounter
+LB1CB := *-1
         cpy     #$3F
         ora     #$04
 LB1D0:  ora     $0991
         sta     $0991
         rts
 
+        ;; $D1B7: Overwritten - via code at LD402
         adc     $B920,y
         asl     $EEB0,x
         jsr     LB238
         jsr     L1EB0
-        bcs     LB1CB
+        bcs     LB1CB           ; ???
         bit     $1FBD
         lda     #$00
         sta     $1E0E
@@ -10013,9 +10017,9 @@ LB219:  lda     $0924,x
         jmp     LB1F4
 
 LB238:  LDAX    $0932
-        STAX    $1E03
+        STAX    L1E03
         lda     #$40
-        sta     $1E01
+        sta     L1E01
         rts
 
         ldx     #$00

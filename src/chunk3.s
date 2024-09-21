@@ -61,36 +61,36 @@ LD3E2:  jmp     LD95D
 ;;; ============================================================
 
 LD3E5:  lda     #$00
-        sta     $1E09
+        sta     L1E09
         lda     #$20
-        sta     $1E0B
+        sta     L1E0B
         bit     LD972
-        ldx     $1E08
+        ldx     BootSlot
         lda     $D088,x
         clc
         rts
 
 LD3FA:  jsr     LD459
         bcs     LD41E
-        jsr     L1FC4
-LD402:  lda     ($A5),y
+        jsr     PopulateA5ThruA8From1E03
+:       lda     ($A5),y
         sta     ($A7),y
         iny
-        bne     LD402
+        bne     :-
         inc     $A6
         inc     $A8
         inc     L1E03+1
         dex
-        bne     LD402
+        bne     :-
         jsr     LD48B
         jsr     LD5C8
         lda     #$00
-        sta     $1E09
+        sta     L1E09
 LD41E:  rts
 
 LD41F:  jsr     LD459
         bcs     LD458
-        jsr     L1FC4
+        jsr     PopulateA5ThruA8From1E03
         stx     $A0
         ldx     #$00
 LD42B:  lda     $A6
@@ -121,7 +121,7 @@ LD459:  jsr     L1FE0
         bcs     LD484
 LD45E:  jsr     L1EC6
         lda     #$FF
-        sta     $1E09
+        sta     L1E09
         rts
 
         .byte   $02
@@ -136,16 +136,16 @@ LD477:  jsr     LD95D
         jmp     LD46A
 
 LD47D:  lda     #$FF
-        sta     $1E09
+        sta     L1E09
         clc
         rts
 
 LD484:  lda     #$00
-        sta     $1E09
+        sta     L1E09
         sec
         rts
 
-LD48B:  inc     $1E01
+LD48B:  inc     L1E01
         bne     LD493
         inc     $1E02
 LD493:  rts
@@ -155,7 +155,7 @@ LD494:  clc
 
         .res    95, 0
 
-LD4F5:  lda     $1E01
+LD4F5:  lda     L1E01
         asl     a
         clc
         adc     #$02
@@ -169,10 +169,10 @@ LD507:  jsr     LD4F5
         bcs     LD52C
         jsr     LD52D
         lda     #$00
-        sta     $1E09
+        sta     L1E09
         jsr     LD5C8
         bcs     LD52C
-        inc     $1E01
+        inc     L1E01
         bne     LD521
         inc     $1E02
 LD521:  lda     $A5
@@ -182,10 +182,10 @@ LD521:  lda     $A5
         clc
 LD52C:  rts
 
-LD52D:  jsr     L1FC4
-        lda     #$60
+LD52D:  jsr     PopulateA5ThruA8From1E03
+        lda     #<$3B60
         sta     $A7
-        lda     #$3B
+        lda     #>$3B60
         sta     $A8
         sty     $B6
 LD53A:  lda     ($A5),y
@@ -572,7 +572,7 @@ LDCDA:  lda     #$00
 
 LDCE9:  jsr     ClearViewportsToBlack
         CALLAX  DrawMessageOrange, msg_problem
-        lda     $2B
+        lda     UpdateCounter
         adc     $5F
         and     #$0E
         tax
@@ -966,44 +966,16 @@ LE047:  .byte   $01
 LE048:  brk
 LE049:  brk
 LE04A:  brk
-LE04B:  ora     $110F
-        .byte   $13
-        ora     $16,x
-        clc
-        ora     $1C1B,y
-        ora     $1F1E,x
-        jsr     $2221
-        .byte   $23
-        bit     $25
-        rol     $27
-        plp
-        and     #$2A
-        .byte   $2B
-        bit     $2E2D
-        .byte   $2F
-        bmi     $E09B
-        .byte   $32
-LE06B:  brk
-        .byte   $03
-        .byte   $07
-        .byte   $0B
-        .byte   $0F
-        .byte   $12
-        .byte   $13
-        .byte   $14
-        ora     $18,x
-        .byte   $1B
-        asl     $2421,x
-        rol     $28
-        rol     a
-        bit     $2F2D
-        bmi     LE0B3
-        .byte   $34
-        and     $37,x
-        and     $3D3B,y
-        .byte   $3F
-        eor     ($43,x)
-        .byte   $46
+LE04B:
+        .byte   $0D, $0F, $11, $13, $15, $16, $18, $19
+        .byte   $1B, $1C, $1D, $1E, $1F, $20, $21, $22
+        .byte   $23, $24, $25, $26, $27, $28, $29, $2A
+        .byte   $2B, $2C, $2D, $2E, $2F, $30, $31, $32
+LE06B:
+        .byte   $00, $03, $07, $0B, $0F, $12, $13, $14
+        .byte   $15, $18, $1B, $1E, $21, $24, $26, $28
+        .byte   $2A, $2C, $2D, $2F, $30, $32, $34, $35
+        .byte   $37, $39, $3B, $3D, $3F, $41, $43, $46
 
 ;;; Improved engine (magneto, mixture, prop autorotation effects). ???
 
@@ -1023,7 +995,7 @@ LE09F:  lda     WW1AceMode
         cmp     #$07
         beq     LE0C2
         lda     LE046
-LE0B3:  and     $0999
+        and     $0999
         sta     $B7
         lda     LE047
         and     $099A
@@ -1058,7 +1030,7 @@ LE0D9:  lda     RealityMode
         lda     Season
         cmp     #$01
         bne     LE10B
-        lda     $2B
+        lda     UpdateCounter
         and     #$04
         beq     LE110
 LE10B:  lda     #$01
@@ -1067,9 +1039,9 @@ LE110:  lda     L0A11+1
         lsr     a
         lsr     a
         cmp     #$1F
-        bcc     LE11B
+        bcc     :+
         lda     #$1F
-LE11B:  tax
+:       tax
         lda     LE06B,x
         sta     L00BA
         ldy     $0A6F

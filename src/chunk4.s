@@ -574,28 +574,22 @@ Season:         .byte   4
         brk
         brk
         brk
+L095F:  .byte   0
+L0960:  .byte   0
+L0961:  .byte   0
+L0962:  .byte   0
+L0963:  .byte   0
+L0964:  .byte   0
+L0965:  .word   0
+        .word   0
+L0969:  .word   0
         brk
         brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
-        brk
+L096D:  .word   0
         brk
         brk
 
-WindSpeed:              .byte   0
-
-        brk
+WindSpeed:              .word   0
 
 WindDirection:          .word   0
 
@@ -3015,11 +3009,11 @@ loop:   lda     HiresTableHi,x
         .byte   $13
         .byte   $14
         brk
-        .byte   $20
+
+L1E01:  .byte   $20
         brk
 
-L1E03:  .byte   $05
-L1E04:  brk
+L1E03:  .word   $0005
         brk
         brk
         brk
@@ -3027,7 +3021,7 @@ L1E04:  brk
 BootSlot:
         .byte   $60     ; high nibble = boot slot
 
-        brk
+L1E09:  .byte   0
         .byte   $20
 L1E0B:  .byte   $20
 L1E0C:  ora     ($D9,x)
@@ -3152,7 +3146,7 @@ L1EC4:  clc
 L1EC6:  jsr     SwapZP
         lda     #$00
         sta     $53
-        lda     $1E01
+        lda     L1E01
         lsr     a
         lsr     a
         clc
@@ -3326,9 +3320,10 @@ L1F89 := ReadBlocks::L1F89
         brk
         brk
 
-L1FC4:  lda     L1E03
+PopulateA5ThruA8From1E03:
+        lda     L1E03
         sta     $A5
-        lda     L1E04
+        lda     L1E03+1
         sta     $A6
         lda     #$00
         sta     $A7
@@ -3341,22 +3336,21 @@ L1FC4:  lda     L1E03
         ldy     #$00
         rts
 
-L1FE0:  lda     $1E01
+L1FE0:  lda     L1E01
         cmp     #$88
-        bcs     L1FFB
+        bcs     :+
         lsr     a
         php
         lsr     a
-        .byte   $8D
-        .byte   $0B
-        asl     a:$A9,x
+        sta     L1E0B
+        lda     #$00
         rol     a
         plp
         rol     a
         sta     L1E0C
         inc     L1E0B
         asl     L1E0B
-L1FFB:  rts
+:       rts
 
         brk
         brk

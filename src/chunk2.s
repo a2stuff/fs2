@@ -401,7 +401,7 @@ LF9E7:  stx     $A5
         lda     LF9B3
         and     #$01
         beq     LFA31
-        lda     $2B
+        lda     UpdateCounter
         and     #$C0
         beq     LFA3E
         cmp     #$80
@@ -425,31 +425,31 @@ LFA4F:  sta     $08A1
         rts
 
 LFA56:  lda     $5F
-        cmp     $095F
+        cmp     L095F
         lda     $60
-        sbc     $0960
+        sbc     L0960
         bmi     LFA8F
         lda     $5F
-        cmp     $0961
+        cmp     L0961
         lda     $60
-        sbc     $0962
+        sbc     L0962
         bmi     LFA88
         lda     $5F
-        cmp     $0963
+        cmp     L0963
         lda     $60
-        sbc     $0964
+        sbc     L0964
         bmi     LFA81
 
-        LDAX    #$0965
+        LDAX    #L0965
         jmp     LFA96
 
-LFA81:  LDAX    #$0969
+LFA81:  LDAX    #L0969
         jmp     LFA96
 
-LFA88:  LDAX    #$096D
+LFA88:  LDAX    #L096D
         jmp     LFA96
 
-LFA8F:  LDAX    #$0971
+LFA8F:  LDAX    #WindSpeed
         inc     $09A6
 
 LFA96:  STAX    $BE

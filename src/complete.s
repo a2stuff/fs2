@@ -58,6 +58,8 @@ LCBANK1         := $C08B
 ColorByteEven   := $23
 ColorByteOdd    := $24
 
+UpdateCounter   := $2B
+
 HiresPageDelta  := $8D          ; Either +$20 or -$20
 
 HiresRowPtr     := $8E          ; $8E-$8F
