@@ -60,6 +60,8 @@ ColorByteOdd    := $24
 
 UpdateCounter   := $2B
 
+InputTickCounter := $31
+
 HiresPageDelta  := $8D          ; Either +$20 or -$20
 
 HiresRowPtr     := $8E          ; $8E-$8F

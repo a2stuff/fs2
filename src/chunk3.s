@@ -1012,9 +1012,9 @@ LE0C8:  lda     $0998
 LE0D4:  lda     $0997
         beq     LE0C2
 LE0D9:  lda     RealityMode
-        ora     $099B
+        ora     EngineOnFlag
         beq     LE10B
-        lda     $099B
+        lda     EngineOnFlag
         bne     LE110
         lda     L0A11+1
         cmp     #$25
@@ -1034,7 +1034,7 @@ LE0D9:  lda     RealityMode
         and     #$04
         beq     LE110
 LE10B:  lda     #$01
-        sta     $099B
+        sta     EngineOnFlag
 LE110:  lda     L0A11+1
         lsr     a
         lsr     a
@@ -1045,7 +1045,7 @@ LE110:  lda     L0A11+1
         lda     LE06B,x
         sta     L00BA
         ldy     $0A6F
-        lda     $099B
+        lda     EngineOnFlag
         beq     LE141
         lda     $0A58
         beq     LE143
@@ -1084,7 +1084,7 @@ LE16B:  tya
         lsr     a
         tay
         lda     LE04B,y
-        ldx     $099B
+        ldx     EngineOnFlag
         bne     LE179
         lda     #$00
 LE179:  sta     $0990
@@ -1115,7 +1115,7 @@ LE1B9:  lda     $FC
         and     #$40
         beq     LE22B
         ldx     #$00
-        lda     $099B
+        lda     EngineOnFlag
         beq     LE1D1
         ldx     #$06
         lda     $0991
@@ -1138,7 +1138,7 @@ LE1E8:  adc     #$0A
         adc     #$00
 LE1F2:  sta     $099C
 LE1F5:  ldx     #$00
-        lda     $099B
+        lda     EngineOnFlag
         beq     LE207
         ldx     #$06
         lda     $0991
@@ -1160,10 +1160,10 @@ LE21E:  adc     #$64
         lda     $099D
         adc     #$00
 LE228:  sta     $099D
-LE22B:  lda     $31
+LE22B:  lda     InputTickCounter
         and     #$1F
         bne     LE2AC
-        lda     $099B
+        lda     EngineOnFlag
         beq     LE2AC
         ldx     #$F2
         lda     WW1AceMode
@@ -1219,7 +1219,7 @@ LE28A:  lda     $0998
 LE2AC:  rts
 
 LE2AD:  lda     #$00
-        sta     $099B
+        sta     EngineOnFlag
         rts
 
 LE2B3:  ldy     #$00

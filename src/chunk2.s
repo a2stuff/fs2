@@ -253,13 +253,13 @@ MaybeRecord:
 
 EnableLCBank1:
         lda     #$01
-        sta     $08B0
+        sta     LCBank1Flag     ; set
         lda     LCBANK1
         lda     LCBANK1
         rts
 
 EnableLCBank2:
-        lsr     $08B0
+        lsr     LCBank1Flag     ; clear
         lda     LCBANK2
         lda     LCBANK2
         rts

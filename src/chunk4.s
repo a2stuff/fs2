@@ -396,7 +396,8 @@ ModeLibraryAction:
 RebootVector:   .addr   0
 RebootFlag:     .byte   1
 
-        brk
+LCBank1Flag:    .byte   0
+
         brk
         .byte   $9A
         .byte   $0D
@@ -450,7 +451,8 @@ Has64K:         .byte   1
         brk
         .byte   $04
         brk
-        brk
+
+Seconds:        .byte   0
 
 InputCounter:   .byte   0       ; ???
 
@@ -629,7 +631,8 @@ ADFMode:        .byte   0
         brk
 L0994:  ora     $00,y
 L0997:  ora     $0100,y
-        ora     ($01,x)
+        .byte   1
+EngineOnFlag:   .byte   1
 L099C:  brk
 L099D:  brk
         brk

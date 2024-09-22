@@ -11,7 +11,8 @@ LB9CE           := $B9CE
 
 L6000:  jmp     L610A
 
-L6003:  jmp     L639D
+FlipPagesFillViewportRelay:
+        jmp     FlipPagesFillViewport
 
         ;; Called from chunk2
 L6006:  jmp     L6734
@@ -428,7 +429,7 @@ L639C:  rts
 
 ;;; Flip pages and fill viewport with sky/ground. Also updates artificial horizon.
 
-.proc L639D
+.proc FlipPagesFillViewport
         txa
         bne     L63BE
 
@@ -4893,7 +4894,7 @@ HorizonANDMask:
 
 ;;; ============================================================
 
-        jmp     L8AC4
+        jmp     UpdateMinutesHoursDisplay
 
         ;; Called from chunk3
 TogglePauseRelay:
@@ -4938,8 +4939,11 @@ L8776:  jmp     LA63A
 
         jmp     L915D
 
+;;; ============================================================
+;;; Main Loop
+
 L877F:  jsr     LA7F4
-L8782:  lda     $33
+MainLoop:  lda     $33
         clc
         adc     #$0D
         sta     $33
@@ -4966,7 +4970,7 @@ L87A8:  jsr     LA60C
         bne     L87BE
         inx
 L87BE:  jsr     L89B6           ; 64k: Patched to JSR `LDDFC`
-        jsr     L6003
+        jsr     FlipPagesFillViewportRelay
         jsr     L6006
 P64K_9: jsr     NoOp            ; 64k: Patched to JSR `LF7E2`
         jsr     LA1E2
@@ -4995,6 +4999,7 @@ P64K_C: jsr     DemoMode48K     ; 64k: Patched to JSR `DemoMode64K`
         bcs     L8836
         lsr     a
         bcs     L882D
+
         jsr     LA5E1
         jsr     MaybeBootDOS
         jsr     UpdateFuelTankGauges::Left
@@ -5002,6 +5007,7 @@ P64K_B: jsr     NoOp            ; 64k: Patched to JSR `LFA56`
         lda     UpdateCounter
         and     #$04
         beq     L8863
+
         jsr     DrawDME
         jsr     L9DDA
         jsr     L9DFB
@@ -5012,7 +5018,7 @@ L882D:  jsr     UpdateOilTempAndPressureGauges::Temp
         jsr     L9AA3
         jmp     L8863
 
-L8836:  lsr     a
+L8836:  lsr     a               ; A = `UpdateCounter` >> 1
         bcs     L8842
         jsr     UpdateFuelTankGauges::Right
 P64K_4: jsr     NoOp            ; 64k: Patched to JSR `UpdateAltimeter10K`
@@ -5029,15 +5035,19 @@ P64K_2: jsr     NoOp            ; 64k: Patched to JSR `UpdateADFIndicator`
         rol     $0833
         adc     #$00
         sta     $0832
-        jmp     L8871
+        jmp     FinishMainLoop
 
 L8863:  jsr     L9C40
         jsr     LA054
         lda     JoystickMode
-        beq     L8871
+        beq     FinishMainLoop
         jsr     CalibrateJoystickIfButtonDown
-L8871:  inc     UpdateCounter
-        jmp     L8782
+
+FinishMainLoop:
+        inc     UpdateCounter
+        jmp     MainLoop
+
+;;; ============================================================
 
 ;;; Keyboard input ring buffer
 
@@ -5100,7 +5110,7 @@ L8933:  jsr     DrawNav1
         jsr     DrawNav2
         jsr     DrawCom1
         jsr     DrawXPNDR
-        jsr     L8AC4
+        jsr     UpdateMinutesHoursDisplay
         rts
 
 L8943:  LDAX    $0843
@@ -5194,6 +5204,8 @@ L89F0:  lda     $08B1
         lsr     $08BB
 L8A05:  rts
 
+;;; ============================================================
+
 ;;; Course Plotter replaces this with a NOP...
 MaybeBootDOS:
         rts
@@ -5204,15 +5216,21 @@ MaybeBootDOS:
         lda     RdROMWrRAM1
         jmp     (RebootVector)
 
+;;; ============================================================
+
 L8A15:  sbc     #$11
         sta     $33
-        lda     SoundMode
-        beq     L8A26
-        lda     $099B
-        beq     L8A26
-        lda     SPKR
-L8A26:  inc     $34
 
+        ;; Make sound if needed
+        lda     SoundMode
+        beq     :+
+        lda     EngineOnFlag
+        beq     :+
+        lda     SPKR
+:
+        inc     $34
+
+        ;; Enqueue key if needed
         lda     KBD
         bpl     :+
         and     #$7F
@@ -5221,22 +5239,24 @@ L8A26:  inc     $34
 :
         lda     KeyBufReadPos
         cmp     KeyBufWritePos
-        beq     L8A45
+        beq     :+
 
-        lda     $08B0
-        bne     L8A45
+        lda     LCBank1Flag
+        bne     :+
         jsr     MaybeProcessKey
-
-L8A45:  lda     JoystickMode
-        beq     L8A4D
+:
+        lda     JoystickMode
+        beq     :+
         jsr     ReadPaddleDeltas
-L8A4D:  inc     $31
-        lda     $31
+:
+        inc     InputTickCounter
+        lda     InputTickCounter
         lsr     a
-        bcc     L8A55
+        bcc     :+
 L8A54:  rts
 
-L8A55:  lda     $08BB
+:
+        lda     $08BB
         bne     L8A54
         lda     InputCounter
         beq     L8A62
@@ -5244,31 +5264,39 @@ L8A55:  lda     $08BB
 L8A62:  jsr     L93CA
         jsr     UpdateAirspeedIndicator
         jsr     UpdateVerticalSpeedIndicator
-        lda     $31
+        lda     InputTickCounter
         and     #$03
         bne     L8A54
-        lda     $31
+        lda     InputTickCounter
         and     #$07
         bne     L8A54
         jsr     LA55A
-        ldx     $08F0
-        cpx     #$3B
-        bne     L8A9F
+
+        ;; Increment Seconds/Minutes/Hours
+.scope
+        ldx     Seconds
+        cpx     #59
+        bne     IncSeconds
+
         ldy     Minutes
-        cpy     #$3B
-        bne     L8A99
+        cpy     #59
+        bne     IncMinutes
+
         inc     Hours
         lda     Hours
-        cmp     #$18
-        bne     L8A97
-        lda     #$00
+        cmp     #24
+        bne     :+
+        lda     #0
         sta     Hours
-L8A97:  ldy     #$FF
-L8A99:  iny
+:       ldy     #$FF
+IncMinutes:
+        iny
         sty     Minutes
         ldx     #$FF
-L8A9F:  inx
-        stx     $08F0
+IncSeconds:
+        inx
+        stx     Seconds
+.endscope
 
         ;; Update clock seconds display
         jsr     CheckForAbort
@@ -5284,12 +5312,12 @@ L8A9F:  inx
         sta     str_clock_ss+1
         CALLAX  DrawMessageOrange, msg_clock_ss
 
-        ;; ???
-        lda     $08F0
-        bne     NoOp
-L8AC4:  jsr     CheckForAbort
+        lda     Seconds
+        bne     NoOp            ; skip unless we just rolled over
+UpdateMinutesHoursDisplay:
 
         ;; Update clock minutes display
+        jsr     CheckForAbort
         lda     Minutes
         ldx     #'0'-1
 :       inx
@@ -6460,10 +6488,10 @@ L9211:  lda     #$00
         clc
         adc     $09CC
         cmp     $097C
-        bcc     L9246
+        bcc     :+
         LDAX    $09CB
         STAX    $08B9
-L9246:  jsr     L925C
+:       jsr     L925C
         jmp     L92B7
 
 ;;; H key
@@ -6505,7 +6533,7 @@ RudderLeft:
         sec
         sbc     #4
         cmp     #AS_BYTE(-128)
-        bne     L92B4
+        bne     RudderCommon
         rts
 
 ;;; M key
@@ -6515,7 +6543,7 @@ RudderRight:
         adc     #4
         bvs     L92DA
 
-L92B4:
+RudderCommon:
         sta     RudderPos
 L92B7:  lda     AutoCoordinationMode
         beq     L92CB
@@ -6533,7 +6561,7 @@ L92CB:  lda     RudderPos
 L92DA:  rts
 
 ;;; B key
-YokeUp:
+.proc YokeUp
         ldx     #$08            ; back
         jsr     MaybeSetViewDirectionAndAbort
 
@@ -6553,6 +6581,7 @@ L92F3:  sta     YokeVertPos
         bcc     L9300
         lda     #$50
 L9300:  jmp     L91D6
+.endproc
 
 ;;; ============================================================
 
@@ -6604,6 +6633,7 @@ L9311:  ldx     RudderPos
         LDAX    $0A23
         jsr     ScaleC2ByAX
         STAX    $09C5
+
 L9386:  lda     $09F0
         clc
         adc     $09B1
@@ -6642,9 +6672,13 @@ L9386:  lda     $09F0
         .byte   $37
         ora     $1919,y
         .byte   $19
+
 L93C9:  rts
 
-L93CA:  lda     SlewMode
+;;; ============================================================
+
+.proc L93CA
+        lda     SlewMode
         bne     L93C9
         ldx     $09AD
         lda     $09AE
@@ -6995,8 +7029,12 @@ L97B0:  jsr     ScaleC2ByAX
         bcc     L97BE
         inx
 L97BE:  rts
+.endproc
 
-L97BF:  lda     #$01
+;;; ============================================================
+
+.proc L97BF
+        lda     #$01
         sta     $08C2
         lda     $32
         tax
@@ -7278,9 +7316,14 @@ L9A85:  LDAX    $09DE
         jsr     L16A2
         LDAX    $C2
         STAX    $0A15
+.endproc
+
 L9AA2:  rts
 
-L9AA3:  lda     SlewMode
+;;; ============================================================
+
+.proc L9AA3
+        lda     SlewMode
         bne     L9AA2
         lda     $0830
         tax
@@ -7341,8 +7384,12 @@ L9AFB:  lda     $0838
 L9B19:  lda     #$00
         sta     $0838
 L9B1E:  rts
+.endproc
 
-L9B1F:  lda     #$19
+;;; ============================================================
+
+.proc L9B1F
+        lda     #$19
         sta     $0994
         sta     $0997
         ldx     #$FF
@@ -7358,6 +7405,7 @@ L9B1F:  lda     #$19
         stx     $0999
         inc     $08A5
         rts
+.endproc
 
 ;;; ============================================================
 
@@ -7868,7 +7916,6 @@ L9EEE:  lda     #' '
         jmp     L9EE6
 .endproc
 
-;;; ??? - maybe for WWI Ace Combat mode?
 .proc CheckForAbort
         lda     $FC
         and     #$80
@@ -8759,7 +8806,7 @@ LA56F:  sty     $0990
         bcs     LA59E
         lda     #$0D
 LA59E:  sta     $0990
-        lda     $31
+        lda     InputTickCounter
         and     #$1F
         bne     LA5D8
         ldx     #$F2
@@ -8814,18 +8861,13 @@ LA60C:  nop                     ; 64k: patched to JMP `LE4DD`
         nop
         rts
 
-LA60F:  .byte   $22
-        .byte   $03
-LA611:  .byte   $25
-        .byte   $06
-LA613:  .byte   $2D
-        .byte   $03
-LA615:  .byte   $2B
-        .byte   $01
-LA617:  .byte   $42
-        .byte   $01
-LA619:  .byte   $2C
-        .byte   $01
+LA60F:  .word   $0322
+LA611:  .word   $0625
+LA613:  .word   $032D
+LA615:  .word   $012B
+LA617:  .word   $0142
+LA619:  .word   $012C
+
 LA61B:  LDAX    LA7E0
         STAX    $8B
         lda     $1E0E
@@ -9050,15 +9092,15 @@ ResetInterruptHandler:
         jmp     LAB91
         jmp     LAB91
 
-LA7E8:  jsr     LA674
+LA7E8:  jsr     LA674           ; replaced with JSR $8758 - when???
         brk
         brk
         brk
-LA7EE:  jsr     LA67D           ; replaced with JMP $AA03
-        brk                     ; replaced with JMP $AA03
+LA7EE:  jsr     LA67D           ; replaced with JMP $AA03 - or $875B - when???
+        brk                     ; replaced with JMP $AA03 - when???
         brk
         brk
-LA7F4:  jsr     LA686
+LA7F4:  jsr     LA686           ; replaced with JMP $8761 - when???
         brk
         brk
         brk
